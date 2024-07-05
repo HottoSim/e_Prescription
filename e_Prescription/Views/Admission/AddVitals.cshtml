@@ -42,9 +42,9 @@
             <input type="hidden" name="Id" value="@Model.Id" />
             <br />
             <div class="col-md-12">
-                @if (TempData["Notifications"] != null)
+                @if (ViewBag.Notifications != null)
                 {
-                    var notifications = TempData["Notifications"] as List<string>;
+                    var notifications = ViewBag.Notifications as List<string>;
                     if (notifications != null && notifications.Any())
                     {
                         <div class="notification">
@@ -54,64 +54,75 @@
                                     <p>@notification</p>
                                 }
                             </span>
-                            <button onclick="location.href='@Url.Action("ViewAdmission", "Admission", new { admissionId = Model.Id })'" class="btn btn-success">View Admission</button>
+                            <div class="d-flex justify-content-center">
+                                <a asp-controller="Admission" class="btn btn-success" asp-action="ViewAdmission" asp-route-patientId="@Model.Patient.IdNumber">View Admission</a>
+                            </div>
+                            <br />
                         </div>
                     }
                 }
-
-                <table id="ExpTable" class="table table-sm">
-                    <thead>
-                        <tr>
-                            <th>Vital Name</th>
-                            <th>Reading</th>
-                            <th>Time</th>
-                            <th>Note</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < Model.PatientVitals.Count; i++)
-                        {
+                else if (ViewBag.AlertMessage != null)
+                {
+                    <div class="alert alert-success d-flex justify-content-center">
+                        @ViewBag.AlertMessage
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <a asp-controller="Admission" class="btn btn-success" asp-action="ViewAdmission" asp-route-patientId="@Model.Patient.IdNumber">View Admission</a>
+                    </div>
+                }
+                else
+                {
+                    <table id="ExpTable" class="table table-sm">
+                        <thead>
                             <tr>
-                                <td>
-                                    <select name="PatientVitals[@i].VitalId" class="form-control">
-                                        <option value="">Select Vital</option>
-                                        @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.VitalNames)
-                                        {
-                                            <option value="@item.Value">@item.Text</option>
-                                        }
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="text" name="PatientVitals[@i].Reading" class="form-control" />
-                                </td>
-                                <td>
-                                    <input type="time" name="PatientVitals[@i].Time" class="form-control" />
-                                </td>
-                                <td>
-                                    <textarea name="PatientVitals[@i].Note" class="form-control" rows="1"></textarea>
-                                </td>
-                                <td>
-                                    @if (i == 0)
-                                    {
-                                        <button type="button" class="btn btn-sm btn-secondary" onclick="AddItem()">
-                                            Add
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <button type="button" class="btn btn-sm btn-danger delete-button" onclick="DeleteItem(this)">
-                                            Delete
-                                        </button>
-                                    }
-                                </td>
+                                <th>Vital Name</th>
+                                <th>Reading</th>
+                                <th>Time</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.PatientVitals.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <select name="PatientVitals[@i].VitalId" class="form-control">
+                                            <option value="">Select Vital</option>
+                                            @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.VitalNames)
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="PatientVitals[@i].Reading" class="form-control" />
+                                    </td>
+                                    <td>
+                                        <input type="time" name="PatientVitals[@i].Time" class="form-control" />
+                                    </td>
+                                    <td>
+                                        @if (i == 0)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-secondary" onclick="AddItem()">
+                                                Add
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-sm btn-danger delete-button" onclick="DeleteItem(this)">
+                                                Delete
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="centered-container">
+                        <button type="submit" class="btn btn-success btn-block">Submit</button>
+                    </div>
+                }
             </div>
-            <div class="centered-container">
-                <button type="submit" class="btn btn-success btn-block">Submit</button>
-            </div>
+            
         </form>
     </div>
 </div>
@@ -136,20 +147,18 @@
             let cell2 = newRow.insertCell(1);
             let cell3 = newRow.insertCell(2);
             let cell4 = newRow.insertCell(3);
-            let cell5 = newRow.insertCell(4);
 
             cell1.innerHTML = `<select name="PatientVitals[${vitalIndex}].VitalId" class="form-control">
-                                                <option value="">Select Vital</option>
+                                                        <option value="">Select Vital</option>
         @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.VitalNames)
         {
-                                                                    <option value="@item.Value">@item.Text</option>
+                                                                                <option value="@item.Value">@item.Text</option>
         }
-                                            </select>`;
+                                                    </select>`;
 
             cell2.innerHTML = `<input type="text" name="PatientVitals[${vitalIndex}].Reading" class="form-control" />`;
             cell3.innerHTML = `<input type="time" name="PatientVitals[${vitalIndex}].Time" class="form-control" />`;
-            cell4.innerHTML = `<textarea name="PatientVitals[${vitalIndex}].Note" class="form-control" rows="1"></textarea>`;
-            cell5.innerHTML = `<button type="button" class="btn btn-sm btn-danger delete-button" onclick="DeleteItem(this)">Delete</button>`;
+            cell4.innerHTML = `<button type="button" class="btn btn-sm btn-danger delete-button" onclick="DeleteItem(this)">Delete</button>`;
 
             vitalIndex++;
         }

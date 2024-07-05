@@ -156,6 +156,7 @@ namespace e_Prescription.Controllers
             List<SelectListItem> vitalNames = GetVitalNames();
             ViewBag.VitalNames = vitalNames;
 
+
             // Populate ViewBag.VitalNames with the available vital names
             ViewBag.VitalNames = context.Vitals
                                          .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
@@ -169,8 +170,9 @@ namespace e_Prescription.Controllers
         public IActionResult AddVitals(Admission model)
         {
             var admission = context.Admissions
-                                    .Include(a => a.PatientVitals)
-                                    .FirstOrDefault(a => a.Id == model.Id);
+                                     .Include(a => a.Patient) // Include Patient data
+                                     .Include(a => a.PatientVitals)
+                                     .FirstOrDefault(a => a.Id == model.Id);
 
             if (admission == null)
             {
@@ -179,7 +181,6 @@ namespace e_Prescription.Controllers
 
             try
             {
-                // Notification system for vital readings
                 List<string> notifications = new List<string>();
 
                 foreach (var vital in model.PatientVitals)
@@ -205,21 +206,22 @@ namespace e_Prescription.Controllers
 
                 if (notifications.Count > 0)
                 {
-                    TempData["Notifications"] = notifications;
+                    ViewBag.Notifications = notifications;
                 }
 
-                TempData["AlertMessage"] = "Successfully Added!";
+                ViewBag.AlertMessage = "Vitals Back to normal!";
             }
             catch (Exception ex)
             {
-                TempData["AlertMessage"] = $"Error: {ex.Message}";
-                // You might want to log the exception or handle it differently
+                ViewBag.AlertMessage = $"Error: {ex.Message}";
             }
 
-            // Redirect back to the AddVitals view
-            return RedirectToAction("AddVitals", new { admissionId = model.Id });
-        }
+            ViewBag.VitalNames = context.Vitals
+                                         .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
+                                         .ToList();
 
+            return View(admission); // Return the updated admission model
+        }
 
 
 
