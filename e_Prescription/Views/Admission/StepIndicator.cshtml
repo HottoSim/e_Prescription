@@ -1,0 +1,77 @@
+﻿@model string
+
+@{
+    var steps = new List<string> { "Contacts", "Admission", "History" };
+    var currentStepIndex = steps.IndexOf(Model);
+    var progressPercentage = (currentStepIndex + 1) * 100 / steps.Count;
+}
+
+<div class="step-indicator-container">
+    <div class="progress-bar">
+        <div class="progress" style="width:@progressPercentage%"></div>
+    </div>
+    <div class="step-indicator">
+        @for (int i = 0; i < steps.Count; i++)
+        {
+            <div class="step @(i <= currentStepIndex ? "active" : "")">
+                <span class="step-number"></span>
+                <span class="step-title">@steps[i]</span>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .step-indicator-container {
+        width: 80%;
+        margin: 20px auto;
+        text-align: center;
+    }
+
+    .progress-bar {
+        height: 10px;
+        background: #e0e0e0;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .progress {
+        height: 100%;
+        background: #4caf50;
+    }
+
+    .step-indicator {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+        cursor: pointer;
+    }
+
+        .step .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .step .step-title {
+            display: block;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        .step.active .step-number {
+            background: #4caf50;
+            color: white;
+        }
+</style>

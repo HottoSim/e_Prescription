@@ -1,0 +1,129 @@
+﻿@model e_Prescription.Models.Account.RegisterViewModel
+
+@{
+    Layout = "_Layout2";
+}
+
+<div class="col-md-8 mx-auto pt-0 p-0">
+    <div class="card justify-content-center">
+        <div class="card-header bg-success text-uppercase text-white d-flex align-items-center justify-content-center" style="height: 45px;">
+            <h2 class="m-0">Register @Model.Role</h2>
+        </div>
+
+        <form asp-action="Register" style="width: 100%;">
+            <div class="row">
+                <div class="col-md-12">
+                    <div asp-validation-summary="ModelOnly"></div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="FirstName">First Name</label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="LastName">Last Name</label>
+                                <input asp-for="LastName" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="ContactNumber">Contact Number</label>
+                                <input asp-for="ContactNumber" class="form-control" />
+                                <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Email"></label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.Role != "Admin")
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="HPCSANumber">HPCSA Number</label>
+                                    <input asp-for="HPCSANumber" class="form-control" />
+                                    <span asp-validation-for="HPCSANumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <!-- Empty column to balance layout -->
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Password"></label>
+                                <div class="input-group">
+                                    <input asp-for="Password" class="form-control" id="myInput" />
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <input type="checkbox" onclick="myFunction()"> Show
+                                        </div>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="ConfirmPassword"></label>
+                                <div class="input-group">
+                                    <input asp-for="Password" class="form-control" id="myInput1" />
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <input type="checkbox" onclick="myFunction1()"> Show
+                                        </div>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" asp-for="Role" />
+                    <button type="submit" class="btn btn-success btn-block">Register</button>
+                    <br />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+ @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+
+    <script>
+        function myFunction() {
+            var x = document.getElementById("myInput");
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+        }
+
+        function myFunction1() {
+            var x = document.getElementById("myInput1");
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+        }
+    </script>
+ }
+

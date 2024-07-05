@@ -1,0 +1,40 @@
+﻿@model e_Prescription.Models.DischargeViewModel
+@{
+    ViewData["Title"] = "Dicharge";
+    Layout = "_Layout2";
+}
+
+<div class="col-10 mx-auto pt-0 p-0">
+    <div class="card justify-content-center">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Discharge Patient</h4>
+        </div>
+        <form asp-action="Discharge" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="AdmissionId" />
+            @* <input type="hidden" asp-for="NurseId" /> *@
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="form-group">
+                        <label asp-for="DischargeNote" class="control-label">Discharge Note</label>
+                        <textarea asp-for="DischargeNote" class="form-control"></textarea>
+                        <span asp-validation-for="DischargeNote" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Discharge" class="btn btn-success btn-block" />
+            </div>
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

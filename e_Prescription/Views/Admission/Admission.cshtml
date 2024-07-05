@@ -1,0 +1,186 @@
+﻿@model e_Prescription.Models.Admission
+
+@{
+    ViewData["Title"] = "Admission";
+    var vitals = ViewBag.Vitals as List<e_Prescription.Models.Vital>;
+}
+
+@* Include the step indicator *@
+@await Html.PartialAsync("StepIndicator", "Admission")
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+
+    <style>
+        .equal-input {
+            width: 100%;
+            max-width: 150px; /* Adjust the width as needed */
+        }
+
+        .centered-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px; /* Adjust margin as needed */
+        }
+
+        .notification {
+            border: 1px solid #d9534f;
+            background-color: #f2dede;
+            color: #a94442;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stepper-content py-3">
+        <div class="col-10 mx-auto pt-0 p-0">
+            <div class="card justify-content-center">
+                <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+                    <h4 class="text-center">Admission for @ViewBag.PatientName</h4>
+                </div>
+                <form enctype="multipart/form-data" asp-action="Admission" method="post" style="width: 100%;">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            @if (TempData["Notifications"] != null)
+                            {
+                                var notifications = TempData["Notifications"] as List<string>;
+                                foreach (var notification in notifications)
+                                {
+                                    <div class="notification">@notification</div>
+                                }
+                            }
+
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input asp-for="PatientId" class="form-control" hidden />
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="WardId" class="control-label">Ward</label>
+                                        <select asp-for="WardId" class="form-control" id="wardId" asp-items="@ViewBag.Wards">
+                                            <option selected disabled>--Select Ward--</option>
+                                        </select>
+                                        <span asp-validation-for="WardId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="BedId" class="control-label">Bed</label>
+                                        <select asp-for="BedId" class="form-control" id="bedId">
+                                            <option selected disabled>--Select Bed--</option>
+                                        </select>
+                                        <span asp-validation-for="BedId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label asp-for="Weight" class="control-label"></label>
+                                        <input asp-for="Weight" class="form-control" aria-required="true" style="width: 100%;" />
+                                        <span asp-validation-for="Weight" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label asp-for="Height" class="control-label"></label>
+                                        <input asp-for="Height" class="form-control" aria-required="true" style="width: 100%;" />
+                                        <span asp-validation-for="Height" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-md-12">
+                        <table id="ExpTable" class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Vital Name</th>
+                                    <th>Readings</th>
+                                    <th>Normal Range</th>
+                                    <th>Time</th>
+                                    <th>Note</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < vitals.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            @vitals[i].VitalName
+                                            <input type="hidden" name="PatientVitals[@i].VitalId" value="@vitals[i].VitalId" />
+                                        </td>
+                                        <td>
+                                            <input type="text" name="PatientVitals[@i].Reading" class="form-control equal-input" aria-required="true" />
+                                        </td>
+                                        <td>
+                                            @vitals[i].LowLimit - @vitals[i].HighLimit @vitals[i].Units
+                                        </td>
+                                        <td>
+                                            <input type="time" name="PatientVitals[@i].Time" class="form-control equal-input" aria-required="true" />
+                                        </td>
+                                        <td>
+                                            <textarea name="PatientVitals[@i].Note" class="form-control" rows="1"></textarea>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="centered-container">
+                        <input type="submit" value="Submit" class="btn btn-success btn-block" />
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+
+        <script>
+            $(document).ready(function () {
+                // Bind change event
+                $('#wardId').change(function () {
+                    getBedByWardId();
+                });
+            });
+
+            function getBedByWardId() {
+                var wardId = $('#wardId').val();
+                if (wardId) {
+                    $.ajax({
+                        url: '@Url.Action("GetBedByWardId", "Admission")', // Ensure this is properly processed server-side
+                        type: 'GET',
+                        data: { wardId: wardId },
+                        success: function (data) {
+                            var BedDropdown = $('#bedId');
+                            BedDropdown.empty();
+                            BedDropdown.append('<option selected disabled>--Select Bed--</option>');
+
+                            $.each(data, function (index, item) {
+                                BedDropdown.append('<option value="' + item.bedId + '">' + item.bedName + '</option>');
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching beds:', status, error);
+                        }
+                    });
+                }
+            }
+        </script>
+    }
+</body>
+</html>

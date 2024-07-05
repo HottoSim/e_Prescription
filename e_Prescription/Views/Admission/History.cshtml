@@ -1,0 +1,144 @@
+﻿@model e_Prescription.Models.PatientHistory
+
+@{
+    ViewData["Title"] = "Add Patient History";
+}
+
+@await Html.PartialAsync("StepIndicator", "History")
+
+<head>
+    <style>
+        .equal-input {
+            width: 100%;
+            max-width: 150px; /* Adjust the width as needed */
+        }
+
+        .centered-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px; /* Adjust margin as needed */
+        }
+    </style>
+</head>
+
+<div class="col-10 mx-auto pt-0 p-0">
+    <div class="card justify-content-center">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Add Patient History for @ViewBag.PatientName</h4>
+        </div>
+        <form id="historyForm" enctype="multipart/form-data" asp-action="History" style="width: 100%;">
+            <br />
+            @if (TempData["AlertMessage"] != null)
+            {
+                <div class="alert alert-success d-flex justify-content-center">
+                    @TempData["AlertMessage"]
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <a asp-controller="Admission" class="btn btn-success" asp-action="ViewAdmission" asp-route-patientId="@Model.Patient.IdNumber">View Admission</a>
+                </div>
+                <br />
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="PatientId" />
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <label asp-for="SelectedAllergies">Select Allergies:</label>
+                                <select asp-for="SelectedAllergies" class="form-control selectpicker" name="SelectedAllergies" multiple="multiple" data-live-search="true" data-actions-box="true">
+                                    @foreach (var allergy in (SelectList)ViewBag.Allergies)
+                                    {
+                                        <option value="@allergy.Value">@allergy.Text</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="SelectedAllergies" class="text-danger"></span>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="noAllergies" name="NoAllergies" />
+                                    <label class="form-check-label" for="noAllergies">
+                                        None
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="SelectedConditions">Select Conditions:</label>
+                                <select asp-for="SelectedConditions" class="form-control selectpicker" name="SelectedConditions" multiple="multiple" data-live-search="true" data-actions-box="true">
+                                    @foreach (var condition in (SelectList)ViewBag.Conditions)
+                                    {
+                                        <option value="@condition.Value">@condition.Text</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="SelectedConditions" class="text-danger"></span>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="noConditions" name="NoConditions" />
+                                    <label class="form-check-label" for="noConditions">
+                                        None
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="SelectedMedications">Select Medications:</label>
+                                <select asp-for="SelectedMedications" class="form-control selectpicker" name="SelectedMedications" multiple="multiple" data-live-search="true" data-actions-box="true">
+                                    @foreach (var medication in (SelectList)ViewBag.Medications)
+                                    {
+                                        <option value="@medication.Value">@medication.Text</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="SelectedMedications" class="text-danger"></span>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="noMedications" name="NoMedications" />
+                                    <label class="form-check-label" for="noMedications">
+                                        None
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="centered-container">
+                            <input type="submit" value="Submit" class="btn btn-success btn-block" />
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </form>
+        <br />
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#noAllergies').change(function () {
+                if ($(this).is(':checked')) {
+                    $('select[name="SelectedAllergies"]').prop('disabled', true).selectpicker('refresh').val([]);
+                } else {
+                    $('select[name="SelectedAllergies"]').prop('disabled', false).selectpicker('refresh');
+                }
+            });
+
+            $('#noConditions').change(function () {
+                if ($(this).is(':checked')) {
+                    $('select[name="SelectedConditions"]').prop('disabled', true).selectpicker('refresh').val([]);
+                } else {
+                    $('select[name="SelectedConditions"]').prop('disabled', false).selectpicker('refresh');
+                }
+            });
+
+            $('#noMedications').change(function () {
+                if ($(this).is(':checked')) {
+                    $('select[name="SelectedMedications"]').prop('disabled', true).selectpicker('refresh').val([]);
+                } else {
+                    $('select[name="SelectedMedications"]').prop('disabled', false).selectpicker('refresh');
+                }
+            });
+        });
+    </script>
+}

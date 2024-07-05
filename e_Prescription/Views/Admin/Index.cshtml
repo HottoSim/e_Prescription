@@ -1,0 +1,81 @@
+﻿@{
+    ViewBag.Title = "Admin Dashboard";
+}
+
+<head>
+    <style>
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .tile {
+            width: 250px;
+            height: 120px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .tile-users {
+            background-color: #007bff;
+        }
+
+            .tile-users:hover {
+                background-color: #0056b3;
+            }
+
+        .tile-roles {
+            background-color: #28a745;
+        }
+
+            .tile-roles:hover {
+                background-color: #1e7e34;
+            }
+
+        .tile-reports {
+            background-color: #ffc107;
+            color: black;
+        }
+
+            .tile-reports:hover {
+                background-color: #e0a800;
+                color: black;
+            }
+
+        .tile-settings {
+            background-color: #dc3545;
+        }
+
+            .tile-settings:hover {
+                background-color: #c82333;
+            }
+    </style>
+</head>
+<body>
+    <div class="col-md-12 mx-auto pt-0 p-0">
+        <h3  class="text-center">Admin Dashboard</h3>
+        <div class="dashboard">
+            <div class="tile tile-users" onclick="location.href='@Url.Action("Users", "Admin")'">
+                <h4>Manage Users</h4>
+            </div>
+            <div class="tile tile-roles" onclick="location.href='@Url.Action("ManageRoles", "Admin")'">
+                <h4>Manage Roles</h4>
+            </div>
+            <div class="tile tile-reports" onclick="location.href='@Url.Action("ViewReports", "Admin")'">
+                <h4>View Reports</h4>
+            </div>
+            <div class="tile tile-settings" onclick="location.href='@Url.Action("Settings", "Admin")'">
+                <h4>Settings</h4>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+

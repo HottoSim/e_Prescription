@@ -1,0 +1,177 @@
+﻿@model e_Prescription.Models.ContactDetail
+
+@{
+    ViewData["Title"] = "Contacts";
+}
+
+@await Html.PartialAsync("StepIndicator", "Contacts")
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .equal-input {
+            width: 100%;
+            max-width: 150px; /* Adjust the width as needed */
+        }
+
+        .centered-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px; /* Adjust margin as needed */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="col-10 mx-auto pt-0 p-0">
+        <div class="card justify-content-center">
+            <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+                <h4 class="text-center">Contact Details for @ViewBag.PatientName</h4>
+            </div>
+            <form enctype="multipart/form-data" asp-action="Contacts" method="post" style="width: 100%;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input asp-for="PatientId" class="form-control" hidden />
+
+                        <!-- Row 1 -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CellphoneNumber" class="control-label">Contact</label>
+                                    <input asp-for="CellphoneNumber" class="form-control" style="width: 100%;" />
+                                    <span asp-validation-for="CellphoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            @* <em>(optional)</em> *@
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Email" class="control-label">Email </label>
+                                    <input asp-for="Email" class="form-control" style="width: 100%;" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2 -->
+                        <div class="card justify-content-center">
+                            <div class="card-header" style="height: 40px;">
+                                <h6 class="text-center text-black text-capitalize">Residential Address</h6>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label asp-for="ProvinceId" class="control-label">Province</label>
+                                        <select asp-for="ProvinceId" class="form-control" id="provinceId" asp-items="@ViewBag.Provinces">
+                                            <option selected disabled>--Select Province--</option>
+                                        </select>
+                                        <span asp-validation-for="ProvinceId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label asp-for="CityId" class="control-label">City</label>
+                                        <select asp-for="CityId" class="form-control" id="cityId">
+                                            <option selected disabled>--Select City--</option>
+                                        </select>
+                                        <span asp-validation-for="CityId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label asp-for="SuburbId" class="control-label">Suburb</label>
+                                        <select asp-for="SuburbId" class="form-control" id="suburbId">
+                                            <option selected disabled>--Select Suburb--</option>
+                                        </select>
+                                        <span asp-validation-for="SuburbId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label asp-for="StreetAddress" class="control-label">Street Address</label>
+                                        <input asp-for="StreetAddress" class="form-control" style="width: 100%;" />
+                                        <span asp-validation-for="StreetAddress" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="centered-container">
+                            <input type="submit" value="Submit" class="btn btn-success btn-block" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+        <script>
+            $(document).ready(function () {
+                // Bind change event
+                $('#provinceId').change(function () {
+                    getCityByProvinceId();
+                });
+
+                $('#cityId').change(function () {
+                    getSuburbByCityId();
+                });
+
+                // Trigger the city and suburb population if existing contact detail
+                if ('@ViewBag.SelectedCityId' != '') {
+                    $('#provinceId').change();
+                    $('#cityId').val('@ViewBag.SelectedCityId').change();
+                    $('#suburbId').val('@ViewBag.SelectedSuburbId');
+                }
+            });
+
+            function getCityByProvinceId() {
+                var provinceId = $('#provinceId').val();
+                if (provinceId) {
+                    $.ajax({
+                        url: '@Url.Action("GetCityByProvinceId", "Admission")',
+                        type: 'GET',
+                        data: { provinceId: provinceId },
+                        success: function (data) {
+                            var cityDropdown = $('#cityId');
+                            cityDropdown.empty();
+                            cityDropdown.append('<option selected disabled>--Select City--</option>');
+
+                            $.each(data, function (index, item) {
+                                cityDropdown.append('<option value="' + item.cityId + '">' + item.cityName + '</option>');
+                            });
+
+                            // Trigger suburb dropdown update
+                            $('#suburbId').empty().append('<option selected disabled>--Select Suburb--</option>');
+                        }
+                    });
+                }
+            }
+
+            function getSuburbByCityId() {
+                var cityId = $('#cityId').val();
+                if (cityId) {
+                    $.ajax({
+                        url: '@Url.Action("GetSuburbByCityId", "Admission")',
+                        type: 'GET',
+                        data: { cityId: cityId },
+                        success: function (data) {
+                            var suburbDropdown = $('#suburbId');
+                            suburbDropdown.empty();
+                            suburbDropdown.append('<option selected disabled>--Select Suburb--</option>');
+
+                            $.each(data, function (index, item) {
+                                suburbDropdown.append('<option value="' + item.suburbId + '">' + item.suburbName + '</option>');
+                            });
+                        }
+                    });
+                }
+            }
+        </script>
+    }
+</body>
+</html>

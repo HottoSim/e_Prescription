@@ -1,0 +1,166 @@
+﻿@model e_Prescription.Models.Admission
+
+@{
+    ViewData["Title"] = "Recapture Vitals";
+    Layout = "_Layout2";
+}
+
+<style>
+    .equal-input {
+        width: 100%;
+        max-width: 150px; /* Adjust the width as needed */
+    }
+
+    .centered-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px; /* Adjust margin as needed */
+    }
+
+    .notification {
+        border: 1px solid #d9534f;
+        background-color: #f2dede;
+        color: #a94442;
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+<div class="col-10 mx-auto pt-0 p-0">
+    <div class="card justify-content-center">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Re-Capture Vitals</h4>
+        </div>
+
+        <form enctype="multipart/form-data" asp-action="AddVitals" method="post" style="width: 100%;">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <br />
+            <div class="col-md-12">
+                @if (TempData["Notifications"] != null)
+                {
+                    var notifications = TempData["Notifications"] as List<string>;
+                    if (notifications != null && notifications.Any())
+                    {
+                        <div class="notification">
+                            <span>
+                                @foreach (var notification in notifications)
+                                {
+                                    <p>@notification</p>
+                                }
+                            </span>
+                            <button onclick="location.href='@Url.Action("ViewAdmission", "Admission", new { admissionId = Model.Id })'" class="btn btn-success">View Admission</button>
+                        </div>
+                    }
+                }
+
+                <table id="ExpTable" class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Vital Name</th>
+                            <th>Reading</th>
+                            <th>Time</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.PatientVitals.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <select name="PatientVitals[@i].VitalId" class="form-control">
+                                        <option value="">Select Vital</option>
+                                        @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.VitalNames)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" name="PatientVitals[@i].Reading" class="form-control" />
+                                </td>
+                                <td>
+                                    <input type="time" name="PatientVitals[@i].Time" class="form-control" />
+                                </td>
+                                <td>
+                                    <textarea name="PatientVitals[@i].Note" class="form-control" rows="1"></textarea>
+                                </td>
+                                <td>
+                                    @if (i == 0)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-secondary" onclick="AddItem()">
+                                            Add
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-sm btn-danger delete-button" onclick="DeleteItem(this)">
+                                            Delete
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="centered-container">
+                <button type="submit" class="btn btn-success btn-block">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+        let vitalIndex = @Model.PatientVitals.Count;
+
+        function DeleteItem(btn) {
+            $(btn).closest('tr').remove();
+        }
+
+        function AddItem() {
+            let table = document.getElementById('ExpTable').getElementsByTagName('tbody')[0];
+            let newRow = table.insertRow();
+
+            let cell1 = newRow.insertCell(0);
+            let cell2 = newRow.insertCell(1);
+            let cell3 = newRow.insertCell(2);
+            let cell4 = newRow.insertCell(3);
+            let cell5 = newRow.insertCell(4);
+
+            cell1.innerHTML = `<select name="PatientVitals[${vitalIndex}].VitalId" class="form-control">
+                                                <option value="">Select Vital</option>
+        @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.VitalNames)
+        {
+                                                                    <option value="@item.Value">@item.Text</option>
+        }
+                                            </select>`;
+
+            cell2.innerHTML = `<input type="text" name="PatientVitals[${vitalIndex}].Reading" class="form-control" />`;
+            cell3.innerHTML = `<input type="time" name="PatientVitals[${vitalIndex}].Time" class="form-control" />`;
+            cell4.innerHTML = `<textarea name="PatientVitals[${vitalIndex}].Note" class="form-control" rows="1"></textarea>`;
+            cell5.innerHTML = `<button type="button" class="btn btn-sm btn-danger delete-button" onclick="DeleteItem(this)">Delete</button>`;
+
+            vitalIndex++;
+        }
+
+        // Initial check to hide delete button for the first row
+        document.querySelectorAll('.delete-button').forEach(button => {
+            let row = button.closest('tr');
+            let index = Array.from(row.parentNode.children).indexOf(row);
+            if (index === 0) {
+                button.style.display = 'none';
+            }
+        });
+    </script>
+}

@@ -1,0 +1,167 @@
+﻿@model e_Prescription.Models.Account.RegisterViewModel
+@{
+    ViewBag.Title = "System Users";
+}
+<head>
+    <style>
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .tile {
+            width: 260px;
+            height: 170px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+            transition: background-color 0.3s;
+        }
+
+        .tile h4 {
+            margin: 0;
+        }
+
+        .tile .stats {
+            text-align: center;
+        }
+
+        .tile button {
+            width: 45%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            position: absolute;
+            bottom: 10px;
+        }
+
+        .tile .btn-view {
+            background-color: #6c757d;
+            left: 10px;
+        }
+
+        .tile .btn-register {
+            background-color: #28a745;
+            right: 10px;
+        }
+
+        .tile-users {
+            background-color: #007bff;
+        }
+
+        .tile-users:hover {
+            background-color: #0056b3;
+        }
+
+        .tile-roles {
+            background-color: #28a745;
+        }
+
+        .tile-roles:hover {
+            background-color: #1e7e34;
+        }
+
+        .tile-reports {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .tile-reports:hover {
+            background-color: #e0a800;
+            color: black;
+        }
+
+        .tile-settings {
+            background-color: #dc3545;
+        }
+
+        .tile-settings:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="col-md-12 mx-auto pt-0 p-0">
+        <h3 class="text-center">System Users</h3>
+        <div class="dashboard">
+            <div class="tile tile-users">
+                <div class="stats">
+                    <h4>Surgeons</h4>
+                    <p>Active: <span id="active-doctors">10</span></p>
+                    <p>Inactive: <span id="inactive-doctors">5</span></p>
+                </div>
+                <button class="btn-view" onclick="location.href='@Url.Action("ViewSurgeon", "Admin")'">View</button>
+                <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Surgeon" })')">Register</button>
+
+            </div>
+            <div class="tile tile-roles">
+                <div class="stats">
+                    <h4>Nurses</h4>
+                    <p>Active: <span id="active-nurses">15</span></p>
+                    <p>Inactive: <span id="inactive-nurses">3</span></p>
+                </div>
+                <button class="btn-view" onclick="location.href='@Url.Action("ViewNurses", "Admin")'">View</button>
+                <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Nurse" })')">Register</button>
+            </div>
+            <div class="tile tile-reports">
+                <div class="stats">
+                    <h4>Pharmacists</h4>
+                    <p>Active: <span id="active-pharmacists">8</span></p>
+                    <p>Inactive: <span id="inactive-pharmacists">2</span></p>
+                </div>
+                <button class="btn-view" onclick="location.href='@Url.Action("ViewPharmacists", "Admin")'">View</button>
+                <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Pharmacist" })')">Register</button>
+            </div>
+            <div class="tile tile-settings">
+                <div class="stats">
+                    <h4>Admins</h4>
+                    <p>Active: <span id="active-admins">4</span></p>
+                    <p>Inactive: <span id="inactive-admins">1</span></p>
+                </div>
+                <button class="btn-view" onclick="location.href='@Url.Action("ViewAdmins", "Admin")'">View</button>
+                <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Admin" })')">Register</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="RegisterModal" tabindex="-1" role="dialog" aria-labelledby="RegisterModalLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title text-center" id="RegisterModalLabel">Register</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="RegisterModalBody">
+                    <!-- Content loaded dynamically -->
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Bootstrap JS -->
+    
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+
+        <script>
+            function openRegisterModal(url) {
+                $('#RegisterModalBody').load(url, function () {
+                    $('#RegisterModal').modal('show');
+                });
+            }
+        </script>
+    }
+</body>
