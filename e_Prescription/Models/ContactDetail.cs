@@ -31,7 +31,7 @@ namespace e_Prescription.Models
 
         [Required]
         [RegularExpression(@"^(\+27|0)[6-8][0-9]{8}$", ErrorMessage = "Invalid South African phone number.")]
-        public int CellphoneNumber { get; set; }
+        public string CellphoneNumber { get; set; }
 
         [RegularExpression(@"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", ErrorMessage = "Invalid email address.")]
         public string? Email { get; set; }

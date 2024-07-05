@@ -23,7 +23,7 @@ namespace e_Prescription.Controllers
             var bookings = context.PatientBookings
                                 .Where(p => p.Patient.IsActive)
                                 .Include(pb => pb.Patient)
-                                .Include(pb => pb.HealthcareProfessional)
+                                .Include(pb => pb.ApplicationUser)
                                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchIdNumber))
@@ -228,69 +228,58 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public ActionResult Admission(int patientId)
         {
-            Admission admission = new Admission();
+            var admission = new Admission();
             admission.PatientVitals.Add(new PatientVital() { PatientVitalId = 1 });
 
             var patient = context.Patients.Find(patientId);
-
-            // Ward and Bed Selection
-            var wards = context.Wards.ToList();
-            var beds = new List<Bed>();
-
             if (patient == null)
             {
                 return NotFound();
             }
 
-            beds.Add(new Bed()
+            var wards = context.Wards.ToList();
+            var beds = new List<Bed>
             {
-                BedId = 0,
-                BedName = "--Select Bed--"
-            });
+                new Bed() 
+                { 
+                    BedId = 0, BedName = "--Select Bed--" 
+                }
+            };
+
             ViewBag.Wards = new SelectList(wards, "WardId", "WardName");
             ViewBag.Beds = new SelectList(beds, "BedId", "BedName");
-
             ViewBag.PatientName = $"{patient.Firstname} {patient.Lastname}";
-            ViewBag.PatientId = patientId; // Set PatientId in ViewBag
-
-            // Set ViewBag with the vital names
+            ViewBag.PatientId = patientId;
             ViewBag.Vitals = context.Vitals.ToList();
+            ViewBag.Notifications = null;  // Initialize to avoid null reference
+            ViewBag.AlertMessage = null;  // Initialize to avoid null reference
 
             return View(admission);
         }
 
+
         [HttpPost]
         public async Task<IActionResult> Admission(int patientId, Admission admission)
         {
-            // Assign other properties
             admission.PatientId = patientId;
 
             var bed = context.Beds.Find(admission.BedId);
-
             if (bed == null)
             {
                 return NotFound();
             }
+            bed.IsAvailable = false;
+            context.SaveChanges();
 
-            if (bed != null)
-            {
-                bed.IsAvailable = false;
-                context.SaveChanges(); // Save changes to update the bed's availability
-            }
-
-            // Fetch the logged-in nurse (ApplicationUser)
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the logged-in user's ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var nurse = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-
             if (nurse == null)
             {
                 return NotFound();
             }
+            admission.NurseId = nurse.Id;
 
-            admission.NurseId = nurse.Id; // Set NurseId to the logged-in user's Id
-
-            // Check vital readings and notify if out of range
-            List<string> notifications = new List<string>();
+            var notifications = new List<string>();
             foreach (var patientVital in admission.PatientVitals)
             {
                 var vital = context.Vitals.Find(patientVital.VitalId);
@@ -314,11 +303,16 @@ namespace e_Prescription.Controllers
 
             if (notifications.Count > 0)
             {
-                TempData["Notifications"] = notifications;
+                ViewBag.Notifications = notifications;
+            }
+            else
+            {
+                ViewBag.AlertMessage = "Vitals seem to be normal!";
             }
 
-            return RedirectToAction("History", "Admission", new { patientId = admission.PatientId });
+            return View(admission);
         }
+
 
         // Get Bed By Ward
         public JsonResult GetBedByWardId(int wardId)

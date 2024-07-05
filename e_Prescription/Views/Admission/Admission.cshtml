@@ -35,6 +35,16 @@
             margin-bottom: 20px;
             border-radius: 5px;
         }
+
+        .alert {
+            border: 1px solid #008000;
+            background-color: #f2dede;
+            color: #006400;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
     </style>
 </head>
 
@@ -46,96 +56,118 @@
                     <h4 class="text-center">Admission for @ViewBag.PatientName</h4>
                 </div>
                 <form enctype="multipart/form-data" asp-action="Admission" method="post" style="width: 100%;">
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            @if (TempData["Notifications"] != null)
-                            {
-                                var notifications = TempData["Notifications"] as List<string>;
-                                foreach (var notification in notifications)
-                                {
-                                    <div class="notification">@notification</div>
-                                }
-                            }
-
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                            <input asp-for="PatientId" class="form-control" hidden />
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label asp-for="WardId" class="control-label">Ward</label>
-                                        <select asp-for="WardId" class="form-control" id="wardId" asp-items="@ViewBag.Wards">
-                                            <option selected disabled>--Select Ward--</option>
-                                        </select>
-                                        <span asp-validation-for="WardId" class="text-danger"></span>
-                                    </div>
+                    @if (ViewBag.Notifications != null)
+                    {
+                        var notifications = ViewBag.Notifications as List<string>;
+                        if (notifications != null && notifications.Any())
+                        {
+                            <div class="notification">
+                                <span>
+                                    @foreach (var notification in notifications)
+                                    {
+                                        <p>@notification</p>
+                                    }
+                                </span>
+                                <div class="d-flex justify-content-center">
+                                    <a asp-controller="Admission" class="btn btn-success" asp-action="History" asp-route-patientId="@Model.PatientId">Continue</a>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label asp-for="BedId" class="control-label">Bed</label>
-                                        <select asp-for="BedId" class="form-control" id="bedId">
-                                            <option selected disabled>--Select Bed--</option>
-                                        </select>
-                                        <span asp-validation-for="BedId" class="text-danger"></span>
-                                    </div>
-                                </div>
+                                <br />
                             </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label asp-for="Weight" class="control-label"></label>
-                                        <input asp-for="Weight" class="form-control" aria-required="true" style="width: 100%;" />
-                                        <span asp-validation-for="Weight" class="text-danger"></span>
+                        }
+                    }
+                    else if (ViewBag.AlertMessage != null)
+                    {
+                        <div class="alert alert d-flex justify-content-center">
+                            @ViewBag.AlertMessage
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a asp-controller="Admission" class="btn btn-success" asp-action="History" asp-route-patientId="@Model.PatientId">Continue</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+
+                            <div class="col-md-12">
+
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <input asp-for="PatientId" class="form-control" hidden />
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="WardId" class="control-label">Ward</label>
+                                            <select asp-for="WardId" class="form-control" id="wardId" asp-items="@ViewBag.Wards">
+                                                <option selected disabled>--Select Ward--</option>
+                                            </select>
+                                            <span asp-validation-for="WardId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="BedId" class="control-label">Bed</label>
+                                            <select asp-for="BedId" class="form-control" id="bedId">
+                                                <option selected disabled>--Select Bed--</option>
+                                            </select>
+                                            <span asp-validation-for="BedId" class="text-danger"></span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label asp-for="Height" class="control-label"></label>
-                                        <input asp-for="Height" class="form-control" aria-required="true" style="width: 100%;" />
-                                        <span asp-validation-for="Height" class="text-danger"></span>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="Weight" class="control-label"></label>
+                                            <input asp-for="Weight" class="form-control" aria-required="true" style="width: 100%;" />
+                                            <span asp-validation-for="Weight" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="Height" class="control-label"></label>
+                                            <input asp-for="Height" class="form-control" aria-required="true" style="width: 100%;" />
+                                            <span asp-validation-for="Height" class="text-danger"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <br />
-                    <div class="col-md-12">
-                        <table id="ExpTable" class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Vital Name</th>
-                                    <th>Readings</th>
-                                    <th>Normal Range</th>
-                                    <th>Time</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < vitals.Count; i++)
-                                {
+                        <br />
+                        <div class="col-md-12">
+                            <table id="ExpTable" class="table table-sm">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            @vitals[i].VitalName
-                                            <input type="hidden" name="PatientVitals[@i].VitalId" value="@vitals[i].VitalId" />
-                                        </td>
-                                        <td>
-                                            <input type="text" name="PatientVitals[@i].Reading" class="form-control equal-input" aria-required="true" />
-                                        </td>
-                                        <td>
-                                            @vitals[i].LowLimit - @vitals[i].HighLimit @vitals[i].Units
-                                        </td>
-                                        <td>
-                                            <input type="time" name="PatientVitals[@i].Time" class="form-control equal-input" aria-required="true" />
-                                        </td>
+                                        <th>Vital Name</th>
+                                        <th>Readings</th>
+                                        <th>Normal Range</th>
+                                        <th>Time</th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < vitals.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @vitals[i].VitalName
+                                                <input type="hidden" name="PatientVitals[@i].VitalId" value="@vitals[i].VitalId" />
+                                            </td>
+                                            <td>
+                                                <input type="text" name="PatientVitals[@i].Reading" class="form-control equal-input" aria-required="true" />
+                                            </td>
+                                            <td>
+                                                @vitals[i].LowLimit - @vitals[i].HighLimit @vitals[i].Units
+                                            </td>
+                                            <td>
+                                                <input type="time" name="PatientVitals[@i].Time" class="form-control equal-input" aria-required="true" />
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <div class="centered-container">
-                        <input type="submit" value="Submit" class="btn btn-success btn-block" />
-                    </div>
-
+                        <div class="centered-container">
+                            <input type="submit" value="Submit" class="btn btn-success btn-block" />
+                        </div>
+                    }
                 </form>
             </div>
         </div>

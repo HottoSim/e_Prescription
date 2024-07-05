@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using e_Prescription.Data;
 
@@ -11,9 +12,11 @@ using e_Prescription.Data;
 namespace e_Prescription.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240705214803_DropHealthcare")]
+    partial class DropHealthcare
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -597,10 +600,6 @@ namespace e_Prescription.Migrations
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SurgeonId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Theatre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -616,8 +615,6 @@ namespace e_Prescription.Migrations
                     b.HasKey("BookingId");
 
                     b.HasIndex("PatientId");
-
-                    b.HasIndex("SurgeonId");
 
                     b.ToTable("PatientBookings");
                 });
@@ -973,14 +970,6 @@ namespace e_Prescription.Migrations
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("e_Prescription.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("SurgeonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
 
                     b.Navigation("Patient");
                 });

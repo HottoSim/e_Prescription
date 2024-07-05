@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using e_Prescription.Data;
 
@@ -11,9 +12,11 @@ using e_Prescription.Data;
 namespace e_Prescription.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240705213541_Re-Contact")]
+    partial class ReContact
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -594,12 +597,11 @@ namespace e_Prescription.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PatientId")
+                    b.Property<int>("HealthcareProfessionalId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SurgeonId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Theatre")
                         .IsRequired()
@@ -615,9 +617,9 @@ namespace e_Prescription.Migrations
 
                     b.HasKey("BookingId");
 
-                    b.HasIndex("PatientId");
+                    b.HasIndex("HealthcareProfessionalId");
 
-                    b.HasIndex("SurgeonId");
+                    b.HasIndex("PatientId");
 
                     b.ToTable("PatientBookings");
                 });
@@ -968,19 +970,19 @@ namespace e_Prescription.Migrations
 
             modelBuilder.Entity("e_Prescription.Models.PatientBooking", b =>
                 {
+                    b.HasOne("e_Prescription.Models.Account.HealthcareProfessional", "HealthcareProfessional")
+                        .WithMany()
+                        .HasForeignKey("HealthcareProfessionalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("e_Prescription.Models.Patient", "Patient")
                         .WithMany()
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("e_Prescription.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("SurgeonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
+                    b.Navigation("HealthcareProfessional");
 
                     b.Navigation("Patient");
                 });
