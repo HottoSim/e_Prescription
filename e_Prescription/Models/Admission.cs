@@ -15,23 +15,23 @@ namespace e_Prescription.Models
 
         public DateTime AdmissionDate { get; set; }= DateTime.Now;
 
-        [Required(ErrorMessage = "*required")]
+        [Required(ErrorMessage = "*Required")]
         [ForeignKey("Ward")]
         public int WardId { get; set; }
         public virtual Ward Ward { get; set; }
 
-        [Required(ErrorMessage = "*required")]
+        [Required(ErrorMessage = "*Required")]
         [ForeignKey("Bed")]
         public int BedId { get; set; }
         public virtual Bed Bed { get; set; }
 
-        [Required]
-        [Range(0.0, Double.MaxValue, ErrorMessage = "Invalid weight entered")]
-        public double Weight { get; set; }
+        [Required(ErrorMessage = "*Required")]
+        [Range(2.0, Double.MaxValue, ErrorMessage = "Invalid weight entered")]
+        public double? Weight { get; set; }
 
-        [Required]
-        [Range(0.0, Double.MaxValue, ErrorMessage = "Invalid Height entered.")]
-        public double Height { get; set; }
+        [Required(ErrorMessage = "*Required")]
+        [Range(45.0, Double.MaxValue, ErrorMessage = "Invalid Height entered.")]
+        public double? Height { get; set; }
 
         public virtual List<PatientVital> PatientVitals { get; set; } = new List<PatientVital>();
 

@@ -17,11 +17,11 @@ namespace e_Prescription.Models
         public int AdmissionId { get; set; }
         public virtual Admission Admission { get; set; }
 
-        [Required]
-        [Range(0.0, Double.MaxValue, ErrorMessage = "Reading must be a positive number.")]
-        public double Reading { get; set; }
+        [Required(ErrorMessage = "*Required")]
+        [Range(1.0, Double.MaxValue, ErrorMessage = "Reading must be a positive number.")]
+        public double? Reading { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public DateTime Time { get; set; }
 
         [ForeignKey("VitalId")]

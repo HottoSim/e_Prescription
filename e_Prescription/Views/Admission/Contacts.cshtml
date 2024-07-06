@@ -18,7 +18,22 @@
         .centered-container {
             display: flex;
             justify-content: center;
-            margin-top: 20px; /* Adjust margin as needed */
+            align-items: center;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: 30px; /* Adjust the gap size as needed */
+        }
+
+        .btn-large {
+            width: 150px; /* Adjust as needed */
+            padding: 10px 20px;
+            font-size: 1.25rem;
         }
     </style>
 </head>
@@ -98,7 +113,10 @@
                             </div>
                         </div>
                         <div class="centered-container">
-                            <input type="submit" value="Submit" class="btn btn-success btn-block" />
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-info" onclick="history.back()">Back</button>
+                                <input type="submit" value="Submit" class="btn btn-success" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -171,6 +189,7 @@
                     });
                 }
             }
+
         </script>
     }
 </body>

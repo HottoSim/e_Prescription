@@ -76,12 +76,16 @@
                         }
                     }
                     else if (ViewBag.AlertMessage != null)
-                    {
-                        <div class="alert alert d-flex justify-content-center">
-                            @ViewBag.AlertMessage
-                        </div>
-                        <div class="d-flex justify-content-center">
-                            <a asp-controller="Admission" class="btn btn-success" asp-action="History" asp-route-patientId="@Model.PatientId">Continue</a>
+                    { 
+                        <div class="alert">
+                            <span>
+                                <div class="alert alert-success d-flex justify-content-center">
+                                    @ViewBag.AlertMessage
+                                </div>
+                            </span>
+                            <div class="d-flex justify-content-center">
+                                <a asp-controller="Admission" class="btn btn-success" asp-action="History" asp-route-patientId="@Model.PatientId">Continue</a>
+                            </div>
                         </div>
                     }
                     else
@@ -150,13 +154,13 @@
                                                 <input type="hidden" name="PatientVitals[@i].VitalId" value="@vitals[i].VitalId" />
                                             </td>
                                             <td>
-                                                <input type="text" name="PatientVitals[@i].Reading" class="form-control equal-input" aria-required="true" />
+                                                <input type="text" name="PatientVitals[@i].Reading" class="form-control equal-input" aria-required="true" required />
                                             </td>
                                             <td>
                                                 @vitals[i].LowLimit - @vitals[i].HighLimit @vitals[i].Units
                                             </td>
                                             <td>
-                                                <input type="time" name="PatientVitals[@i].Time" class="form-control equal-input" aria-required="true" />
+                                                <input type="time" name="PatientVitals[@i].Time" class="form-control equal-input" aria-required="true" required />
                                             </td>
                                         </tr>
                                     }

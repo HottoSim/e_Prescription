@@ -29,7 +29,7 @@ namespace e_Prescription.Models
         public int SuburbId { get; set; }
         public virtual Suburb Suburb { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         [RegularExpression(@"^(\+27|0)[6-8][0-9]{8}$", ErrorMessage = "Invalid South African phone number.")]
         public string CellphoneNumber { get; set; }
 
