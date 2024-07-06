@@ -75,7 +75,6 @@ namespace e_Prescription.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             ApplicationUser user;
-
             if (model.Role == "Admin")
             {
                 user = new ApplicationUser
@@ -122,7 +121,8 @@ namespace e_Prescription.Controllers
             {
                 await EnsureRoleExistsAsync(model.Role);
                 await _userManager.AddToRoleAsync(user, model.Role);
-                return RedirectToAction("Index", "Admin");
+                TempData["SuccessMessage"] = $"{model.Role} has been registered successfully!";
+                return RedirectToAction("Users", "Admin");
             }
             AddErrors(result);
 

@@ -68,7 +68,7 @@
                             <div class="form-group">
                                 <label asp-for="Password"></label>
                                 <div class="input-group">
-                                    <input asp-for="Password" class="form-control" id="myInput" />
+                                    <input asp-for="Password" class="form-control" id="myInput" type="password" />
                                     <div class="input-group-append">
                                         <div class="input-group-text">
                                             <input type="checkbox" onclick="myFunction()"> Show
@@ -82,7 +82,7 @@
                             <div class="form-group">
                                 <label asp-for="ConfirmPassword"></label>
                                 <div class="input-group">
-                                    <input asp-for="Password" class="form-control" id="myInput1" />
+                                    <input asp-for="ConfirmPassword" class="form-control" id="myInput1" type="password" />
                                     <div class="input-group-append">
                                         <div class="input-group-text">
                                             <input type="checkbox" onclick="myFunction1()"> Show
@@ -101,10 +101,10 @@
         </form>
     </div>
 </div>
- @section Scripts {
-        @{
-            await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        }
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     <script>
         function myFunction() {
@@ -125,5 +125,4 @@
             }
         }
     </script>
- }
-
+}

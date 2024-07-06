@@ -24,73 +24,82 @@
             transition: background-color 0.3s;
         }
 
-        .tile h4 {
-            margin: 0;
-        }
+            .tile h4 {
+                margin: 0;
+            }
 
-        .tile .stats {
-            text-align: center;
-        }
+            .tile .stats {
+                text-align: center;
+            }
 
-        .tile button {
-            width: 45%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            color: white;
-            position: absolute;
-            bottom: 10px;
-        }
+            .tile button {
+                width: 45%;
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                color: white;
+                position: absolute;
+                bottom: 10px;
+            }
 
-        .tile .btn-view {
-            background-color: #6c757d;
-            left: 10px;
-        }
+            .tile .btn-view {
+                background-color: #6c757d;
+                left: 10px;
+            }
 
-        .tile .btn-register {
-            background-color: #28a745;
-            right: 10px;
-        }
+            .tile .btn-register {
+                background-color: #28a745;
+                right: 10px;
+            }
 
         .tile-users {
             background-color: #007bff;
         }
 
-        .tile-users:hover {
-            background-color: #0056b3;
-        }
+            .tile-users:hover {
+                background-color: #0056b3;
+            }
 
         .tile-roles {
             background-color: #28a745;
         }
 
-        .tile-roles:hover {
-            background-color: #1e7e34;
-        }
+            .tile-roles:hover {
+                background-color: #1e7e34;
+            }
 
         .tile-reports {
             background-color: #ffc107;
             color: black;
         }
 
-        .tile-reports:hover {
-            background-color: #e0a800;
-            color: black;
-        }
+            .tile-reports:hover {
+                background-color: #e0a800;
+                color: black;
+            }
 
         .tile-settings {
             background-color: #dc3545;
         }
 
-        .tile-settings:hover {
-            background-color: #c82333;
-        }
+            .tile-settings:hover {
+                background-color: #c82333;
+            }
     </style>
 </head>
 <body>
     <div class="col-md-12 mx-auto pt-0 p-0">
         <h3 class="text-center">System Users</h3>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
         <div class="dashboard">
             <div class="tile tile-users">
                 <div class="stats">
@@ -150,7 +159,6 @@
         </div>
     </div>
     <!-- Add Bootstrap JS -->
-    
     @section Scripts {
         @{
             await Html.RenderPartialAsync("_ValidationScriptsPartial");
