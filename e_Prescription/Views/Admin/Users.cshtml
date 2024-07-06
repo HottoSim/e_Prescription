@@ -1,4 +1,4 @@
-﻿@model e_Prescription.Models.Account.RegisterViewModel
+﻿@model e_Prescription.Models.Account.UserCountViewModel
 @{
     ViewBag.Title = "System Users";
 }
@@ -62,7 +62,7 @@
             }
 
         .tile-roles {
-            background-color: #28a745;
+            background-color: #018749;
         }
 
             .tile-roles:hover {
@@ -104,8 +104,8 @@
             <div class="tile tile-users">
                 <div class="stats">
                     <h4>Surgeons</h4>
-                    <p>Active: <span id="active-doctors">10</span></p>
-                    <p>Inactive: <span id="inactive-doctors">5</span></p>
+                    <p>Active: <span id="active-doctors">@Model.SurgeonCount</span></p>
+                    <p>Inactive: <span id="inactive-doctors">@Model.NoSurgeonCount</span></p>
                 </div>
                 <button class="btn-view" onclick="location.href='@Url.Action("ViewSurgeon", "Admin")'">View</button>
                 <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Surgeon" })')">Register</button>
@@ -114,8 +114,8 @@
             <div class="tile tile-roles">
                 <div class="stats">
                     <h4>Nurses</h4>
-                    <p>Active: <span id="active-nurses">15</span></p>
-                    <p>Inactive: <span id="inactive-nurses">3</span></p>
+                    <p>Active: <span id="active-nurses">@Model.NurseCount</span></p>
+                    <p>Inactive: <span id="inactive-nurses">@Model.NoNurseCount</span></p>
                 </div>
                 <button class="btn-view" onclick="location.href='@Url.Action("ViewNurses", "Admin")'">View</button>
                 <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Nurse" })')">Register</button>
@@ -123,8 +123,8 @@
             <div class="tile tile-reports">
                 <div class="stats">
                     <h4>Pharmacists</h4>
-                    <p>Active: <span id="active-pharmacists">8</span></p>
-                    <p>Inactive: <span id="inactive-pharmacists">2</span></p>
+                    <p>Active: <span id="active-pharmacists">@Model.PharmacistCount</span></p>
+                    <p>Inactive: <span id="inactive-pharmacists">@Model.NoPharmacistCount</span></p>
                 </div>
                 <button class="btn-view" onclick="location.href='@Url.Action("ViewPharmacists", "Admin")'">View</button>
                 <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Pharmacist" })')">Register</button>
@@ -132,8 +132,8 @@
             <div class="tile tile-settings">
                 <div class="stats">
                     <h4>Admins</h4>
-                    <p>Active: <span id="active-admins">4</span></p>
-                    <p>Inactive: <span id="inactive-admins">1</span></p>
+                    <p>Active: <span id="active-admins">@Model.AdminCount</span></p>
+                    <p>Inactive: <span id="inactive-admins">@Model.NoAdminCount</span></p>
                 </div>
                 <button class="btn-view" onclick="location.href='@Url.Action("ViewAdmins", "Admin")'">View</button>
                 <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Admin" })')">Register</button>
