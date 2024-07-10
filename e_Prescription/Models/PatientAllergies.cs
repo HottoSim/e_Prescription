@@ -12,6 +12,6 @@ namespace e_Prescription.Models
         public int PatientId { get; set; }
 
         [ForeignKey("ActiveIngredientId")]
-        public int? ActiveIngredientId { get; set; } = null;
+        public int? ActiveIngredientId { get; set; }
     }
 }
