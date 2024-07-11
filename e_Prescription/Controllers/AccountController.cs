@@ -47,6 +47,10 @@ namespace e_Prescription.Controllers
                     {
                         return RedirectToAction("Index", "Admission");
                     }
+                    if (roles.Contains("Admin"))
+                    {
+                        return RedirectToAction("Users", "Admin");
+                    }
 
                     return RedirectToLocal(returnUrl);
                 }
