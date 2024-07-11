@@ -1,0 +1,70 @@
+﻿@model IEnumerable<e_Prescription.Models.Bed>
+
+@{
+    ViewData["Title"] = "Manage Wards";
+}
+<style>
+    .dashboard {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px; /* Add margin to create space between header and dashboard */
+    }
+
+</style>
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Manage Beds</h4>
+        </div>
+        <p>
+            <a asp-action="Create">Create New</a>
+        </p>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Ward Name
+                    </th>
+                    <th>
+                        Bed Name
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Action
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Ward.WardName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BedName)
+                        </td>
+                        <td>
+                            @if (item.IsAvailable)
+                            {
+                                <text>Available</text>
+                            }
+                            else
+                            {
+                                <text>Not Available</text>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.BedId">Update</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+     </div>
+</div>
+

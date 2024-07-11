@@ -1,6 +1,8 @@
 ﻿using e_Prescription.Data;
 using Microsoft.AspNetCore.Mvc;
 using e_Prescription.Models.Account;
+using e_Prescription.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace e_Prescription.Controllers
 {
@@ -46,6 +48,33 @@ namespace e_Prescription.Controllers
             };
 
             return View(model);
+        }
+
+        //Returning vitals
+        public IActionResult ManageVitals()
+        {
+            var vitalsList = _context.Vitals.ToList();
+            return View(vitalsList);
+        }
+
+        //Add new vital
+        [HttpGet]
+        public IActionResult AddVitals()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult AddVitals(Vital vital)
+        {
+            return View();
+        }
+
+
+        //Return beds and wards
+        public IActionResult ManageWards()
+        {
+            var beds = _context.Beds.Include(b => b.Ward).ToList();
+            return View(beds);
         }
     }
 }
