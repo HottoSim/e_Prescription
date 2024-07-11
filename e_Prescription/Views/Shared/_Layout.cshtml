@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using e_Prescription.Data
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -13,6 +17,52 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.14/js/bootstrap-select.min.js"></script>
+    <style>
+        .navbar-container {
+            display: flex;
+            height: calc(100vh - 70px); /* Full height minus the horizontal navbar height */
+        }
+
+        .navbar-vertical {
+            width: 230px; /* Width of the navbar */
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            gap: 10px;
+            overflow-y: auto;
+            position: fixed; /* Fix navbar position */
+            top: 70px; /* Adjust if the horizontal navbar height changes */
+            background-color: white; /* Set background color of the navbar */
+        }
+
+        .navbar-item {
+            width: 90%;
+            text-align: left;
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 10px;
+            color: #000; /* Default text color (black) */
+            text-decoration: none; /* Remove underline from links */
+            background-color: white; /* Background color for navbar items */
+        }
+
+            .navbar-item:hover {
+                background-color: #f0f0f0; /* Light gray background on hover */
+            }
+
+            .navbar-item.active {
+                background-color: #28a745; /* Green background for active tab */
+                color: #fff; /* White text color for active tab */
+            }
+
+        .content1 {
+            margin-left: 250px; /* Leave space for the navbar */
+            padding: 20px;
+            flex-grow: 1;
+            border-left: 1px solid #ccc; /* Add a border to separate the content from the navbar */
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -39,7 +89,7 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark">Hello, @User.Identity.Name!</a>
+                                <a class="nav-link text-dark">Hello, @User.Identity.Name.!</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark">@User.Claims.FirstOrDefault(c => c.Type == "role")?.Value</a>
@@ -61,6 +111,26 @@
             </div>
         </nav>
     </header>
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="navbar-container">
+            <div class="nav flex-column navbar-vertical" role="tablist" aria-orientation="vertical">
+                <a class="nav-link navbar-item text-dark active" href="@Url.Action("Users", "Admin")">Manage Users</a>
+                <a class="nav-link navbar-item text-dark" href="@Url.Action("ManageVitals", "Admin")">Manage Vitals</a>
+                <a class="nav-link navbar-item text-dark" href="@Url.Action("ManageBeds", "Admin")">Manage Wards</a>
+                <a class="nav-link navbar-item text-dark" href="@Url.Action("ManageTreatments", "Admin")">Treatment Records</a>
+                <a class="nav-link navbar-item text-dark" href="@Url.Action("Theatre", "Admin")">Theatre Records</a>
+                <a class="nav-link navbar-item text-dark" href="@Url.Action("ActiveIngredients", "Admin")">Active Ingredients</a>
+                <a class="nav-link navbar-item text-dark" href="@Url.Action("Medication", "Admin")">Manage Medication</a>
+                <a class="nav-link navbar-item text-dark" href="@Url.Action("DiagnosisRecords(ICD-10)", "Admin")">Diagnosis (ICD-10)</a>
+            </div>
+            <div class="content1">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    }
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -70,6 +140,29 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function () {
+            // Remove 'active' class from all navbar items
+            $(".navbar-item").removeClass("active");
+
+            // Determine the current page URL
+            var currentPath = window.location.pathname.toLowerCase();
+
+            // Loop through each navbar item
+            $(".navbar-item").each(function () {
+                // Check if the href attribute matches the current path
+                if (this.href.toLowerCase().indexOf(currentPath) !== -1) {
+                    // Add 'active' class to the matching navbar item
+                    $(this).addClass("active");
+                }
+            });
+
+            // If no navbar item is active, default to the first item
+            // if (!$(".navbar-item").hasClass("active")) {
+            //     $(".navbar-item:first").addClass("active");
+            // }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -3,7 +3,22 @@
 @{
     Layout = "_Layout2";
 }
+<style>
+    .centered-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        width: 100%;
+    }
 
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 30px; /* Adjust the gap size as needed */
+    }
+</style>
 <div class="col-md-8 mx-auto pt-0 p-0">
     <div class="card justify-content-center">
         <div class="card-header bg-success text-uppercase text-white d-flex align-items-center justify-content-center" style="height: 45px;">
@@ -94,7 +109,12 @@
                         </div>
                     </div>
                     <input type="hidden" asp-for="Role" />
-                    <button type="submit" class="btn btn-success btn-block">Register</button>
+                    <div class="centered-container">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info" onclick="history.back()">Back</button>
+                            <input type="submit" value="Submit" class="btn btn-success" />
+                        </div>
+                    </div>
                     <br />
                 </div>
             </div>

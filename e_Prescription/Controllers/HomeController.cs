@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using e_Prescription.Models;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace e_Prescription.Controllers
 {
@@ -12,7 +13,7 @@ namespace e_Prescription.Controllers
         {
             _logger = logger;
         }
-
+       // [Authorize]
         public IActionResult Index()
         {
             return View();

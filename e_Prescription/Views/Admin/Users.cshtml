@@ -8,6 +8,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
+            margin-top: 20px; /* Add margin to create space between header and dashboard */
         }
 
         .tile {
@@ -90,55 +91,60 @@
 </head>
 <body>
     <div class="col-md-12 mx-auto pt-0 p-0">
-        <h3 class="text-center">System Users</h3>
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                @TempData["SuccessMessage"]
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+        <div class="card">
+            <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+                <h4 class="text-center">System Users</h4>
             </div>
-        }
-        <div class="dashboard">
-            <div class="tile tile-users">
-                <div class="stats">
-                    <h4>Surgeons</h4>
-                    <p>Active: <span id="active-doctors">@Model.SurgeonCount</span></p>
-                    <p>Inactive: <span id="inactive-doctors">@Model.NoSurgeonCount</span></p>
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <button class="btn-view" onclick="location.href='@Url.Action("ViewSurgeon", "Admin")'">View</button>
-                <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Surgeon" })')">Register</button>
+            }
+            <div class="dashboard">
+                <div class="tile tile-users">
+                    <div class="stats">
+                        <h4>Surgeons</h4>
+                        <p>Active: <span id="active-doctors">@Model.SurgeonCount</span></p>
+                        <p>Inactive: <span id="inactive-doctors">@Model.NoSurgeonCount</span></p>
+                    </div>
+                    <button class="btn-view" onclick="location.href='@Url.Action("ViewSurgeon", "Admin")'">View</button>
+                    <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Surgeon" })')">Register</button>
 
-            </div>
-            <div class="tile tile-roles">
-                <div class="stats">
-                    <h4>Nurses</h4>
-                    <p>Active: <span id="active-nurses">@Model.NurseCount</span></p>
-                    <p>Inactive: <span id="inactive-nurses">@Model.NoNurseCount</span></p>
                 </div>
-                <button class="btn-view" onclick="location.href='@Url.Action("ViewNurses", "Admin")'">View</button>
-                <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Nurse" })')">Register</button>
-            </div>
-            <div class="tile tile-reports">
-                <div class="stats">
-                    <h4>Pharmacists</h4>
-                    <p>Active: <span id="active-pharmacists">@Model.PharmacistCount</span></p>
-                    <p>Inactive: <span id="inactive-pharmacists">@Model.NoPharmacistCount</span></p>
+                <div class="tile tile-roles">
+                    <div class="stats">
+                        <h4>Nurses</h4>
+                        <p>Active: <span id="active-nurses">@Model.NurseCount</span></p>
+                        <p>Inactive: <span id="inactive-nurses">@Model.NoNurseCount</span></p>
+                    </div>
+                    <button class="btn-view" onclick="location.href='@Url.Action("ViewNurses", "Admin")'">View</button>
+                    <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Nurse" })')">Register</button>
                 </div>
-                <button class="btn-view" onclick="location.href='@Url.Action("ViewPharmacists", "Admin")'">View</button>
-                <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Pharmacist" })')">Register</button>
-            </div>
-            <div class="tile tile-settings">
-                <div class="stats">
-                    <h4>Admins</h4>
-                    <p>Active: <span id="active-admins">@Model.AdminCount</span></p>
-                    <p>Inactive: <span id="inactive-admins">@Model.NoAdminCount</span></p>
+                <div class="tile tile-reports">
+                    <div class="stats">
+                        <h4>Pharmacists</h4>
+                        <p>Active: <span id="active-pharmacists">@Model.PharmacistCount</span></p>
+                        <p>Inactive: <span id="inactive-pharmacists">@Model.NoPharmacistCount</span></p>
+                    </div>
+                    <button class="btn-view" onclick="location.href='@Url.Action("ViewPharmacists", "Admin")'">View</button>
+                    <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Pharmacist" })')">Register</button>
                 </div>
-                <button class="btn-view" onclick="location.href='@Url.Action("ViewAdmins", "Admin")'">View</button>
-                <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Admin" })')">Register</button>
+                <div class="tile tile-settings">
+                    <div class="stats">
+                        <h4>Admins</h4>
+                        <p>Active: <span id="active-admins">@Model.AdminCount</span></p>
+                        <p>Inactive: <span id="inactive-admins">@Model.NoAdminCount</span></p>
+                    </div>
+                    <button class="btn-view" onclick="location.href='@Url.Action("ViewAdmins", "Admin")'">View</button>
+                    <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Admin" })')">Register</button>
+                </div>
             </div>
         </div>
+        
     </div>
 
     <!-- Modal -->
