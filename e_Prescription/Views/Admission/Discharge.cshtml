@@ -1,12 +1,32 @@
 ﻿@model e_Prescription.Models.DischargeViewModel
 @{
-    ViewData["Title"] = "Dicharge";
+    ViewData["Title"] = "Discharge";
     Layout = "_Layout2";
 }
 
+<style>
+    .modal-content {
+        background-color: #f8f9fa; /* Light background */
+        border-radius: 10px; /* Rounded corners */
+    }
+
+    .modal-header {
+        background-color: #dc3545; /* Primary color */
+        color: #fff; /* White text */
+    }
+
+    .modal-footer .btn-secondary {
+        background-color: #6c757d; /* Secondary color */
+    }
+
+    .modal-footer .btn-danger {
+        background-color: #dc3545; /* Danger color */
+    }
+</style>
+
 <div class="col-10 mx-auto pt-0 p-0">
     <div class="card justify-content-center">
-        <form asp-action="Discharge" method="post">
+        <form id="dischargeForm" asp-action="Discharge" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <input type="hidden" asp-for="AdmissionId" />
@@ -15,23 +35,56 @@
                 <div class="row">
                     <div class="form-group">
                         <label asp-for="DischargeNote" class="control-label">Discharge Note</label>
-                        <textarea asp-for="DischargeNote" class="form-control"></textarea>
+                        <textarea asp-for="DischargeNote" class="form-control" id="DischargeNote"></textarea>
                         <span asp-validation-for="DischargeNote" class="text-danger"></span>
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Discharge" class="btn btn-success btn-block" />
+                <button type="button" class="btn btn-success btn-block" id="dischargeButton">Discharge</button>
             </div>
         </form>
+    </div>
+</div>
 
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirm Discharge</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to discharge this patient?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDischarge">Discharge</button>
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
+    <script>
+        document.getElementById("dischargeButton").addEventListener("click", function () {
+            var dischargeNote = document.getElementById("DischargeNote").value;
+            if (dischargeNote.trim() === "") {
+                alert("Please fill in the discharge note.");
+            } else {
+                $('#confirmModal').modal('show');
+            }
+        });
+
+        document.getElementById("confirmDischarge").addEventListener("click", function () {
+            document.getElementById("dischargeForm").submit();
+        });
+    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
-
