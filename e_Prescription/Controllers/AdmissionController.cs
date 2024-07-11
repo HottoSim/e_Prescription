@@ -396,7 +396,7 @@ namespace e_Prescription.Controllers
             ViewBag.Allergies = new SelectList(context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
             ViewBag.Conditions = new SelectList(context.ChronicConditions, "ChronicCondotionId", "ConditionName");
             ViewBag.Medications = new SelectList(context.Medications, "MedicationId", "MedicationName");
-            TempData["AlertMessage"] = "Successfully Added!";
+            TempData["AlertMessage"] = $"{patient.Firstname} {patient.Lastname} has been admitted successfully!";
             return View(viewModel); // Or any appropriate action
         }
 
