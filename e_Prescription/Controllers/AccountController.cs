@@ -98,7 +98,7 @@ namespace e_Prescription.Controllers
                 };
                 _context.Admins.Add(admin);
             }
-            else // For Healthcare Professionals
+            else if (model.Role == "Surgeon")// For Healthcare Professionals
             {
                 user = new ApplicationUser
                 {
@@ -111,13 +111,55 @@ namespace e_Prescription.Controllers
                     IsActive = true
                 };
 
-                var healthcareProfessional = new HealthcareProfessional
+                var surgeon = new Surgeon
                 {
                     HPCSANumber = model.HPCSANumber,
                     ApplicationUser = user
                 };
 
-                _context.HealthcareProfessionals.Add(healthcareProfessional);
+                _context.Surgeons.Add(surgeon);
+            }
+            else if(model.Role == "Pharmacist")
+            {
+                user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    ContactNumber = model.ContactNumber,
+                    Role = model.Role,
+                    IsActive = true
+                };
+
+                var pharmacist = new Pharmacist
+                {
+                    PharmacyLicenseNumber = model.PharmacyLicenseNumber,
+                    ApplicationUser = user
+                };
+
+                _context.Pharmacists.Add(pharmacist);
+            }
+            else
+            {
+                user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    ContactNumber = model.ContactNumber,
+                    Role = model.Role,
+                    IsActive = true
+                };
+
+                var nurse = new Nurse
+                {
+                    NursingLicenseNumber = model.NursingLicenseNumber,
+                    ApplicationUser = user
+                };
+
+                _context.Nurses.Add(nurse);
             }
 
             var result = await _userManager.CreateAsync(user, model.Password);

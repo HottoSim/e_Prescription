@@ -46,13 +46,17 @@ namespace e_Prescription.Data
 
         public DbSet<MedicationGiven> MedicationsGiven { get; set; }
 
-        public DbSet<HealthcareProfessional> HealthcareProfessionals { get; set; }
+        public DbSet<Surgeon> Surgeons { get; set; }
 
         public DbSet<Admin> Admins { get; set; }
 
         public DbSet<PatientBooking> PatientBookings { get; set; }
 
         public DbSet<Discharge> Discharges { get; set; }
+
+        public DbSet<Nurse> Nurses { get; set; }
+
+        public DbSet<Pharmacist> Pharmacists { get; set; }
 
     }
 }

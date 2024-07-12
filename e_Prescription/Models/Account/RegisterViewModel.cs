@@ -4,15 +4,15 @@ namespace e_Prescription.Models.Account
 {
     public class RegisterViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
@@ -20,16 +20,29 @@ namespace e_Prescription.Models.Account
         [Required]
         public string Role { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string FirstName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string LastName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         [RegularExpression(@"^(\+27|0)[6-8][0-9]{8}$", ErrorMessage = "Invalid South African phone number.")]
         public string ContactNumber { get; set; }
 
+        [Required(ErrorMessage = "*Required")]
+        [RegularExpression(@"^MP\d{7}$", ErrorMessage = "Invalid Medical License Number")]
         public string HPCSANumber { get; set; } // For healthcare professionals
+
+        [Required(ErrorMessage = "*Required")]
+        [RegularExpression(@"^P\d{5}$", ErrorMessage = "Invalid Pharmacy License Number")]
+        public string PharmacyLicenseNumber { get; set; }
+
+        [Required(ErrorMessage = "*Required")]
+        [RegularExpression(@"^\d{7}$", ErrorMessage = "Invalid Nursing License Number")]
+        public string NursingLicenseNumber { get; set; }
+
+        [Required(ErrorMessage = "*Required")]
+        public DateTime? LicenseExpiryDate { get; set; }
     }
 }

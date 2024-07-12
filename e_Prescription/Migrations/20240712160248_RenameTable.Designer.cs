@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using e_Prescription.Data;
 
@@ -11,9 +12,11 @@ using e_Prescription.Data;
 namespace e_Prescription.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240712160248_RenameTable")]
+    partial class RenameTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -255,56 +258,6 @@ namespace e_Prescription.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Admins");
-                });
-
-            modelBuilder.Entity("e_Prescription.Models.Account.Nurse", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("LicenseExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("NursingLicenseNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("Nurses");
-                });
-
-            modelBuilder.Entity("e_Prescription.Models.Account.Pharmacist", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
-
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("LicenseExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PharmacyLicenseNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("Pharmacists");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Account.Surgeon", b =>
@@ -887,24 +840,6 @@ namespace e_Prescription.Migrations
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Account.Admin", b =>
-                {
-                    b.HasOne("e_Prescription.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("e_Prescription.Models.Account.Nurse", b =>
-                {
-                    b.HasOne("e_Prescription.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("e_Prescription.Models.Account.Pharmacist", b =>
                 {
                     b.HasOne("e_Prescription.Data.ApplicationUser", "ApplicationUser")
                         .WithMany()

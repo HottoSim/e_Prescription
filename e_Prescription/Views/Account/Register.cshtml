@@ -62,20 +62,65 @@
                         </div>
                     </div>
 
-                    @if (Model.Role != "Admin")
+                    @if (Model.Role == "Surgeon")
                     {
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="HPCSANumber">HPCSA Number</label>
+                                    <label asp-for="HPCSANumber">License Number</label>
                                     <input asp-for="HPCSANumber" class="form-control" />
                                     <span asp-validation-for="HPCSANumber" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <!-- Empty column to balance layout -->
+                                <div class="form-group">
+                                    <label asp-for="LicenseExpiryDate">License Expiry Date</label>
+                                    <input asp-for="LicenseExpiryDate" class="form-control" type="date" />
+                                    <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
+                                </div>
                             </div>
                         </div>
+                    }
+
+                    @if(Model.Role == "Pharmacist")
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="PharmacyLicenseNumber">License Number</label>
+                                    <input asp-for="PharmacyLicenseNumber" class="form-control"/>
+                                    <span asp-validation-for="PharmacyLicenseNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="LicenseExpiryDate">License Expiry Date</label>
+                                    <input asp-for="LicenseExpiryDate" class="form-control" type="date" />
+                                    <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.Role == "Nurse")
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="NursingLicenseNumber">Licence Number</label>
+                                    <input asp-for="NursingLicenseNumber" class="form-control" />
+                                    <span asp-validation-for="NursingLicenseNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="LicenseExpiryDate">License Expiry Date</label>
+                                    <input asp-for="LicenseExpiryDate" class="form-control" type="date" />
+                                    <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
                     }
 
                     <div class="row">

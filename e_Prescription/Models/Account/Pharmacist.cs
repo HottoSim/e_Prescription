@@ -3,15 +3,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace e_Prescription.Models.Account
 {
-    public class HealthcareProfessional
+    public class Pharmacist
     {
         [Key]
         public int UserId { get; set; }
 
-        
         [Required]
-        [RegularExpression(@"^\d{7}$", ErrorMessage = "Invalid HPCSA number. It should be 7 digits long.")]
-        public string HPCSANumber { get; set; }
+        [RegularExpression(@"^P\d{5}$", ErrorMessage = "Invalid Pharmacy License Number")]
+        public string PharmacyLicenseNumber { get; set; }
+
+        [Required]
+        public DateTime? LicenseExpiryDate { get; set; }
 
         public ApplicationUser ApplicationUser { get; set; }
     }
