@@ -62,5 +62,7 @@ namespace e_Prescription.Data
 
         public DbSet<TreatmentCode> TreatmentCodes { get; set; }
 
+        public DbSet<MedicationIngredient> MedicationIngredients { get; set; }
+
     }
 }

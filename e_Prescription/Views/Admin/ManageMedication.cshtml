@@ -1,0 +1,65 @@
+﻿ @model IEnumerable<e_Prescription.Models.MedicationIngredient>
+
+@{
+    ViewData["Title"] = "Manage Medication";
+}
+
+<style>
+    .dashboard {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px; /* Add margin to create space between header and dashboard */
+    }
+
+</style>
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Manage Medication</h4>
+        </div>
+
+        <p>
+            <a asp-action="Create">Create New</a>
+        </p>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Medication)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ActiveIngredient)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IngredientStrength)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Medication.MedicationName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ActiveIngredient.IngredientName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IngredientStrength)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.MedicationIngredientId">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.MedicationIngredientId">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.MedicationIngredientId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

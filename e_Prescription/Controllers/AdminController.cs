@@ -107,10 +107,22 @@ namespace e_Prescription.Controllers
             return View();
         }
         //Return beds and wards
+        [HttpGet]
         public IActionResult ManageWards()
         {
             var beds = _context.Beds.Include(b => b.Ward).ToList();
             return View(beds);
+        }
+
+        //Return Medications
+        [HttpGet]
+        public IActionResult ManageMedication()
+        {
+            var medication = _context.MedicationIngredients
+                                                         .Include(m => m.Medication)
+                                                         .Include( a => a.ActiveIngredient)
+                                                         .ToList();
+            return View(medication);
         }
     }
 }
