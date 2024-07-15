@@ -1,4 +1,5 @@
 ﻿using e_Prescription.Data;
+using e_Prescription.Models.Validations;
 using System.ComponentModel.DataAnnotations;
 
 namespace e_Prescription.Models.Account
@@ -13,6 +14,7 @@ namespace e_Prescription.Models.Account
         public string NursingLicenseNumber { get; set; }
 
         [Required]
+        [FutureDate(ErrorMessage = "The License Expiry Date must be a date in the future.")]
         public DateTime LicenseExpiryDate { get; set; }
 
         public ApplicationUser ApplicationUser { get; set; }

@@ -43,6 +43,9 @@ namespace e_Prescription.Models.Account
         public string NursingLicenseNumber { get; set; }
 
         [Required(ErrorMessage = "*Required")]
-        public DateTime? LicenseExpiryDate { get; set; }
+        public DateTime LicenseExpiryDate { get; set; }
+
+        [Required(ErrorMessage = "*Required")]
+        public string Specialization { get; set; }
     }
 }

@@ -37,26 +37,40 @@ namespace e_Prescription.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
                 {
-                    var user = await _userManager.FindByEmailAsync(model.Email);
-                    var roles = await _userManager.GetRolesAsync(user);
-
-                    if (roles.Contains("Nurse"))
+                    if (!user.IsActive)
                     {
-                        return RedirectToAction("Index", "Admission");
-                    }
-                    if (roles.Contains("Admin"))
-                    {
-                        return RedirectToAction("Users", "Admin");
+                        ModelState.AddModelError(string.Empty, "Your account is inactive. Please contact the administrator.");
+                        return View(model);
                     }
 
-                    return RedirectToLocal(returnUrl);
-                }
-                if (result.IsLockedOut)
-                {
-                    return View("Lockout");
+                    var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                    if (result.Succeeded)
+                    {
+                        var roles = await _userManager.GetRolesAsync(user);
+
+                        if (roles.Contains("Nurse"))
+                        {
+                            return RedirectToAction("Index", "Admission");
+                        }
+                        if (roles.Contains("Admin"))
+                        {
+                            return RedirectToAction("Users", "Admin");
+                        }
+
+                        return RedirectToLocal(returnUrl);
+                    }
+                    if (result.IsLockedOut)
+                    {
+                        return View("Lockout");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                        return View(model);
+                    }
                 }
                 else
                 {
@@ -67,6 +81,7 @@ namespace e_Prescription.Controllers
 
             return View(model);
         }
+
 
         [HttpGet]
         public IActionResult Register(string role)
@@ -114,6 +129,8 @@ namespace e_Prescription.Controllers
                 var surgeon = new Surgeon
                 {
                     HPCSANumber = model.HPCSANumber,
+                    Specialization = model.Specialization,
+                    LicenseExpiryDate = model.LicenseExpiryDate,
                     ApplicationUser = user
                 };
 
@@ -135,6 +152,7 @@ namespace e_Prescription.Controllers
                 var pharmacist = new Pharmacist
                 {
                     PharmacyLicenseNumber = model.PharmacyLicenseNumber,
+                    LicenseExpiryDate = model.LicenseExpiryDate,
                     ApplicationUser = user
                 };
 
@@ -156,6 +174,7 @@ namespace e_Prescription.Controllers
                 var nurse = new Nurse
                 {
                     NursingLicenseNumber = model.NursingLicenseNumber,
+                    LicenseExpiryDate = model.LicenseExpiryDate,
                     ApplicationUser = user
                 };
 

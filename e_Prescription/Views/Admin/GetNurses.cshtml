@@ -55,7 +55,7 @@
                             @Html.DisplayFor(modelItem => item.NursingLicenseNumber)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.LicenseExpiryDate)
+                            @item.LicenseExpiryDate.ToShortDateString()
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.ApplicationUser.ContactNumber)

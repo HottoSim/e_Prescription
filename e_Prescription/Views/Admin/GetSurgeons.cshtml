@@ -27,7 +27,7 @@
                         Full Name
                     </th>
                     <th>
-                        License Number
+                        HPCSANumber
                     </th>
                     <th>
                         Specialization
@@ -58,10 +58,10 @@
                             @Html.DisplayFor(modelItem => item.HPCSANumber)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.LicenseExpiryDate)
+                            @Html.DisplayFor(modelItem => item.Specialization)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Specialization)
+                            @item.LicenseExpiryDate.ToShortDateString()
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.ApplicationUser.ContactNumber)

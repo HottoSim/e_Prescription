@@ -1,5 +1,6 @@
 ﻿using e_Prescription.Data;
 using System.ComponentModel.DataAnnotations;
+using e_Prescription.Models.Validations;
 
 namespace e_Prescription.Models.Account
 {
@@ -14,6 +15,7 @@ namespace e_Prescription.Models.Account
         public string HPCSANumber { get; set; }
 
         [Required]
+        [FutureDate(ErrorMessage = "The License Expiry Date must be a date in the future.")]
         public DateTime LicenseExpiryDate { get; set; }
 
         [Required]

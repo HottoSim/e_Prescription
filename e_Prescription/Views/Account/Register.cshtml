@@ -74,9 +74,16 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label asp-for="LicenseExpiryDate">License Expiry Date</label>
-                                <input asp-for="LicenseExpiryDate" class="form-control" type="date" />
+                                <label asp-for="LicenseExpiryDate" class="control-label">License Expiry Date</label>
+                                <input asp-for="LicenseExpiryDate" class="form-control" type="date" min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
                                 <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Specialization">Specialization</label>
+                                <input asp-for="Specialization" class="form-control"/>
+                                <span asp-validation-for="Specialization" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
@@ -94,8 +101,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label asp-for="LicenseExpiryDate">License Expiry Date</label>
-                                <input asp-for="LicenseExpiryDate" class="form-control" type="date" />
+                                <label asp-for="LicenseExpiryDate" class="control-label">License Expiry Date</label>
+                                <input asp-for="LicenseExpiryDate" class="form-control" type="date" min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
                                 <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
                             </div>
                         </div>
@@ -114,8 +121,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label asp-for="LicenseExpiryDate">License Expiry Date</label>
-                                <input asp-for="LicenseExpiryDate" class="form-control" type="date" />
+                                <label asp-for="LicenseExpiryDate" class="control-label">License Expiry Date</label>
+                                <input asp-for="LicenseExpiryDate" class="form-control" type="date" min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")"/>
                                 <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
                             </div>
                         </div>
