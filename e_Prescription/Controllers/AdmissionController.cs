@@ -24,6 +24,8 @@ namespace e_Prescription.Controllers
             var bookings = context.PatientBookings
                                 .Where(p => p.Patient.IsActive)
                                 .Include(pb => pb.Patient)
+                                .Include(t => t.TreatmentCode)
+                                .Include(t => t.Theatre)
                                 .Include(pb => pb.ApplicationUser)
                                 .AsQueryable();
 

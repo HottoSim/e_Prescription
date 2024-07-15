@@ -35,6 +35,7 @@
                         <th>Gender</th>
                         <th>Surgeon</th>
                         <th>Treatment Code</th>
+                        <th>Theatre</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -48,7 +49,8 @@
                             <td>@patientBooking.Date.ToShortDateString()</td>
                             <td>@patientBooking.Patient?.Gender</td>
                             <td>Dr. @patientBooking.ApplicationUser?.FirstName &nbsp;@patientBooking.ApplicationUser?.LastName</td>
-                            <td>@patientBooking.TreatmentCode</td>
+                            <td>@patientBooking.TreatmentCode?.TreatmentCodeName</td>
+                            <td>@patientBooking.Theatre?.TheatreName</td>
                             <td>
                                 <a asp-controller="Admission" class="btn btn-success" asp-action="Contacts" asp-route-patientId="@patientBooking.Patient?.PatientId">Select</a>
                             </td>

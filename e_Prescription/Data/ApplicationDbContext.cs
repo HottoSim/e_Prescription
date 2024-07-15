@@ -58,5 +58,9 @@ namespace e_Prescription.Data
 
         public DbSet<Pharmacist> Pharmacists { get; set; }
 
+        public DbSet<Theatre> Theatre { get; set; }
+
+        public DbSet<TreatmentCode> TreatmentCodes { get; set; }
+
     }
 }

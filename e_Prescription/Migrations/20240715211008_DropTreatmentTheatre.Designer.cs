@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using e_Prescription.Data;
 
@@ -11,9 +12,11 @@ using e_Prescription.Data;
 namespace e_Prescription.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240715211008_DropTreatmentTheatre")]
+    partial class DropTreatmentTheatre
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -660,25 +663,15 @@ namespace e_Prescription.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("TheatreId")
-                        .HasColumnType("int");
-
                     b.Property<string>("TimeSlot")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TreatmentCodeId")
-                        .HasColumnType("int");
 
                     b.HasKey("BookingId");
 
                     b.HasIndex("PatientId");
 
                     b.HasIndex("SurgeonId");
-
-                    b.HasIndex("TheatreId");
-
-                    b.HasIndex("TreatmentCodeId");
 
                     b.ToTable("PatientBookings");
                 });
@@ -791,48 +784,6 @@ namespace e_Prescription.Migrations
                     b.HasIndex("CityId");
 
                     b.ToTable("Suburbs");
-                });
-
-            modelBuilder.Entity("e_Prescription.Models.Theatre", b =>
-                {
-                    b.Property<int>("TheatreId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TheatreId"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TheatreName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("TheatreId");
-
-                    b.ToTable("Theatre");
-                });
-
-            modelBuilder.Entity("e_Prescription.Models.TreatmentCode", b =>
-                {
-                    b.Property<int>("TreatmentCodeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TreatmentCodeId"));
-
-                    b.Property<string>("TreatmentCodeDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TreatmentCodeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("TreatmentCodeId");
-
-                    b.ToTable("TreatmentCodes");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Vital", b =>
@@ -1102,25 +1053,9 @@ namespace e_Prescription.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("e_Prescription.Models.Theatre", "Theatre")
-                        .WithMany()
-                        .HasForeignKey("TheatreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("e_Prescription.Models.TreatmentCode", "TreatmentCode")
-                        .WithMany()
-                        .HasForeignKey("TreatmentCodeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Patient");
-
-                    b.Navigation("Theatre");
-
-                    b.Navigation("TreatmentCode");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.PatientVital", b =>

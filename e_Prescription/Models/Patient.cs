@@ -7,10 +7,13 @@ namespace e_Prescription.Models
         [Key]
         public int PatientId { get; set; }
 
+        [Required]
         public string Firstname { get; set; }
 
+        [Required]
         public string Lastname { get; set; }
 
+        [Required]
         public string Gender { get; set; }
 
         [RegularExpression("^(\\d{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])(\\d{4})([01])(\\d)(\\d)$", ErrorMessage = "Invalid South African ID number format.")]

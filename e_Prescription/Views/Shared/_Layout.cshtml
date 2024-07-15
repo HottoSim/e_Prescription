@@ -62,9 +62,7 @@
             flex-grow: 1;
             border-left: 1px solid #ccc; /* Add a border to separate the content from the navbar */
         }
-        .container1 {
-            padding-top: 60px;
-        }
+       
     </style>
 </head>
 <body>
@@ -134,7 +132,8 @@
             </div>
         </div>
     }
-    <div class="container1">
+    <div class="container" style="padding-top: 90px;">
+        <!-- Adjust padding to prevent content overlap -->
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
