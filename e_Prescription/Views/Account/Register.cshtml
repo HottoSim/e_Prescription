@@ -20,151 +20,150 @@
     }
 </style>
 <div class="col-md-8 mx-auto pt-0 p-0">
-    <div class="card justify-content-center">
-        <div class="card-header bg-success text-uppercase text-white d-flex align-items-center justify-content-center" style="height: 45px;">
-            <h2 class="m-0">Register @Model.Role</h2>
-        </div>
 
-        <form asp-action="Register" style="width: 100%;">
-            <div class="row">
-                <div class="col-md-12">
-                    <div asp-validation-summary="ModelOnly"></div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="FirstName">First Name</label>
-                                <input asp-for="FirstName" class="form-control" />
-                                <span asp-validation-for="FirstName" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="LastName">Last Name</label>
-                                <input asp-for="LastName" class="form-control" />
-                                <span asp-validation-for="LastName" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="ContactNumber">Contact Number</label>
-                                <input asp-for="ContactNumber" class="form-control" />
-                                <span asp-validation-for="ContactNumber" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="Email"></label>
-                                <input asp-for="Email" class="form-control" />
-                                <span asp-validation-for="Email" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if (Model.Role == "Surgeon")
-                    {
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="HPCSANumber">License Number</label>
-                                    <input asp-for="HPCSANumber" class="form-control" />
-                                    <span asp-validation-for="HPCSANumber" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="LicenseExpiryDate">License Expiry Date</label>
-                                    <input asp-for="LicenseExpiryDate" class="form-control" type="date" />
-                                    <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-                    }
-
-                    @if(Model.Role == "Pharmacist")
-                    {
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="PharmacyLicenseNumber">License Number</label>
-                                    <input asp-for="PharmacyLicenseNumber" class="form-control"/>
-                                    <span asp-validation-for="PharmacyLicenseNumber" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="LicenseExpiryDate">License Expiry Date</label>
-                                    <input asp-for="LicenseExpiryDate" class="form-control" type="date" />
-                                    <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-                    }
-
-                    @if (Model.Role == "Nurse")
-                    {
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="NursingLicenseNumber">Licence Number</label>
-                                    <input asp-for="NursingLicenseNumber" class="form-control" />
-                                    <span asp-validation-for="NursingLicenseNumber" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="LicenseExpiryDate">License Expiry Date</label>
-                                    <input asp-for="LicenseExpiryDate" class="form-control" type="date" />
-                                    <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                    }
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="Password"></label>
-                                <div class="input-group">
-                                    <input asp-for="Password" class="form-control" id="myInput" type="password" />
-                                    <div class="input-group-append">
-                                        <div class="input-group-text">
-                                            <input type="checkbox" onclick="myFunction()"> Show
-                                        </div>
-                                    </div>
-                                </div>
-                                <span asp-validation-for="Password" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label asp-for="ConfirmPassword"></label>
-                                <div class="input-group">
-                                    <input asp-for="ConfirmPassword" class="form-control" id="myInput1" type="password" />
-                                    <div class="input-group-append">
-                                        <div class="input-group-text">
-                                            <input type="checkbox" onclick="myFunction1()"> Show
-                                        </div>
-                                    </div>
-                                </div>
-                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <input type="hidden" asp-for="Role" />
-                    <div class="centered-container">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info" onclick="history.back()">Back</button>
-                            <input type="submit" value="Submit" class="btn btn-success" />
-                        </div>
-                    </div>
-                    <br />
+    <form asp-action="Register" style="width: 100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="text-center text-capitalize">
+                    <h4>Register @Model.Role</h4>
                 </div>
+
+                <div asp-validation-summary="ModelOnly"></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="FirstName">First Name</label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="LastName">Last Name</label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ContactNumber">Contact Number</label>
+                            <input asp-for="ContactNumber" class="form-control" />
+                            <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Email"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.Role == "Surgeon")
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="HPCSANumber">License Number</label>
+                                <input asp-for="HPCSANumber" class="form-control" />
+                                <span asp-validation-for="HPCSANumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="LicenseExpiryDate">License Expiry Date</label>
+                                <input asp-for="LicenseExpiryDate" class="form-control" type="date" />
+                                <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.Role == "Pharmacist")
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="PharmacyLicenseNumber">License Number</label>
+                                <input asp-for="PharmacyLicenseNumber" class="form-control" />
+                                <span asp-validation-for="PharmacyLicenseNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="LicenseExpiryDate">License Expiry Date</label>
+                                <input asp-for="LicenseExpiryDate" class="form-control" type="date" />
+                                <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.Role == "Nurse")
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="NursingLicenseNumber">Licence Number</label>
+                                <input asp-for="NursingLicenseNumber" class="form-control" />
+                                <span asp-validation-for="NursingLicenseNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="LicenseExpiryDate">License Expiry Date</label>
+                                <input asp-for="LicenseExpiryDate" class="form-control" type="date" />
+                                <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Password"></label>
+                            <div class="input-group">
+                                <input asp-for="Password" class="form-control" id="myInput" type="password" />
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" onclick="myFunction()"> Show
+                                    </div>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ConfirmPassword"></label>
+                            <div class="input-group">
+                                <input asp-for="ConfirmPassword" class="form-control" id="myInput1" type="password" />
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" onclick="myFunction1()"> Show
+                                    </div>
+                                </div>
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" asp-for="Role" />
+                <div class="centered-container">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-info" onclick="window.location.href='@Url.Action("Users", "Admin")'">Back</button>
+                        <input type="submit" value="Submit" class="btn btn-success" />
+                    </div>
+                </div>
+                <br />
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
 @section Scripts {
     @{

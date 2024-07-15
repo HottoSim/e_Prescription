@@ -55,11 +55,11 @@
             }
 
         .tile-users {
-            background-color: #007bff;
+            background-color: #355E3B;
         }
 
             .tile-users:hover {
-                background-color: #0056b3;
+                background-color: #00A36C;
             }
 
         .tile-roles {
@@ -71,21 +71,21 @@
             }
 
         .tile-reports {
-            background-color: #ffc107;
-            color: black;
+            background-color: #00A36C;
+            /* color: black; */
         }
 
             .tile-reports:hover {
-                background-color: #e0a800;
-                color: black;
+                background-color: #2AAA8A;
+                /* color: black; */
             }
 
         .tile-settings {
-            background-color: #dc3545;
+            background-color: #097969;
         }
 
             .tile-settings:hover {
-                background-color: #c82333;
+                background-color: #AFE1AF;
             }
     </style>
 </head>
@@ -111,7 +111,7 @@
                         <p>Active: <span id="active-doctors">@Model.SurgeonCount</span></p>
                         <p>Inactive: <span id="inactive-doctors">@Model.NoSurgeonCount</span></p>
                     </div>
-                    <button class="btn-view" onclick="location.href='@Url.Action("ViewSurgeon", "Admin")'">View</button>
+                    <button class="btn-view" onclick="openViewModal('@Url.Action("GetSurgeons", "Admin")')">View</button>
                     <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Surgeon" })')">Register</button>
 
                 </div>
@@ -121,7 +121,7 @@
                         <p>Active: <span id="active-nurses">@Model.NurseCount</span></p>
                         <p>Inactive: <span id="inactive-nurses">@Model.NoNurseCount</span></p>
                     </div>
-                    <button class="btn-view" onclick="location.href='@Url.Action("ViewNurses", "Admin")'">View</button>
+                    <button class="btn-view" onclick="openViewModal('@Url.Action("GetNurses", "Admin")')">View</button>
                     <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Nurse" })')">Register</button>
                 </div>
                 <div class="tile tile-reports">
@@ -130,7 +130,7 @@
                         <p>Active: <span id="active-pharmacists">@Model.PharmacistCount</span></p>
                         <p>Inactive: <span id="inactive-pharmacists">@Model.NoPharmacistCount</span></p>
                     </div>
-                    <button class="btn-view" onclick="location.href='@Url.Action("ViewPharmacists", "Admin")'">View</button>
+                    <button class="btn-view" onclick="openViewModal('@Url.Action("GetPharmacists", "Admin")')">View</button>
                     <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Pharmacist" })')">Register</button>
                 </div>
                 <div class="tile tile-settings">
@@ -139,7 +139,7 @@
                         <p>Active: <span id="active-admins">@Model.AdminCount</span></p>
                         <p>Inactive: <span id="inactive-admins">@Model.NoAdminCount</span></p>
                     </div>
-                    <button class="btn-view" onclick="location.href='@Url.Action("ViewAdmins", "Admin")'">View</button>
+                    <button class="btn-view" onclick="openViewModal('@Url.Action("GetAdmins", "Admin")')">View</button>
                     <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Admin" })')">Register</button>
                 </div>
             </div>
@@ -153,7 +153,7 @@
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
                     <h5 class="modal-title text-center" id="RegisterModalLabel">Register</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" onclick="window.location.href='@Url.Action("Users", "Admin")'" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -164,6 +164,27 @@
             </div>
         </div>
     </div>
+    <!-- Modal 2 -->
+    <div class="modal fade" id="ViewModal" tabindex="-1" role="dialog" aria-labelledby="ViewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title text-center" id="ViewModalLabel">View</h5>
+                    <button type="button" class="close" onclick="window.location.href='@Url.Action("Users", "Admin")'" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="ViewModalBody">
+                    <!-- Content loaded dynamically -->
+                </div>
+                <div class="modal-footer d-flex justify-content-end">
+                    <button type="button" class="btn btn-danger" onclick="window.location.href='@Url.Action("Users", "Admin")'">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Add Bootstrap JS -->
     @section Scripts {
         @{
@@ -174,6 +195,12 @@
             function openRegisterModal(url) {
                 $('#RegisterModalBody').load(url, function () {
                     $('#RegisterModal').modal('show');
+                });
+            }
+
+            function openViewModal(url) {
+                $('#ViewModalBody').load(url, function () {
+                    $('#ViewModal').modal('show');
                 });
             }
         </script>

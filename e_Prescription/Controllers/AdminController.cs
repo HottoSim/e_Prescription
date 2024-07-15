@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using e_Prescription.Models.Account;
 using e_Prescription.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Build.ObjectModelRemoting;
 
 namespace e_Prescription.Controllers
 {
@@ -50,6 +51,43 @@ namespace e_Prescription.Controllers
             return View(model);
         }
 
+        //View Users
+        //View Nurses
+        [HttpGet]
+        public IActionResult GetNurses()
+        {
+            var getNurses = _context.Nurses.Include(n => n.ApplicationUser).ToList();
+            return View(getNurses);
+        }
+
+        //View Surgeon
+        [HttpGet]
+        public IActionResult GetSurgeons()
+        {
+            var getSurgeons = _context.Surgeons.Include(n => n.ApplicationUser).ToList();
+            return View(getSurgeons);
+        }
+        //View Pharmacists
+        [HttpGet]
+        public IActionResult GetPharmacists()
+        {
+            var getPharmacists = _context.Pharmacists.Include(n => n.ApplicationUser).ToList();
+            return View(getPharmacists);
+        }
+
+        //View Admins
+        [HttpGet]
+        public IActionResult GetAdmins()
+        {
+            var getAdmins = _context.Admins.Include(n => n.ApplicationUser).ToList();
+            return View(getAdmins);
+        }
+
+
+
+
+
+
         //Returning vitals
         public IActionResult ManageVitals()
         {
@@ -68,8 +106,6 @@ namespace e_Prescription.Controllers
         {
             return View();
         }
-
-
         //Return beds and wards
         public IActionResult ManageWards()
         {

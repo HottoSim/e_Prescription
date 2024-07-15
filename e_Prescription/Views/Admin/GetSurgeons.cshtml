@@ -1,0 +1,93 @@
+﻿@model IEnumerable<e_Prescription.Models.Account.Surgeon>
+
+@{
+    ViewData["Title"] = "Surgeons";
+    Layout = null;
+}
+
+<style>
+    .dashboard {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px; /* Add margin to create space between header and dashboard */
+    }
+
+</style>
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Manage Surgeons</h4>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Full Name
+                    </th>
+                    <th>
+                        License Number
+                    </th>
+                    <th>
+                        Specialization
+                    </th>
+                    <th>
+                        License Expiry Date
+                    </th>
+                    <th>
+                        Contact
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            Dr. @Html.DisplayFor(modelItem => item.ApplicationUser.FirstName)  @Html.DisplayFor(modelItem => item.ApplicationUser.LastName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.HPCSANumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LicenseExpiryDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Specialization)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ApplicationUser.ContactNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ApplicationUser.Email)
+                        </td>
+                        <td>
+                            @if (item.ApplicationUser.IsActive)
+                            {
+                                <text>Active</text>
+                            }
+                            else
+                            {
+                                <text>Not Active</text>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.UserId">Update</a>
+                            <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.UserId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace e_Prescription.Controllers
 {
+    [Authorize(Roles = "Nurse")]
     public class AdmissionController : Controller
     {
         private readonly ApplicationDbContext context;
