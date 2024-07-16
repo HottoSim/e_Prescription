@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = "Admission";
     var vitals = ViewBag.Vitals as List<e_Prescription.Models.Vital>;
+    var hasNotifications = ViewBag.Notifications != null && (ViewBag.Notifications as List<string>)?.Any() == true;
+    var hasAlertMessage = ViewBag.AlertMessage != null;
 }
 
 @* Include the step indicator *@
@@ -27,24 +29,15 @@
             margin-top: 20px; /* Adjust margin as needed */
         }
 
-        .notification {
-            border: 1px solid #d9534f;
-            background-color: #f2dede;
-            color: #a94442;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
+        .modal-header {
+            background-color: #dc3545; /* Primary color */
+            color: #fff; /* White text */
         }
 
-        .alert {
-            border: 1px solid #008000;
-            background-color: #f2dede;
-            color: #006400;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
+        .modal-header1 {
+            background-color: #28a745; /* Primary color */
+            color: #fff; /* White text */
         }
-
     </style>
 </head>
 
@@ -56,51 +49,67 @@
                     <h4 class="text-center">Admission for @ViewBag.PatientName</h4>
                 </div>
                 <form enctype="multipart/form-data" asp-action="Admission" method="post" style="width: 100%;">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
                     @if (ViewBag.Notifications != null)
                     {
                         var notifications = ViewBag.Notifications as List<string>;
                         if (notifications != null && notifications.Any())
                         {
                             <div class="notification">
-                                <span>
-                                    @foreach (var notification in notifications)
-                                    {
-                                        <p>@notification</p>
-                                    }
-                                </span>
-                                <div class="d-flex justify-content-center">
-                                    <a asp-controller="Admission" class="btn btn-success" asp-action="History" asp-route-patientId="@Model.PatientId">Continue</a>
+                                <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="notificationModalLabel">Notifications</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                @foreach (var notification in notifications)
+                                                {
+                                                    <p>@notification</p>
+                                                }
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a asp-controller="Admission" class="btn btn-success" asp-action="History" asp-route-patientId="@Model.PatientId">Continue</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <br />
                             </div>
                         }
                     }
                     else if (ViewBag.AlertMessage != null)
-                    { 
+                    {
                         <div class="alert">
-                            <span>
-                                <div class="alert alert-success d-flex justify-content-center">
-                                    @ViewBag.AlertMessage
+                            <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header1">
+                                            <h5 class="modal-title" id="alertModalLabel">Alert</h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="alert alert-success d-flex justify-content-center">
+                                                @ViewBag.AlertMessage
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a asp-controller="Admission" class="btn btn-success" asp-action="History" asp-route-patientId="@Model.PatientId">Continue</a>
+                                        </div>
+                                    </div>
                                 </div>
-                            </span>
-                            <div class="d-flex justify-content-center">
-                                <a asp-controller="Admission" class="btn btn-success" asp-action="History" asp-route-patientId="@Model.PatientId">Continue</a>
                             </div>
                         </div>
                     }
                     else
                     {
                         <div class="row">
-
                             <div class="col-md-12">
-
-                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                 <input asp-for="PatientId" class="form-control" hidden />
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label asp-for="WardId" class="control-label">Ward</label>
-                                            <select asp-for="WardId" class="form-control" id="wardId" asp-items="@ViewBag.Wards">
+                                            <select asp-for="WardId" class="form-control" id="wardId" asp-items="@ViewBag.Wards" aria-required="true" required>
                                                 <option selected disabled>--Select Ward--</option>
                                             </select>
                                             <span asp-validation-for="WardId" class="text-danger"></span>
@@ -109,7 +118,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label asp-for="BedId" class="control-label">Bed</label>
-                                            <select asp-for="BedId" class="form-control" id="bedId">
+                                            <select asp-for="BedId" class="form-control" id="bedId" aria-required="true" required>
                                                 <option selected disabled>--Select Bed--</option>
                                             </select>
                                             <span asp-validation-for="BedId" class="text-danger"></span>
@@ -120,14 +129,14 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label asp-for="Weight" class="control-label"></label>
-                                            <input asp-for="Weight" class="form-control" aria-required="true" style="width: 100%;" />
+                                            <input asp-for="Weight" class="form-control" aria-required="true" style="width: 100%;" required />
                                             <span asp-validation-for="Weight" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label asp-for="Height" class="control-label"></label>
-                                            <input asp-for="Height" class="form-control" aria-required="true" style="width: 100%;" />
+                                            <input asp-for="Height" class="form-control" aria-required="true" style="width: 100%;" required />
                                             <span asp-validation-for="Height" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -177,42 +186,52 @@
         </div>
     </div>
 
-    @section Scripts {
-        @{
-            await Html.RenderPartialAsync("_ValidationScriptsPartial");
-        }
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    @* <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script> *@
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
 
-        <script>
-            $(document).ready(function () {
-                // Bind change event
-                $('#wardId').change(function () {
-                    getBedByWardId();
-                });
+    <script>
+        $(document).ready(function () {
+            // Bind change event
+            $('#wardId').change(function () {
+                getBedByWardId();
             });
 
-            function getBedByWardId() {
-                var wardId = $('#wardId').val();
-                if (wardId) {
-                    $.ajax({
-                        url: '@Url.Action("GetBedByWardId", "Admission")', // Ensure this is properly processed server-side
-                        type: 'GET',
-                        data: { wardId: wardId },
-                        success: function (data) {
-                            var BedDropdown = $('#bedId');
-                            BedDropdown.empty();
-                            BedDropdown.append('<option selected disabled>--Select Bed--</option>');
+            // Trigger modals if there are notifications or alerts
+            var hasNotifications = @Html.Raw(Json.Serialize(hasNotifications));
+            var hasAlertMessage = @Html.Raw(Json.Serialize(hasAlertMessage));
 
-                            $.each(data, function (index, item) {
-                                BedDropdown.append('<option value="' + item.bedId + '">' + item.bedName + '</option>');
-                            });
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error fetching beds:', status, error);
-                        }
-                    });
-                }
+            if (hasNotifications) {
+                $('#notificationModal').modal('show');
+            } else if (hasAlertMessage) {
+                $('#alertModal').modal('show');
             }
-        </script>
-    }
+        });
+
+        function getBedByWardId() {
+            var wardId = $('#wardId').val();
+            if (wardId) {
+                $.ajax({
+                    url: '@Url.Action("GetBedByWardId", "Admission")', // Ensure this is properly processed server-side
+                    type: 'GET',
+                    data: { wardId: wardId },
+                    success: function (data) {
+                        var BedDropdown = $('#bedId');
+                        BedDropdown.empty();
+                        BedDropdown.append('<option selected disabled>--Select Bed--</option>');
+
+                        $.each(data, function (index, item) {
+                            BedDropdown.append('<option value="' + item.bedId + '">' + item.bedName + '</option>');
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error fetching beds:', status, error);
+                    }
+                });
+            }
+        }
+    </script>
 </body>
 </html>
