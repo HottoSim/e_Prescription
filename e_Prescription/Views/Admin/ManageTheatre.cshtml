@@ -1,0 +1,57 @@
+﻿@model IEnumerable<e_Prescription.Models.Theatre>
+
+@{
+    ViewData["Title"] = "Manage Theatre";
+}
+
+<style>
+    .dashboard {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px; /* Add margin to create space between header and dashboard */
+    }
+
+</style>
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Manage Theatre</h4>
+        </div>
+        <p>
+            <a asp-action="Create">Create New</a>
+        </p>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Theatre Name
+                    </th>
+                    <th>
+                        Description
+                    </th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TheatreName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.TheatreId">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.TheatreId">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.TheatreId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

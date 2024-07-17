@@ -124,5 +124,65 @@ namespace e_Prescription.Controllers
                                                          .ToList();
             return View(medication);
         }
+        //Return Active Ingredients
+        [HttpGet]
+        public IActionResult ManageActiveIngredient()
+        {
+            var active = _context.ActiveIngredients.ToList();
+            return View(active);
+        }
+        //Add new Active Ingredient
+        [HttpGet]
+        public IActionResult AddActiveIngredient()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult AddActiveIngredient(ActiveIngredient activeIngredient)
+        {
+            return View();
+        }
+
+
+        //Return Treatments codes
+        [HttpGet]
+        public IActionResult ManageTreatmentCodes()
+        {
+            var codes = _context.TreatmentCodes.ToList();
+            return View(codes);
+        }
+
+        //Add New Codes
+        [HttpGet]
+        public IActionResult AddTreatmentCode()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult AddTreatmentCode(TreatmentCode code)
+        {
+            return View();
+        }
+
+        //Return Theatre
+        [HttpGet]
+        public IActionResult ManageTheatre()
+        {
+            var theatre = _context.Theatre.ToList();
+            return View(theatre);
+        }
+
+        //Add new Theatre
+        [HttpGet]
+        public IActionResult AddTheatre()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddTheatre(Theatre theatre)
+        {
+            return View();
+        }
     }
 }
