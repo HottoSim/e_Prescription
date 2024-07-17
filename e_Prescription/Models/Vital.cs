@@ -7,16 +7,16 @@ namespace e_Prescription.Models
         [Key]
         public int VitalId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string VitalName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public double LowLimit { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public double HighLimit { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string Units { get; set; }
     }
 }

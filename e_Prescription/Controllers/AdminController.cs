@@ -104,7 +104,10 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public IActionResult AddVitals(Vital vital)
         {
-            return View();
+            _context.Vitals.Add(vital);
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Successful added...";
+            return View(vital);
         }
         //Return beds and wards
         [HttpGet]

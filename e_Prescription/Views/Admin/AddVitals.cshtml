@@ -1,0 +1,47 @@
+﻿@model e_Prescription.Models.Vital
+
+@{
+    ViewData["Title"] = "Add Vital";
+    Layout = "_Layout2";
+}
+
+
+<div class="row">
+    <div class="col-md-10">
+        <form asp-action="AddVitals">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="VitalName" class="control-label">Vital Name</label>
+                    <input asp-for="VitalName" class="form-control" />
+                    <span asp-validation-for="VitalName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label asp-for="LowLimit" class="control-label">Low Limit</label>
+                    <input asp-for="LowLimit" class="form-control" />
+                    <span asp-validation-for="LowLimit" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="HighLimit" class="control-label">High Limit</label>
+                    <input asp-for="HighLimit" class="form-control" />
+                    <span asp-validation-for="HighLimit" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="Units" class="control-label">Units</label>
+                    <input asp-for="Units" class="form-control" />
+                    <span asp-validation-for="Units" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <input type="submit" value="Create" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
