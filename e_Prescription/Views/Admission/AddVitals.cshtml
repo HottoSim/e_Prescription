@@ -3,6 +3,9 @@
 @{
     ViewData["Title"] = "Recapture Vitals";
     Layout = "_Layout2";
+    var notifications = ViewBag.Notifications as List<string>;
+    var hasNotifications = notifications != null && notifications.Any();
+    var hasAlertMessage = ViewBag.AlertMessage != null;
 }
 
 <style>
@@ -17,16 +20,14 @@
         margin-top: 20px; /* Adjust margin as needed */
     }
 
-    .notification {
-        border: 1px solid #d9534f;
-        background-color: #f2dede;
-        color: #a94442;
-        padding: 10px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .modal-header {
+        background-color: #dc3545; /* Primary color */
+        color: #fff; 
+    }
+
+    .modal-header1 {
+        background-color: #28a745; /* Primary color */
+        color: #fff; /* White text */
     }
 </style>
 
@@ -42,32 +43,49 @@
             <input type="hidden" name="Id" value="@Model.Id" />
             <br />
             <div class="col-md-12">
-                @if (ViewBag.Notifications != null)
+                @if (hasNotifications)
                 {
-                    var notifications = ViewBag.Notifications as List<string>;
-                    if (notifications != null && notifications.Any())
-                    {
-                        <div class="notification">
-                            <span>
-                                @foreach (var notification in notifications)
-                                {
-                                    <p>@notification</p>
-                                }
-                            </span>
-                            <div class="d-flex justify-content-center">
-                                <a asp-controller="Admission" class="btn btn-success" asp-action="ViewAdmission" asp-route-patientId="@Model.Patient.IdNumber">View Admission</a>
+                    <div class="notification">
+                        <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="notificationModalLabel">Notifications</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        @foreach (var notification in notifications)
+                                        {
+                                            <p>@notification</p>
+                                        }
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a asp-controller="Admission" class="btn btn-success" asp-action="ViewAdmission" asp-route-patientId="@Model.Patient.IdNumber">View Admission</a>
+                                    </div>
+                                </div>
                             </div>
-                            <br />
                         </div>
-                    }
-                }
-                else if (ViewBag.AlertMessage != null)
-                {
-                    <div class="alert alert-success d-flex justify-content-center">
-                        @ViewBag.AlertMessage
                     </div>
-                    <div class="d-flex justify-content-center">
-                        <a asp-controller="Admission" class="btn btn-success" asp-action="ViewAdmission" asp-route-patientId="@Model.Patient.IdNumber">View Admission</a>
+                }
+                else if (hasAlertMessage)
+                {
+                    <div class="alert">
+                        <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header1">
+                                        <h5 class="modal-title" id="alertModalLabel">Alert</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="alert alert-success d-flex justify-content-center">
+                                            @ViewBag.AlertMessage
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a asp-controller="Admission" class="btn btn-success" asp-action="ViewAdmission" asp-route-patientId="@Model.Patient.IdNumber">View Admission</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 }
                 else
@@ -85,7 +103,7 @@
                             {
                                 <tr>
                                     <td>
-                                        <select name="PatientVitals[@i].VitalId" class="form-control">
+                                        <select name="PatientVitals[@i].VitalId" class="form-control" aria-required="true" required>
                                             <option value="">Select Vital</option>
                                             @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.VitalNames)
                                             {
@@ -94,10 +112,10 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="PatientVitals[@i].Reading" class="form-control" />
+                                        <input type="text" name="PatientVitals[@i].Reading" class="form-control" aria-required="true" required />
                                     </td>
                                     <td>
-                                        <input type="time" name="PatientVitals[@i].Time" class="form-control" />
+                                        <input type="time" name="PatientVitals[@i].Time" class="form-control" aria-required="true" required />
                                     </td>
                                     <td>
                                         @if (i == 0)
@@ -118,14 +136,21 @@
                         </tbody>
                     </table>
                     <div class="centered-container">
-                        <button type="submit" class="btn btn-success btn-block">Submit</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
                     </div>
                 }
+
+                
             </div>
-            
         </form>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+@* <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script> *@
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
 
 @section Scripts {
     @{
@@ -149,12 +174,12 @@
             let cell4 = newRow.insertCell(3);
 
             cell1.innerHTML = `<select name="PatientVitals[${vitalIndex}].VitalId" class="form-control">
-                                                        <option value="">Select Vital</option>
+                                        <option value="">Select Vital</option>
         @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.VitalNames)
         {
-                                                                                <option value="@item.Value">@item.Text</option>
+                                                <option value="@item.Value">@item.Text</option>
         }
-                                                    </select>`;
+                                    </select>`;
 
             cell2.innerHTML = `<input type="text" name="PatientVitals[${vitalIndex}].Reading" class="form-control" />`;
             cell3.innerHTML = `<input type="time" name="PatientVitals[${vitalIndex}].Time" class="form-control" />`;
@@ -169,6 +194,18 @@
             let index = Array.from(row.parentNode.children).indexOf(row);
             if (index === 0) {
                 button.style.display = 'none';
+            }
+        });
+
+        // Trigger modals if there are notifications or alerts
+        $(document).ready(function () {
+            var hasNotifications = @Html.Raw(Json.Serialize(hasNotifications));
+            var hasAlertMessage = @Html.Raw(Json.Serialize(hasAlertMessage));
+
+            if (hasNotifications) {
+                $('#notificationModal').modal('show');
+            } else if (hasAlertMessage) {
+                $('#alertModal').modal('show');
             }
         });
     </script>

@@ -193,7 +193,7 @@ namespace e_Prescription.Controllers
                     {
                         if (vital.Reading < vitalInfo.LowLimit || vital.Reading > vitalInfo.HighLimit)
                         {
-                            notifications.Add($"The reading for {vitalInfo.VitalName} is out of range: {vital.Reading} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit} - {vitalInfo.HighLimit} {vitalInfo.Units})");
+                            notifications.Add($"The reading for {vitalInfo.VitalName} is still out of range: {vital.Reading} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit} - {vitalInfo.HighLimit} {vitalInfo.Units})");
                             vital.Note = "Out of range";
                         }
                         else
