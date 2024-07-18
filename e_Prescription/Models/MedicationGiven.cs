@@ -8,12 +8,10 @@ namespace e_Prescription.Models
         [Key]
         public int MedicationGivenId { get; set; }
 
-        [ForeignKey("Id")]
-        public int AdmissionId { get; set; }
-        public virtual Admission Admission { get; set; }
+        [ForeignKey("PrescriptionItem")]
+        public int PrescriptionItemId { get; set; }
+        public virtual PrescriptionItem PrescriptionItem { get; set; }
 
-        [Required(ErrorMessage = "*Required")]
-        public string MedicationName { get; set; }
 
         [Required(ErrorMessage = "*Required")]
         public int Quantity { get; set; }
@@ -21,9 +19,6 @@ namespace e_Prescription.Models
         [Required(ErrorMessage = "*Required")]
         public DateTime Time { get; set; }
 
-        [Required(ErrorMessage = "*Required")]
-        public string Instruction { get; set; }
-
-        //public string Surgeon { get; set; }
+       
     }
 }

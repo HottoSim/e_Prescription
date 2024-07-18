@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using e_Prescription.Data;
 
@@ -11,9 +12,11 @@ using e_Prescription.Data;
 namespace e_Prescription.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240718174618_NewModelsPharmacy")]
+    partial class NewModelsPharmacy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -574,30 +577,6 @@ namespace e_Prescription.Migrations
                     b.HasKey("MedicationId");
 
                     b.ToTable("Medications");
-                });
-
-            modelBuilder.Entity("e_Prescription.Models.MedicationGiven", b =>
-                {
-                    b.Property<int>("MedicationGivenId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MedicationGivenId"));
-
-                    b.Property<int>("PrescriptionItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("MedicationGivenId");
-
-                    b.HasIndex("PrescriptionItemId");
-
-                    b.ToTable("MedicationsGiven");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.MedicationIngredient", b =>
@@ -1207,17 +1186,6 @@ namespace e_Prescription.Migrations
                     b.Navigation("Admission");
 
                     b.Navigation("ApplicationUser");
-                });
-
-            modelBuilder.Entity("e_Prescription.Models.MedicationGiven", b =>
-                {
-                    b.HasOne("e_Prescription.Models.PrescriptionItem", "PrescriptionItem")
-                        .WithMany()
-                        .HasForeignKey("PrescriptionItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PrescriptionItem");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.MedicationIngredient", b =>

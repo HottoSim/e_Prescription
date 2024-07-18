@@ -467,22 +467,22 @@ namespace e_Prescription.Controllers
             return View(patientVitals);
         }
 
-        public async Task<IActionResult> ViewPrescription(int admissionId)
-        {
-            if(admissionId == null)
-            {
-                return BadRequest("Admission cannot be found");
-            }
+        //public async Task<IActionResult> ViewPrescription(int admissionId)
+        //{
+        //    if(admissionId == null)
+        //    {
+        //        return BadRequest("Admission cannot be found");
+        //    }
 
-            var prescription = await context.MedicationsGiven
-                .Include(a => a.Admission.Ward)
-                .Include(a => a.Admission.Bed)
-                .Include(a => a.Admission.Patient)
-                .Where(a => a.AdmissionId == admissionId)
-                .ToListAsync();
+        //    var prescription = await context.MedicationsGiven
+        //        .Include(a => a.Admission.Ward)
+        //        .Include(a => a.Admission.Bed)
+        //        .Include(a => a.Admission.Patient)
+        //        .Where(a => a.AdmissionId == admissionId)
+        //        .ToListAsync();
 
-            return View(prescription);
-        }
+        //    return View(prescription);
+        //}
 
         //[Authorize("Nurse")]
         [HttpGet]
