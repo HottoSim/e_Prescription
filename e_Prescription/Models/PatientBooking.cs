@@ -24,10 +24,6 @@ namespace e_Prescription.Models
         [Required]
         public string TimeSlot { get; set; }
 
-        [ForeignKey("TreatmentCode")]
-        public int TreatmentCodeId { get; set; } 
-        public virtual TreatmentCode TreatmentCode { get; set; }
-
         [ForeignKey("Theatre")]
         public int TheatreId { get; set; }
         public virtual Theatre Theatre { get; set; }

@@ -21,34 +21,34 @@ namespace e_Prescription.Controllers
 
         public IActionResult Index(string searchIdNumber, DateTime? searchDate, string sortOrder)
         {
-            var bookings = context.PatientBookings
-                                .Where(p => p.Patient.IsActive)
-                                .Include(pb => pb.Patient)
+            var bookings = context.BookingTreatments
+                                .Where(p => p.PatientBooking.Patient.IsActive)
+                                .Include(pb => pb.PatientBooking.Patient)
+                                .Include(t => t.PatientBooking.Theatre)
                                 .Include(t => t.TreatmentCode)
-                                .Include(t => t.Theatre)
-                                .Include(pb => pb.ApplicationUser)
+                                .Include(pb => pb.PatientBooking.ApplicationUser)
                                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchIdNumber))
             {
-                bookings = bookings.Where(b => b.Patient.IdNumber == searchIdNumber);
+                bookings = bookings.Where(b => b.PatientBooking.Patient.IdNumber == searchIdNumber);
             }
 
             if (searchDate.HasValue)
             {
-                bookings = bookings.Where(b => b.Date.Date == searchDate.Value.Date);
+                bookings = bookings.Where(b => b.PatientBooking.Date.Date == searchDate.Value.Date);
             }
 
             switch (sortOrder)
             {
                 case "asc":
-                    bookings = bookings.OrderBy(b => b.Date);
+                    bookings = bookings.OrderBy(b => b.PatientBooking.Date);
                     break;
                 case "desc":
-                    bookings = bookings.OrderByDescending(b => b.Date);
+                    bookings = bookings.OrderByDescending(b => b.PatientBooking.Date);
                     break;
                 default:
-                    bookings = bookings.OrderBy(b => b.Date);
+                    bookings = bookings.OrderBy(b => b.PatientBooking.Date);
                     break;
             }
 
@@ -467,24 +467,24 @@ namespace e_Prescription.Controllers
             return View(patientVitals);
         }
 
-        //public async Task<IActionResult> ViewPrescription(int admissionId)
-        //{
-        //    if(admissionId == null)
-        //    {
-        //        return BadRequest("Admission cannot be found");
-        //    }
+        public async Task<IActionResult> ViewPrescription(int admissionId)
+        {
+            if (admissionId == null)
+            {
+                return BadRequest("Admission cannot be found");
+            }
 
-        //    var prescription = await context.MedicationsGiven
-        //        .Include(a => a.Admission.Ward)
-        //        .Include(a => a.Admission.Bed)
-        //        .Include(a => a.Admission.Patient)
-        //        .Where(a => a.AdmissionId == admissionId)
-        //        .ToListAsync();
+            var prescription = await context.MedicationsGiven
+                .Include(a => a.PrescriptionItem.Prescription.Admission.Ward)
+                .Include(a => a.PrescriptionItem.Prescription.Admission.Bed)
+                .Include(a => a.PrescriptionItem.Prescription.Admission.Patient)
+                .Include(a => a.PrescriptionItem.Prescription.ApplicationUser)
+                .Where(a => a.PrescriptionItem.Prescription.AdmissionId == admissionId)
+                .ToListAsync();
 
-        //    return View(prescription);
-        //}
+            return View(prescription);
+        }
 
-        //[Authorize("Nurse")]
         [HttpGet]
         public IActionResult Discharge(int admissionId)
         {
