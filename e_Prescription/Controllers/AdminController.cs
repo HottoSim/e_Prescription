@@ -117,6 +117,18 @@ namespace e_Prescription.Controllers
             return View(beds);
         }
 
+        [HttpGet]
+        public IActionResult AddBed()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddBed(Bed bed)
+        {
+            return View(bed);
+        }
+
         //Return Medications
         [HttpGet]
         public IActionResult ManageMedication()
@@ -127,6 +139,20 @@ namespace e_Prescription.Controllers
                                                          .ToList();
             return View(medication);
         }
+
+        [HttpGet]
+        public IActionResult AddMedication()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddMedication(Medication medication)
+        {
+            return View(medication);
+        }
+
+
         //Return Active Ingredients
         [HttpGet]
         public IActionResult ManageActiveIngredient()

@@ -57,8 +57,8 @@
             }
 
         .content1 {
-            margin-left: 250px; /* Leave space for the navbar */
-            padding-top: 60px;
+            margin-left: 220px; /* Leave space for the navbar */
+            padding-top: 50px;
             flex-grow: 1;
             border-left: 1px solid #ccc; /* Add a border to separate the content from the navbar */
         }
@@ -89,11 +89,10 @@
                     <ul class="navbar-nav">
                         @if (User.Identity.IsAuthenticated)
                         {
+                            var user = await UserManager.GetUserAsync(User);
+                            var role = (await UserManager.GetRolesAsync(user))[0];
                             <li class="nav-item">
-                                <a class="nav-link text-dark">Hello, @User.Identity.Name.!</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark">@User.Claims.FirstOrDefault(c => c.Type == "Role")?.Value</a>
+                                <a class="nav-link text-dark">@user.LastName @user.FirstName (@role) </a>
                             </li>
                             <li class="nav-item">
                                 <form asp-action="Logout" asp-controller="Account" method="post" class="form-inline">
@@ -123,7 +122,7 @@
                 <a class="nav-link navbar-item text-dark" href="@Url.Action("ManageTheatre", "Admin")">Theatre Records</a>
                 <a class="nav-link navbar-item text-dark" href="@Url.Action("ManageActiveIngredient", "Admin")">Active Ingredients</a>
                 <a class="nav-link navbar-item text-dark" href="@Url.Action("ManageMedication", "Admin")">Manage Medication</a>
-                <a class="nav-link navbar-item text-dark" href="@Url.Action("DiagnosisRecords(ICD-10)", "Admin")">Diagnosis (ICD-10)</a>
+                @* <a class="nav-link navbar-item text-dark" href="@Url.Action("DiagnosisRecords(ICD-10)", "Admin")">Diagnosis (ICD-10)</a> *@
             </div>
             <div class="content1">
                 <main role="main" class="pb-3">

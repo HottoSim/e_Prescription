@@ -12,7 +12,7 @@
         }
 
         .tile {
-            width: 260px;
+            width: 280px;
             height: 170px;
             color: white;
             display: flex;
@@ -111,15 +111,6 @@
                 </div>
             }
             <div class="dashboard">
-                <div class="tile tile-users">
-                    <div class="stats">
-                        <h4>Surgeons</h4>
-                        <p>Active: <span id="active-doctors">@Model.SurgeonCount</span></p>
-                        <p>Inactive: <span id="inactive-doctors">@Model.NoSurgeonCount</span></p>
-                    </div>
-                    <button class="btn-view" onclick="openViewModal('@Url.Action("GetSurgeons", "Admin")')">View</button>
-                    <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Surgeon" })')">Register</button>
-                </div>
                 <div class="tile tile-roles">
                     <div class="stats">
                         <h4>Nurses</h4>
@@ -129,6 +120,17 @@
                     <button class="btn-view" onclick="openViewModal('@Url.Action("GetNurses", "Admin")')">View</button>
                     <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Nurse" })')">Register</button>
                 </div>
+
+                <div class="tile tile-users">
+                    <div class="stats">
+                        <h4>Surgeons</h4>
+                        <p>Active: <span id="active-doctors">@Model.SurgeonCount</span></p>
+                        <p>Inactive: <span id="inactive-doctors">@Model.NoSurgeonCount</span></p>
+                    </div>
+                    <button class="btn-view" onclick="openViewModal('@Url.Action("GetSurgeons", "Admin")')">View</button>
+                    <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Surgeon" })')">Register</button>
+                </div>
+               
                 <div class="tile tile-reports">
                     <div class="stats">
                         <h4>Pharmacists</h4>

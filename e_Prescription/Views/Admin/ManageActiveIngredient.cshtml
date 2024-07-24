@@ -12,22 +12,32 @@
         margin-top: 20px; /* Add margin to create space between header and dashboard */
     }
 
+    .align-left {
+        align-items: flex-end;
+        text-align: left;
+    }
+
+    .btn1 {
+        margin-top: 20px;
+        margin-bottom: 5px;
+    }
+
 </style>
 <div class="col-md-12 mx-auto pt-0 p-0">
     <div class="card">
         <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
             <h4 class="text-center">Manage Ingredients</h4>
         </div>
-        <p>
-            <a asp-action="Create">Create New</a>
-        </p>
+        <div class="d-flex justify-content-end btn1">
+            <button class="btn btn-primary" onclick="openVitalModal('@Url.Action("AddActiveIngredient", "Admin")')">Create New</button>
+        </div>
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>
                         Ingredient Name
                     </th>
-                    <th></th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,14 +48,41 @@
                             @Html.DisplayFor(modelItem => item.IngredientName)
                         </td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@item.ActiveIngredientId">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.ActiveIngredientId">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.ActiveIngredientId">Delete</a>
+                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.ActiveIngredientId">Update</a>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
+        <div class="modal fade" id="VitalModal" tabindex="-1" role="dialog" aria-labelledby="VitalModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title text-center" id="VitalModalLabel">Add New Vital</h5>
+                        <button type="button" class="close" onclick="window.location.href='@Url.Action("ManageActiveIngredient", "Admin")'" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="VitalModalBody">
+                        <!-- Content loaded dynamically -->
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function openVitalModal(url) {
+            $('#VitalModalBody').load(url, function () {
+                $('#VitalModal').modal('show');
+            });
+        }
+    </script>
+}
 

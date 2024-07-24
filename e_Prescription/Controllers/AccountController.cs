@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using e_Prescription.Data;
 using e_Prescription.Models.Account;
 using System.Threading.Tasks;
+using e_Prescription.Models;
 
 namespace e_Prescription.Controllers
 {
@@ -20,6 +21,20 @@ namespace e_Prescription.Controllers
             _signInManager = signInManager;
             _roleManager = roleManager;
             _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var role = (await _userManager.GetRolesAsync(user))[0];
+
+            var model = new UserViewModel
+            {
+                Lastname = user.LastName,
+                Role = role,
+            };
+
+            return View(model);
         }
 
         [HttpGet]
