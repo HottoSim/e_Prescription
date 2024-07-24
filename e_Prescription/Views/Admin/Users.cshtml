@@ -87,6 +87,12 @@
             .tile-settings:hover {
                 background-color: #AFE1AF;
             }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: auto;
+        }
     </style>
 </head>
 <body>
@@ -113,7 +119,6 @@
                     </div>
                     <button class="btn-view" onclick="openViewModal('@Url.Action("GetSurgeons", "Admin")')">View</button>
                     <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Surgeon" })')">Register</button>
-
                 </div>
                 <div class="tile tile-roles">
                     <div class="stats">
@@ -143,8 +148,11 @@
                     <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Admin" })')">Register</button>
                 </div>
             </div>
+
+            <div class="chart-container">
+                <canvas id="userRoleChart"></canvas>
+            </div>
         </div>
-        
     </div>
 
     <!-- Modal -->
@@ -184,13 +192,13 @@
         </div>
     </div>
 
-
     <!-- Add Bootstrap JS -->
     @section Scripts {
         @{
             await Html.RenderPartialAsync("_ValidationScriptsPartial");
         }
 
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             function openRegisterModal(url) {
                 $('#RegisterModalBody').load(url, function () {
@@ -203,6 +211,30 @@
                     $('#ViewModal').modal('show');
                 });
             }
+
+            // Chart.js code
+            document.addEventListener('DOMContentLoaded', function () {
+                var ctx = document.getElementById('userRoleChart').getContext('2d');
+                var userRoleChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Active Nurses', 'Inactive Nurses', 'Active Surgeons', 'Inactive Surgeons', 'Active Pharmacists', 'Inactive Pharmacists', 'Active Admins', 'Inactive Admins'],
+                        datasets: [{
+                            data: [@Model.NurseCount, @Model.NoNurseCount, @Model.SurgeonCount, @Model.NoSurgeonCount, @Model.PharmacistCount, @Model.NoPharmacistCount, @Model.AdminCount, @Model.NoAdminCount],
+                            backgroundColor: ['#018749', '#36a2eb', '#355E3B', '#ff9f40', '#00A36C', '#9966ff', '#097969', '#ffcd56']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            });
         </script>
     }
 </body>
