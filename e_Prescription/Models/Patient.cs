@@ -23,5 +23,14 @@ namespace e_Prescription.Models
 
         public bool IsActive { get; set; } = true;
 
+        public virtual List<PatientAllergies> PatientAllergies { get; set; } = new List<PatientAllergies>();
+
+        public virtual List<PatientCondition> PatientConditions { get; set; } = new List<PatientCondition>();
+
+        public virtual List<PatientMedication> PatientMedications { get; set; } = new List<PatientMedication>();
+
+       
+
+
     }
 }

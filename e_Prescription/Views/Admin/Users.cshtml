@@ -72,12 +72,10 @@
 
         .tile-reports {
             background-color: #00A36C;
-            /* color: black; */
         }
 
             .tile-reports:hover {
                 background-color: #2AAA8A;
-                /* color: black; */
             }
 
         .tile-settings {
@@ -97,9 +95,10 @@
 </head>
 <body>
     <div class="col-md-12 mx-auto pt-0 p-0">
-        <div class="card">
+        <div class="card" id="card-content">
             <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
                 <h4 class="text-center">System Users</h4>
+                <button onclick="downloadPDF()" class="btn btn-primary float-right">Download PDF</button>
             </div>
             @if (TempData["SuccessMessage"] != null)
             {
@@ -110,7 +109,7 @@
                     </button>
                 </div>
             }
-            <div class="dashboard">
+            <div class="dashboard" id="dashboard-content">
                 <div class="tile tile-roles">
                     <div class="stats">
                         <h4>Nurses</h4>
@@ -130,7 +129,7 @@
                     <button class="btn-view" onclick="openViewModal('@Url.Action("GetSurgeons", "Admin")')">View</button>
                     <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Surgeon" })')">Register</button>
                 </div>
-               
+
                 <div class="tile tile-reports">
                     <div class="stats">
                         <h4>Pharmacists</h4>
@@ -201,6 +200,7 @@
         }
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
         <script>
             function openRegisterModal(url) {
                 $('#RegisterModalBody').load(url, function () {
@@ -237,6 +237,17 @@
                     }
                 });
             });
+
+            function downloadPDF() {
+                const element = document.getElementById('card-content');
+                html2pdf(element, {
+                    margin: 10,
+                    filename: 'system_users.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                });
+            }
         </script>
     }
 </body>

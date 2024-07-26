@@ -13,5 +13,7 @@ namespace e_Prescription.Models
 
         [ForeignKey("MedicationId")]
         public int? MedicationId { get; set; } = null;
+
+        public virtual Medication Medication { get; set; }
     }
 }

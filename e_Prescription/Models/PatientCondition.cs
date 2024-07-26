@@ -13,5 +13,6 @@ namespace e_Prescription.Models
 
         [ForeignKey("ChronicCondotionId")]
         public int? ChronicCondotionId { get; set; } = null;
+        public virtual ChronicCondition ChronicCondition { get; set; }
     }
 }

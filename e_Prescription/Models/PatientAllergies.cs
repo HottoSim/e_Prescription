@@ -13,5 +13,6 @@ namespace e_Prescription.Models
 
         [ForeignKey("ActiveIngredientId")]
         public int? ActiveIngredientId { get; set; }
+        public virtual ActiveIngredient ActiveIngredient { get; set; }
     }
 }

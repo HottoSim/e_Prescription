@@ -68,7 +68,7 @@ namespace e_Prescription.Controllers
 
                         if (roles.Contains("Nurse"))
                         {
-                            return RedirectToAction("Index", "Admission");
+                            return RedirectToAction("NurseLandingPage", "Admission");
                         }
                         if (roles.Contains("Admin"))
                         {

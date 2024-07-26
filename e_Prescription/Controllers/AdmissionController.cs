@@ -6,6 +6,7 @@ using e_Prescription.Migrations;
 using e_Prescription.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace e_Prescription.Controllers
 {
@@ -13,10 +14,36 @@ namespace e_Prescription.Controllers
     public class AdmissionController : Controller
     {
         private readonly ApplicationDbContext context;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public AdmissionController(ApplicationDbContext _context)
+        public AdmissionController(ApplicationDbContext _context, UserManager<ApplicationUser> _userManager)
         {
             context = _context;
+            userManager = _userManager;
+        }
+
+        //Nurse Landing page
+        public async Task< IActionResult> NurseLandingPage()
+        {
+            var user = await userManager.GetUserAsync(User);
+            var nurseName = $"{user.FirstName} {user.LastName}"; // Fetch full name
+
+            // Fetch the number of patients admitted by the current nurse
+            var admittedPatientsCount = context.Admissions
+                .Count(a => a.NurseId == user.Id && !a.IsDischarged);
+
+            // Fetch the number of patients booked for admission
+            var bookedPatientsCount = context.BookingTreatments
+                .Count(b => !b.PatientBooking.Patient.IsActive);
+
+            var model = new NurseLandingPageViewModel
+            {
+                NurseName = nurseName,
+                AdmittedPatientsCount = admittedPatientsCount,
+                BookedPatientsCount = bookedPatientsCount
+            };
+
+            return View(model);
         }
 
         public IActionResult Index(string searchIdNumber, DateTime? searchDate, string sortOrder)
@@ -403,6 +430,20 @@ namespace e_Prescription.Controllers
             return View(viewModel); // Or any appropriate action
         }
 
+        //Retrieve all admitted patients by the Nurse
+        public async Task<IActionResult> NursePatients()
+        {
+            var user = await userManager.GetUserAsync(User);
+            var admittedPatients = context.Admissions
+                .Where(a => a.NurseId == user.Id && !a.IsDischarged)
+                .Include(a => a.Patient)
+                .Include(a => a.ApplicationUser)
+                .Include(a => a.Ward)
+                .Include(a => a.Bed)
+                .ToList();
+
+            return View(admittedPatients);
+        }
 
         //Retrieve Patient admission from the database
         public async Task<IActionResult> ViewAdmission(string patientId, int admissionId)
