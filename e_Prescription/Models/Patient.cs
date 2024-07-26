@@ -30,7 +30,7 @@ namespace e_Prescription.Models
         public virtual List<PatientMedication> PatientMedications { get; set; } = new List<PatientMedication>();
 
        
-
+        public virtual PatientBooking PatientBooking { get; set; }
 
     }
 }

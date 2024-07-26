@@ -455,20 +455,32 @@ namespace e_Prescription.Controllers
             }
 
             IQueryable<Admission> admissionsQuery = context.Admissions
-                                                           .Where(a => a.IsDischarged == false)
-                                                           .Include(a => a.Patient)
-                                                           .Include(a => a.ApplicationUser)
-                                                           .Include(a => a.Bed)
-                                                           .Include(a => a.Ward);
+                                                            .Where(a => a.IsDischarged == false)
+                                                            .Include(p => p.PatientVitals)
+                                                            .ThenInclude(pv => pv.Vital)
+                                                            .Include(a => a.Patient)
+                                                            .ThenInclude(p => p.PatientAllergies)
+                                                            .ThenInclude(pa => pa.ActiveIngredient)
+                                                            .Include(a => a.Patient)
+                                                            .Include(p => p.Patient.PatientBooking.ApplicationUser)
+                                                            //.ThenInclude(p => p.PatientConditions)
+                                                            //.ThenInclude(pc => pc.ChronicCondition)
+                                                            .Include(a => a.Patient)
+                                                            
+                                                            .ThenInclude(p => p.PatientMedications)
+                                                            .ThenInclude(pm => pm.Medication)
+                                                            .Include(a => a.ApplicationUser)
+                                                            .Include(a => a.Bed)
+                                                            .Include(a => a.Ward);
 
             if (!string.IsNullOrEmpty(patientId))
             {
                 admissionsQuery = admissionsQuery.Where(a => a.Patient.IdNumber == patientId);
             }
 
-            else if(admissionId > 0)
+            else if (admissionId > 0)
             {
-                admissionsQuery =  admissionsQuery.Where(p => p.Id == admissionId);
+                admissionsQuery = admissionsQuery.Where(p => p.Id == admissionId);
             }
 
             var admissions = await admissionsQuery.ToListAsync();
@@ -480,11 +492,12 @@ namespace e_Prescription.Controllers
             }
 
             ViewBag.VitalNames = context.Vitals
-                                       .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
-                                       .ToList();
+                                        .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
+                                        .ToList();
 
             return View(admissions);
         }
+
 
 
         public async Task<IActionResult> ViewPatientVitals(int? admissionId)
