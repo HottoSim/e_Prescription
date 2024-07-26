@@ -22,9 +22,16 @@
     .modal-footer .btn-danger {
         background-color: #dc3545; /* Danger color */
     }
+
+    .container {
+        border: 5px solid #f5f5f5; /* Whitish color */
+        /* padding: 10px; */
+        overflow: hidden; /* Ensures content doesn't overflow the rounded corners */
+        background-color: #f5f5f5;
+    }
 </style>
 
-<div class="col-10 mx-auto pt-0 p-0">
+<div class="col-10 mx-auto pt-0 p-0 container">
     <div class="card justify-content-center">
         <form id="dischargeForm" asp-action="Discharge" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>

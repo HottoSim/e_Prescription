@@ -44,7 +44,7 @@
             border-radius: 10px;
             color: #000; /* Default text color (black) */
             text-decoration: none; /* Remove underline from links */
-            background-color: white; /* Background color for navbar items */
+            /*background-color: white;  Background color for navbar items */
         }
 
             .navbar-item:hover {
@@ -62,12 +62,19 @@
             flex-grow: 1;
             border-left: 1px solid #ccc; /* Add a border to separate the content from the navbar */
         }
+        .nav-v {
+            background-color: #f5f5f5;
+            /* height: 60px; */
+        }
+        .nav-vt {
+            background-color: #f5f5f5;
+        }
        
     </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3 fixed-top nav-v">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">e_Prescription</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -113,8 +120,8 @@
     </header>
     @if (User.IsInRole("Admin"))
     {
-        <div class="navbar-container">
-            <div class="nav flex-column navbar-vertical" role="tablist" aria-orientation="vertical">
+        <div class="navbar-container nav-vt">
+            <div class="nav flex-column navbar-vertical nav-vt" role="tablist" aria-orientation="vertical">
                 <a class="nav-link navbar-item text-dark active" href="@Url.Action("Users", "Admin")">Manage Users</a>
                 <a class="nav-link navbar-item text-dark" href="@Url.Action("ManageVitals", "Admin")">Manage Vitals</a>
                 <a class="nav-link navbar-item text-dark" href="@Url.Action("ManageWards", "Admin")">Manage beds</a>

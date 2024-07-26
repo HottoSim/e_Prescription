@@ -5,13 +5,30 @@
 }
 
 <style>
-    .card{
-        background-color:lightgray;
+    .card {
+        background-color: lightgray;
         color: #000;
     }
-    
+
+    .container {
+        border: 5px solid #f5f5f5; /* Whitish color */
+        /* border-radius: 15px;  Rounded corners */
+        padding: 10px;
+        overflow: hidden; /* Ensures content doesn't overflow the rounded corners */
+        background-color: #f5f5f5;
+    }
+
+    .card-header {
+        border-radius: 0; /* Ensures card header has no rounded corners */
+    }
+
+    .modal-content {
+        border-radius: 0; /* Ensures modal content has no rounded corners */
+    }
 </style>
-<div class="container mt-5">
+
+
+<div class="container">
     <div class="row">
         <div class="col-12 text-center card-header bg-success" style="height: 45px;">
             <h4>Welcome, Nurse @Model.NurseName</h4>
@@ -42,23 +59,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal -->
-   @*  <div class="modal fade" id="BookingModal" tabindex="-1" role="dialog" aria-labelledby="BookingModalLabel" aria-hidden="true">
-        <div class="modal-dialog  modal-xl" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title text-center" id="BookingModalLabel">Patient Bookings</h5>
-                    <button type="button" class="close" onclick="window.location.href='@Url.Action("NurseLandingPage", "Admission")'" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="BookingModalBody">
-                    <!-- Content loaded dynamically -->
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div> *@
+
     <!-- Modal 2 -->
     <div class="modal fade" id="AdmissionModal" tabindex="-1" role="dialog" aria-labelledby="AdmissionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
@@ -79,6 +80,7 @@
         </div>
     </div>
 </div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -87,12 +89,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
     <script>
-        // function openBookingModal(url) {
-        //     $('#BookingModalBody').load(url, function () {
-        //         $('#BookingModal').modal('show');
-        //     });
-        // }
-
         function openAdmissionModal(url) {
             $('#AdmissionModalBody').load(url, function () {
                 $('#AdmissionModal').modal('show');
