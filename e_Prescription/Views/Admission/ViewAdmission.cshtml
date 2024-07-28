@@ -30,7 +30,7 @@
     }
 </style>
 
-<div class="col-10 mx-auto pt-0 p-0 container">
+<div class="col-12 mx-auto pt-0 p-0 container">
     <div class="card justify-content-center">
         <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
             <h4 class="text-center">Admission</h4>
@@ -40,7 +40,7 @@
             <br />
             <div class="row">
                 <br />
-                <div class="col-md-6 offset-md-3">
+                @* <div class="col-md-6 offset-md-3">
                     <form asp-action="ViewAdmission" asp-controller="Admission" class="d-flex justify-content-center" method="get" enctype="multipart/form-data" style="width: 100%;">
                         <div class="d-flex justify-content-center w-100">
                             <div class="form-group mb-2 mr-3 d-flex align-items-center">
@@ -49,17 +49,20 @@
                             </div>
                         </div>
                     </form>
-                </div>
+                </div> *@
             </div>
         </form>
 
         @if (Model != null && Model.Any())
         {
-            <div class="card-deck">
+            <button onclick="downloadPDF()" class="btn btn-primary float-right">Download PDF</button>
+
+            <div class="card-deck" id="card-content">
                 @foreach (var item in Model)
                 {
                     <div class="card">
                         <div class="card-body">
+                           
                             <h5 class="card-title card-header bg-info d-flex justify-content-center"><strong>@item.Patient?.IdNumber @item.Patient?.Firstname @item.Patient?.Lastname</strong> </h5>
                             <p class="card-text"><strong>Gender:</strong> @item.Patient?.Gender</p>
                             <p class="card-text"><strong>Admission Time:</strong> @item.AdmissionDate.ToLongDateString(), @item.AdmissionDate.ToShortTimeString()</p>
@@ -83,14 +86,31 @@
                                     {
                                         @foreach (var vital in item.PatientVitals)
                                         {
-                                            <tr>
-                                                <td>@vital.Vital?.VitalName</td>
-                                                <td>@vital.Reading @vital.Vital?.Units</td>
-                                                <td>@vital.Time.ToShortTimeString()</td>
-                                                <td>@vital.Note</td>
-                                                <td>@vital.Vital?.LowLimit - @vital.Vital?.HighLimit @vital.Vital?.Units</td>
-                                            </tr>
+                                            @if (vital.Reading > vital.Vital?.HighLimit || vital.Reading < vital.Vital?.LowLimit)
+                                            {
+                                                <tr style="background-color: orangered">
+                                                    <td>@vital.Vital?.VitalName</td>
+                                                    <td>@vital.Reading @vital.Vital?.Units</td>
+                                                    <td>@vital.Time.ToShortTimeString()</td>
+                                                    <td>@vital.Note</td>
+                                                    <td>@vital.Vital?.LowLimit - @vital.Vital?.HighLimit @vital.Vital?.Units</td>
+                                                </tr>
+
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td>@vital.Vital?.VitalName</td>
+                                                    <td>@vital.Reading @vital.Vital?.Units</td>
+                                                    <td>@vital.Time.ToShortTimeString()</td>
+                                                    <td>@vital.Note</td>
+                                                    <td>@vital.Vital?.LowLimit - @vital.Vital?.HighLimit @vital.Vital?.Units</td>
+                                                </tr>
+
+                                            }
+                                                
                                         }
+
                                     }
                                     else
                                     {
@@ -101,7 +121,7 @@
                                 </tbody>
                             </table>
 
-                            <p class="card-text card-header bg-info d-flex justify-content-center"><strong>Allergies</strong></p>
+                            <p class="card-text card-header bg-info d-flex justify-content-center" style="height:40px;"><strong>Allergies</strong></p>
                             <ul>
                                 @if (item.Patient?.PatientAllergies != null && item.Patient.PatientAllergies.Any())
                                 {
@@ -116,9 +136,9 @@
                                 }
                             </ul>
 
-                            <p class="card-text card-header bg-info d-flex justify-content-center"><strong>Conditions:</strong></p>
+                            <p class="card-text card-header bg-info d-flex justify-content-center" style="height:40px;"><strong>Conditions:</strong></p>
                             <ul>
-                               @*  @if (item.Patient?.PatientConditions != null && item.Patient.PatientConditions.Any())
+                                @if (item.Patient?.PatientConditions != null && item.Patient.PatientConditions.Any())
                                 {
                                     @foreach (var condition in item.Patient.PatientConditions)
                                     {
@@ -128,10 +148,10 @@
                                 else
                                 {
                                     <li>None</li>
-                                } *@
+                                }
                             </ul>
 
-                            <p class="card-text card-header bg-info justify-content-center"><strong>Medications</strong></p>
+                            <p class="card-text card-header bg-info d-flex justify-content-center" style="height:40px;"><strong>Medications</strong></p>
                             <ul>
                                 @if (item.Patient?.PatientMedications != null && item.Patient.PatientMedications.Any())
                                 {
@@ -148,7 +168,7 @@
 
                             <div class="btn-group" role="group" aria-label="Actions">
                                 @* <button class="btn btn-primary btn-sm" onclick="openPatientVitalsModal('@Url.Action("ViewPatientVitals", "Admission", new { admissionId = item.Id })')">Vitals</button> *@
-                                <button class="btn btn-secondary btn-sm" onclick="openViewPrescriptionModal('@Url.Action("ViewPrescription", "Admission", new { admissionId = item.Id })')">Prescription</button>
+                                <button class="btn btn-success" onclick="openViewPrescriptionModal('@Url.Action("ViewPrescription", "Admission", new { admissionId = item.Id })')">Prescription</button>
                             </div>
                         </div>
                     </div>
@@ -268,6 +288,10 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -298,6 +322,17 @@
         function openViewPrescriptionModal(url) {
             $('#viewPrescriptionModalBody').load(url, function () {
                 $('#viewPrescriptionModal').modal('show');
+            });
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('card-content');
+            html2pdf(element, {
+                margin: 10,
+                filename: 'system_users.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             });
         }
     </script>

@@ -402,7 +402,7 @@ namespace e_Prescription.Controllers
             // Add the patient conditions to the database
             foreach (var conditionId in viewModel.SelectedConditions)
             {
-                context.PatientConditions.Add(new PatientCondition { PatientId = viewModel.PatientId, ChronicCondotionId = conditionId });
+                context.PatientConditions.Add(new PatientCondition { PatientId = viewModel.PatientId, ChronicConditionId = conditionId });
             }
 
             // Add the patient medications to the database
@@ -450,34 +450,31 @@ namespace e_Prescription.Controllers
         {
             if (string.IsNullOrEmpty(patientId) && admissionId == 0)
             {
-                // Return the view with an empty list when both PatientId and BedName are null or empty
                 return View(new List<Admission>());
             }
 
             IQueryable<Admission> admissionsQuery = context.Admissions
-                                                            .Where(a => a.IsDischarged == false)
-                                                            .Include(p => p.PatientVitals)
-                                                            .ThenInclude(pv => pv.Vital)
-                                                            .Include(a => a.Patient)
-                                                            .ThenInclude(p => p.PatientAllergies)
-                                                            .ThenInclude(pa => pa.ActiveIngredient)
-                                                            .Include(a => a.Patient)
-                                                            .Include(p => p.Patient.PatientBooking.ApplicationUser)
-                                                            //.ThenInclude(p => p.PatientConditions)
-                                                            //.ThenInclude(pc => pc.ChronicCondition)
-                                                            .Include(a => a.Patient)
-                                                            
-                                                            .ThenInclude(p => p.PatientMedications)
-                                                            .ThenInclude(pm => pm.Medication)
-                                                            .Include(a => a.ApplicationUser)
-                                                            .Include(a => a.Bed)
-                                                            .Include(a => a.Ward);
+                .Where(a => a.IsDischarged == false)
+                .Include(p => p.PatientVitals)
+                .ThenInclude(pv => pv.Vital)
+                .Include(a => a.Patient)
+                .ThenInclude(p => p.PatientAllergies)
+                .ThenInclude(pa => pa.ActiveIngredient)
+                .Include(a => a.Patient)
+                .Include(p => p.Patient.PatientBooking.ApplicationUser)
+                .Include(pc => pc.Patient.PatientConditions)
+                .ThenInclude(pc => pc.ChronicCondition)
+                .Include(a => a.Patient)
+                .ThenInclude(p => p.PatientMedications)
+                .ThenInclude(pm => pm.Medication)
+                .Include(a => a.ApplicationUser)
+                .Include(a => a.Bed)
+                .Include(a => a.Ward);
 
             if (!string.IsNullOrEmpty(patientId))
             {
                 admissionsQuery = admissionsQuery.Where(a => a.Patient.IdNumber == patientId);
             }
-
             else if (admissionId > 0)
             {
                 admissionsQuery = admissionsQuery.Where(p => p.Id == admissionId);
@@ -487,16 +484,16 @@ namespace e_Prescription.Controllers
 
             if (admissions == null || !admissions.Any())
             {
-                // Return a message when no admissions are found
                 return NotFound($"No admissions found for PatientId: {patientId}");
             }
 
             ViewBag.VitalNames = context.Vitals
-                                        .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
-                                        .ToList();
+                .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
+                .ToList();
 
             return View(admissions);
         }
+
 
 
 
