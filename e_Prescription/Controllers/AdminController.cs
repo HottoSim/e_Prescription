@@ -4,6 +4,7 @@ using e_Prescription.Models.Account;
 using e_Prescription.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Build.ObjectModelRemoting;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace e_Prescription.Controllers
 {
@@ -106,10 +107,11 @@ namespace e_Prescription.Controllers
         {
             _context.Vitals.Add(vital);
             _context.SaveChanges();
-            TempData["SuccessMessage"] = "Successful added...";
-            return View(vital);
+            TempData["SuccessMessage"] = "Successfully added...";
+            return RedirectToAction("ManageVitals");
         }
-        //Return beds and wards
+
+        //Returns Beds and wards
         [HttpGet]
         public IActionResult ManageWards()
         {
@@ -120,13 +122,20 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult AddBed()
         {
+            ViewBag.getWards = new SelectList(_context.Wards, "WardId", "WardName");
             return View();
         }
 
         [HttpPost]
         public IActionResult AddBed(Bed bed)
         {
-            return View(bed);
+            _context.Beds.Add(bed);
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Successfully added...";
+            ViewBag.getWards = new SelectList(_context.Wards, "WardId", "WardName");
+
+            return RedirectToAction("ManageWards");
+
         }
 
         //Return Medications

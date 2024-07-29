@@ -8,9 +8,10 @@ namespace e_Prescription.Models
         [Key]
         public int BedId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string BedName { get; set; }
 
+        [Required(ErrorMessage = "*Required")]
         [ForeignKey("WardId")]
         public int WardId { get; set; }
         public virtual Ward Ward { get; set; }

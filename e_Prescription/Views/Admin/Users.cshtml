@@ -98,7 +98,7 @@
         <div class="card" id="card-content">
             <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
                 <h4 class="text-center">System Users</h4>
-                <button onclick="downloadPDF()" class="btn btn-primary float-right">Download PDF</button>
+                @* <button onclick="downloadPDF()" class="btn btn-primary float-right">Download PDF</button> *@
             </div>
             @if (TempData["SuccessMessage"] != null)
             {
@@ -238,16 +238,16 @@
                 });
             });
 
-            function downloadPDF() {
-                const element = document.getElementById('card-content');
-                html2pdf(element, {
-                    margin: 10,
-                    filename: 'admission_data.pdf',
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                });
-            }
+            // function downloadPDF() {
+            //     const element = document.getElementById('card-content');
+            //     html2pdf(element, {
+            //         margin: 10,
+            //         filename: 'admission_data.pdf',
+            //         image: { type: 'jpeg', quality: 0.98 },
+            //         html2canvas: { scale: 2 },
+            //         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            //     });
+            // }
         </script>
     }
 </body>
