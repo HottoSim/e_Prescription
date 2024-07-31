@@ -199,7 +199,10 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public IActionResult AddTreatmentCode(TreatmentCode code)
         {
-            return View();
+            _context.TreatmentCodes.Add(code);
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Successfully added...";
+            return RedirectToAction("ManageTreatmentCodes");
         }
 
         //Return Theatre
@@ -220,7 +223,10 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public IActionResult AddTheatre(Theatre theatre)
         {
-            return View();
+            _context.Theatre.Add(theatre);
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Successfully added...";
+            return RedirectToAction("ManageTheatre");
         }
     }
 }

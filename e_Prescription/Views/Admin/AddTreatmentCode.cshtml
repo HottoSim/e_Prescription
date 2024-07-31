@@ -1,0 +1,36 @@
+﻿@model e_Prescription.Models.TreatmentCode
+
+@{
+    ViewData["Title"] = "AddTreatmentCode";
+    Layout = "_Layout2";
+}
+
+
+<div class="row">
+    <div class="col-md-10">
+        <form asp-action="AddTreatmentCode">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="TreatmentCodeName" class="control-label">Code name</label>
+                    <input asp-for="TreatmentCodeName" class="form-control" />
+                    <span asp-validation-for="TreatmentCodeName" class="text-danger"></span>
+                </div>
+                <div class="form-group  col-md-6">
+                    <label asp-for="TreatmentCodeDescription" class="control-label">Description</label>
+                    <input asp-for="TreatmentCodeDescription" class="form-control" />
+                    <span asp-validation-for="TreatmentCodeDescription" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <input type="submit" value="Create" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

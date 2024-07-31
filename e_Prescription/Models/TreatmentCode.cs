@@ -7,10 +7,10 @@ namespace e_Prescription.Models
         [Key]
         public int TreatmentCodeId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string TreatmentCodeName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string TreatmentCodeDescription { get; set; }
     }
 }
