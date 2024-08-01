@@ -70,16 +70,16 @@
                             </div>
 
                             <p class="card-text"><strong>Gender:</strong> @item.Patient?.Gender</p>
-                            <p class="card-text"><strong>Admission Time:</strong> @item.AdmissionDate.ToLongDateString(), @item.AdmissionDate.ToShortTimeString()</p>
+                            <p class="card-text"><strong>Admission time:</strong> @item.AdmissionDate.ToLongDateString(), @item.AdmissionDate.ToShortTimeString()</p>
                             <p class="card-text"><strong>Ward and Bed:</strong> @item.Ward?.WardName - @item.Bed?.BedName</p>
-                            <p class="card-text"><strong>Nurse:</strong> @item.ApplicationUser?.FirstName @item.ApplicationUser?.LastName</p>
+                            @* <p class="card-text"><strong>Nurse:</strong> @item.ApplicationUser?.FirstName @item.ApplicationUser?.LastName</p> *@
                             <p class="card-text"><strong>Surgeon:</strong> Dr. @item.Patient?.PatientBooking.ApplicationUser.FirstName @item.Patient?.PatientBooking.ApplicationUser.LastName</p>
 
                             <p class="card-text"><strong>Vitals:</strong></p>
                             <table class="table table-sm table-striped">
                                 <thead class="card-header bg-info">
                                     <tr>
-                                        <th>Vital Name</th>
+                                        <th>Vital name</th>
                                         <th>Reading</th>
                                         <th>Time</th>
                                         <th>Note</th>
@@ -125,56 +125,74 @@
                                     }
                                 </tbody>
                             </table>
+                            <div class="container mt-4">
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <div class="card">
+                                            <p class="card-text card-header bg-info d-flex justify-content-center" style="height:40px;">
+                                                <strong>Allergies</strong>
+                                            </p>
+                                            <ul class="list-group list-group-flush">
+                                                @if (item.Patient?.PatientAllergies != null && item.Patient.PatientAllergies.Any())
+                                                {
+                                                    @foreach (var allergy in item.Patient.PatientAllergies)
+                                                    {
+                                                        <li class="list-group-item">@allergy.ActiveIngredient?.IngredientName</li>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <li class="list-group-item">None</li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
 
-                            <p class="card-text card-header bg-info d-flex justify-content-center" style="height:40px;"><strong>Allergies</strong></p>
-                            <ul>
-                                @if (item.Patient?.PatientAllergies != null && item.Patient.PatientAllergies.Any())
-                                {
-                                    @foreach (var allergy in item.Patient.PatientAllergies)
-                                    {
-                                        <li>@allergy.ActiveIngredient?.IngredientName</li>
-                                    }
-                                }
-                                else
-                                {
-                                    <li>None</li>
-                                }
-                            </ul>
+                                    <div class="col-md-4 mb-2">
+                                        <div class="card">
+                                            <p class="card-text card-header bg-info d-flex justify-content-center" style="height:40px;">
+                                                <strong>Conditions</strong>
+                                            </p>
+                                            <ul class="list-group list-group-flush">
+                                                @if (item.Patient?.PatientConditions != null && item.Patient.PatientConditions.Any())
+                                                {
+                                                    @foreach (var condition in item.Patient.PatientConditions)
+                                                    {
+                                                        <li class="list-group-item">@condition.ChronicCondition?.ConditionName</li>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <li class="list-group-item">None</li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
 
-                            <p class="card-text card-header bg-info d-flex justify-content-center" style="height:40px;"><strong>Conditions:</strong></p>
-                            <ul>
-                                @if (item.Patient?.PatientConditions != null && item.Patient.PatientConditions.Any())
-                                {
-                                    @foreach (var condition in item.Patient.PatientConditions)
-                                    {
-                                        <li>@condition.ChronicCondition?.ConditionName</li>
-                                    }
-                                }
-                                else
-                                {
-                                    <li>None</li>
-                                }
-                            </ul>
-
-                            <p class="card-text card-header bg-info d-flex justify-content-center" style="height:40px;"><strong>Medications</strong></p>
-                            <ul>
-                                @if (item.Patient?.PatientMedications != null && item.Patient.PatientMedications.Any())
-                                {
-                                    @foreach (var medication in item.Patient.PatientMedications)
-                                    {
-                                        <li>@medication.Medication?.MedicationName</li>
-                                    }
-                                }
-                                else
-                                {
-                                    <li>None</li>
-                                }
-                            </ul>
-
-                            <div class="btn-group" role="group" aria-label="Actions">
-                                @* <button class="btn btn-primary btn-sm" onclick="openPatientVitalsModal('@Url.Action("ViewPatientVitals", "Admission", new { admissionId = item.Id })')">Vitals</button> *@
-                                @* <button class="btn btn-success" onclick="openViewPrescriptionModal('@Url.Action("ViewPrescription", "Admission", new { admissionId = item.Id })')">Prescription</button> *@
+                                    <div class="col-md-4 mb-2">
+                                        <div class="card">
+                                            <p class="card-text card-header bg-info d-flex justify-content-center" style="height:40px;">
+                                                <strong>Medications</strong>
+                                            </p>
+                                            <ul class="list-group list-group-flush">
+                                                @if (item.Patient?.PatientMedications != null && item.Patient.PatientMedications.Any())
+                                                {
+                                                    @foreach (var medication in item.Patient.PatientMedications)
+                                                    {
+                                                        <li class="list-group-item">@medication.Medication?.MedicationName</li>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <li class="list-group-item">None</li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+
+
                         </div>
                     </div>
                 }
@@ -191,7 +209,7 @@
                                     <option value="@item.Id">@item.Patient.Lastname - @item.AdmissionDate.ToShortDateString()</option>
                                 }
                             </select>
-                            <button type="button" class="btn btn-info" onclick="openReCaptureVitalsModal()">Re-Capture Vitals</button>
+                            <button type="button" class="btn btn-info" onclick="openReCaptureVitalsModal()">Re-capture vitals</button>
                         </div>
                     </form>
                 </div>
@@ -205,7 +223,7 @@
                                     <option value="@item.Id">@item.Patient.Lastname - @item.AdmissionDate.ToShortTimeString()</option>
                                 }
                             </select>
-                            <button type="button" class="btn btn-danger" onclick="openDischargeModal()">Discharge Patient</button>
+                            <button type="button" class="btn btn-danger" onclick="openDischargeModal()">Discharge patient</button>
                         </div>
                     </form>
                 </div>
