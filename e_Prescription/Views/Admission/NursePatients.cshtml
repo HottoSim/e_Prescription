@@ -37,7 +37,9 @@
                                 <td>@admission.AdmissionDate.ToShortTimeString()</td>
                                 <td>@admission.Ward.WardName - @admission.Bed.BedName</td>
                                 <td>
-                                    <a class="btn btn-primary" asp-controller="Admission" asp-action="ViewAdmission" asp-route-patientId="@admission.Patient.IdNumber">Manage Admission</a>
+                                    <a class="btn btn-primary" asp-controller="Admission" asp-action="ViewAdmission" asp-route-patientId="@admission.Patient.IdNumber">
+                                        <i class="fas fa-edit"></i> Manage
+                                    </a>
                                 </td>
                             </tr>
                         }

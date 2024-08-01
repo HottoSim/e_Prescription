@@ -32,7 +32,7 @@
                 <div class="col-md-6 offset-md-3">
                     <form asp-action="Index" method="get" class="d-flex justify-content-center">
                         <div class="form-group mb-2 d-flex align-items-center">
-                            <input type="text" name="searchIdNumber" class="form-control mr-2" placeholder="Enter ID Number to search" />
+                            <input type="text" name="searchIdNumber" class="form-control mr-2" placeholder="ID Number" />
                             <input type="date" name="searchDate" class="form-control mr-2" placeholder="Enter Date to search" />
                             <select name="sortOrder" class="form-control mr-2">
                                 <option value="asc">Ascending</option>
@@ -73,7 +73,9 @@
                             <td>@patientBooking.TreatmentCode?.TreatmentCodeName</td>
                             <td>@patientBooking.PatientBooking.Theatre?.TheatreName</td>
                             <td>
-                                <a asp-controller="Admission" class="btn btn-success" asp-action="Contacts" asp-route-patientId="@patientBooking.PatientBooking.Patient?.PatientId">Select</a>
+                                <a asp-controller="Admission" class="btn btn-success" asp-action="Contacts" asp-route-patientId="@patientBooking.PatientBooking.Patient?.PatientId">
+                                    <i class="fas fa-check"></i> Select
+                                </a>
                             </td>
                         </tr>
                     }
