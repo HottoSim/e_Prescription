@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.14/css/bootstrap-select.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
@@ -103,7 +105,7 @@
                             var user = await UserManager.GetUserAsync(User);
                             var role = (await UserManager.GetRolesAsync(user))[0];
                             <li class="nav-item">
-                                <a class="nav-link text-white">@user.LastName @user.FirstName (@role) </a>
+                                <a class="nav-link text-white">@user.LastName (@role) </a>
                             </li>
                             <li class="nav-item">
                                 <form asp-action="Logout" asp-controller="Account" method="post" class="form-inline">
@@ -129,13 +131,34 @@
     {
         <nav class="navbar-container">
             <div class="nav flex-column navbar-vertical nav-vt" role="tablist" aria-orientation="vertical">
-                <a class="nav-link navbar-item text-white active" href="@Url.Action("Users", "Admin")">Manage Users</a>
-                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageVitals", "Admin")">Manage Vitals</a>
-                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageWards", "Admin")">Manage beds</a>
-                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageTreatmentCodes", "Admin")">Treatment Codes</a>
-                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageTheatre", "Admin")">Theatre Records</a>
-                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageActiveIngredient", "Admin")">Active Ingredients</a>
-                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageMedication", "Admin")">Manage Medication</a>
+                <a class="nav-link navbar-item text-white active" href="@Url.Action("Users", "Admin")">
+                    <i class="fas fa-users"></i>
+                    Manage Users
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageVitals", "Admin")">
+                    <i class="fas fa-heartbeat"></i>
+                    Manage Vitals
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageWards", "Admin")">
+                    <i class="fas fa-bed"></i>
+                    Manage Beds
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageTreatmentCodes", "Admin")">
+                    <i class="fas fa-capsules"></i>
+                    Treatment Codes
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageTheatre", "Admin")">
+                    <i class="fas fa-theater-masks"></i>
+                    Theater Records
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageActiveIngredient", "Admin")">
+                    <i class="fas fa-pills"></i>
+                    Active Ingredients
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageMedication", "Admin")">
+                    <i class="fas fa-medkit"></i>
+                    Manage Medication
+                </a>
             </div>
             <div class="content1">
                 <main role="main" class="pb-3">
