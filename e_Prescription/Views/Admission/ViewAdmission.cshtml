@@ -32,26 +32,6 @@
 
 <div class="col-12 mx-auto pt-0 p-0 container">
     <div class="card justify-content-center">
-        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
-            <h4 class="text-center">Admission</h4>
-        </div>
-
-        <form asp-action="ViewAdmission" method="get" class="form form-border align-content-center">
-            <br />
-            <div class="row">
-                <br />
-                @* <div class="col-md-6 offset-md-3">
-                    <form asp-action="ViewAdmission" asp-controller="Admission" class="d-flex justify-content-center" method="get" enctype="multipart/form-data" style="width: 100%;">
-                        <div class="d-flex justify-content-center w-100">
-                            <div class="form-group mb-2 mr-3 d-flex align-items-center">
-                                <input type="text" class="form-control mr-2" placeholder="Enter ID Number" id="patientId" name="patientId">
-                                <button type="submit" class="btn btn-primary">Search</button>
-                            </div>
-                        </div>
-                    </form>
-                </div> *@
-            </div>
-        </form>
 
         @if (Model != null && Model.Any())
         {

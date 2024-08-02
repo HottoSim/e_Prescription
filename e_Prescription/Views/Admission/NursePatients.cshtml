@@ -1,27 +1,67 @@
 ﻿@model IEnumerable<e_Prescription.Models.Admission>
 
 @{
-    Layout = "_Layout2";
+    Layout = "_Layout"; // Assuming "_Layout2" is your layout file
 }
-<div class="container">
-    <div class="row">
-        <div class="col-12 text-center">
-            <p class="lead">List of all your patients</p>
+
+<style>
+    .card {
+        background-color: lightgray;
+        color: #000;
+    }
+
+    .container {
+        border: 5px solid #f5f5f5; /* Whitish color */
+        /* padding: 10px; */
+        overflow: hidden; /* Ensures content doesn't overflow the rounded corners */
+        background-color: #f5f5f5;
+    }
+</style>
+
+<div class="row d-flex justify-content-center align-items-center h-100 container">
+    <div class="form-group">
+        <div class="col-12 text-center card-header bg-success" style="height: 45px;">
+            <h4>List of all your patients</h4>
+        </div>
+    </div>
+
+    <!-- Search by ID form -->
+    <div class="row mt-3 mb-3">
+        <div class="col-md-6 offset-md-3">
+            <form asp-controller="Admission" asp-action="NursePatients" method="get" class="form-inline justify-content-center">
+                <div class="input-group">
+                    <input type="text" name="patientId" class="form-control" placeholder="Search by ID Number">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
     @if (Model != null && Model.Any())
     {
-        <div class="row mt-4">
+        <!-- Table displaying admitted patients -->
+        <div class="row">
             <div class="col-md-12">
                 <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>ID Number</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
+                            <th>
+                                First name
+                                <div class="btn-group" role="group" style="margin-left: 5px;">
+                                    <a class="btn text-black p-0" asp-action="NursePatients" asp-route-sortOrder="FirstName">
+                                        ⬆ <!-- Bold Up arrow for ascending -->
+                                    </a>
+                                    <a class="btn text-black p-0" asp-action="NursePatients" asp-route-sortOrder="FirstName_desc">
+                                        ⬇ <!-- Bold Down arrow for descending -->
+                                    </a>
+                                </div>
+                            </th>
+                            <th>Last name</th>
                             <th>Gender</th>
-                            <th>Admission Time</th>
+                            <th>Admission time</th>
                             <th>Ward and Bed</th>
                             <th>Actions</th>
                         </tr>
@@ -50,6 +90,7 @@
     }
     else
     {
+        <!-- No admitted patients found -->
         <div class="text-center mt-4">
             <h4>No admitted patients found.</h4>
         </div>

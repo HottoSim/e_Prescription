@@ -63,14 +63,14 @@
                         View Admitted Patients
                     </h5>
                     <p class="card-text">Number of patients admitted by you: @Model.AdmittedPatientsCount</p>
-                    <a onclick="openAdmissionModal('@Url.Action("NursePatients", "Admission")')" class="btn btn-success">View Admitted Patients</a>
+                    <a href="@Url.Action("NursePatients", "Admission")" class="btn btn-success">View Admitted Patients</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal 2 -->
-    <div class="modal fade" id="AdmissionModal" tabindex="-1" role="dialog" aria-labelledby="AdmissionModalLabel" aria-hidden="true">
+   @*  <div class="modal fade" id="AdmissionModal" tabindex="-1" role="dialog" aria-labelledby="AdmissionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
@@ -87,7 +87,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> *@
 </div>
 
 @section Scripts {
