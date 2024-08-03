@@ -28,6 +28,10 @@
         overflow: hidden; /* Ensures content doesn't overflow the rounded corners */
         background-color: #f5f5f5;
     }
+
+    .align-right {
+        text-align: right;
+    }
 </style>
 
 <div class="col-12 mx-auto pt-0 p-0 container">
@@ -47,20 +51,25 @@
                 {
                     <div class="card">
                         <div class="card-body">
-                            <div class="card-title card-header bg-info d-flex justify-content-between align-items-center">
+                            <div class="card-title card-header bg-success d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0"><strong>@item.Patient?.IdNumber @item.Patient?.Firstname @item.Patient?.Lastname</strong></h5>
-                                <button class="btn btn-success" onclick="openViewPrescriptionModal('@Url.Action("ViewPrescription", "Admission", new { admissionId = item.Id })')">View prescription</button>
+                                <button class="btn btn-info" onclick="openViewPrescriptionModal('@Url.Action("ViewPrescription", "Admission", new { admissionId = item.Id })')">View prescription</button>
                             </div>
 
-                            <p class="card-text"><strong>Gender:</strong> @item.Patient?.Gender</p>
-                            <p class="card-text"><strong>Admission time:</strong> @item.AdmissionDate.ToLongDateString(), @item.AdmissionDate.ToShortTimeString()</p>
-                            <p class="card-text"><strong>Ward and Bed:</strong> @item.Ward?.WardName - @item.Bed?.BedName</p>
-                            @* <p class="card-text"><strong>Nurse:</strong> @item.ApplicationUser?.FirstName @item.ApplicationUser?.LastName</p> *@
-                            <p class="card-text"><strong>Surgeon:</strong> Dr. @item.Patient?.PatientBooking.ApplicationUser.FirstName @item.Patient?.PatientBooking.ApplicationUser.LastName</p>
+                            <div>
+                                <p class="card-text"><strong>Gender:</strong> @item.Patient?.Gender</p>
+                                <p class="card-text"><strong>Admission time:</strong> @item.AdmissionDate.ToLongDateString(), @item.AdmissionDate.ToShortTimeString()</p>
+                                <p class="card-text"><strong>Ward and Bed:</strong> @item.Ward?.WardName - @item.Bed?.BedName</p>
+                            </div>
+                            <div class="align-right">
+                                <p class="card-text"><strong>Surgeon Responsible:</strong> Dr. @item.Patient?.PatientBooking.ApplicationUser.FirstName @item.Patient?.PatientBooking.ApplicationUser.LastName</p>
+                                <p class="card-text"><strong>Contact:</strong> @item.Patient?.PatientBooking.ApplicationUser.ContactNumber / @item.Patient?.PatientBooking.ApplicationUser.Email</p>
+                            </div>
+
 
                             <p class="card-text"><strong>Vitals:</strong></p>
                             <table class="table table-sm table-striped">
-                                <thead class="card-header bg-info">
+                                <thead class="card-header bg-success">
                                     <tr>
                                         <th>Vital name</th>
                                         <th>Reading</th>
@@ -112,7 +121,7 @@
                                 <div class="row">
                                     <div class="col-md-4 mb-2">
                                         <div class="card">
-                                            <p class="card-text card-header bg-info d-flex justify-content-center" style="height:40px;">
+                                            <p class="card-text card-header bg-success d-flex justify-content-center" style="height:40px;">
                                                 <strong>Allergies</strong>
                                             </p>
                                             <ul class="list-group list-group-flush">
@@ -133,7 +142,7 @@
 
                                     <div class="col-md-4 mb-2">
                                         <div class="card">
-                                            <p class="card-text card-header bg-info d-flex justify-content-center" style="height:40px;">
+                                            <p class="card-text card-header  bg-success d-flex justify-content-center" style="height:40px;">
                                                 <strong>Conditions</strong>
                                             </p>
                                             <ul class="list-group list-group-flush">
@@ -154,7 +163,7 @@
 
                                     <div class="col-md-4 mb-2">
                                         <div class="card">
-                                            <p class="card-text card-header bg-info d-flex justify-content-center" style="height:40px;">
+                                            <p class="card-text card-header bg-success d-flex justify-content-center" style="height:40px;">
                                                 <strong>Medications</strong>
                                             </p>
                                             <ul class="list-group list-group-flush">
