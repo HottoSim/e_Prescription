@@ -239,7 +239,7 @@ namespace e_Prescription.Controllers
                     ViewBag.Notifications = notifications;
                 }
 
-                ViewBag.AlertMessage = "Vitals Back to normal!";
+                ViewBag.AlertMessage = "Vital is back to normal!";
             }
             catch (Exception ex)
             {
