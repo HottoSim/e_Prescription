@@ -5,6 +5,7 @@ using e_Prescription.Data;
 using e_Prescription.Models.Account;
 using System.Threading.Tasks;
 using e_Prescription.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace e_Prescription.Controllers
 {
@@ -213,7 +214,7 @@ namespace e_Prescription.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
 
         private async Task EnsureRoleExistsAsync(string role)
@@ -240,5 +241,133 @@ namespace e_Prescription.Controllers
             }
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
+
+        // Update User Records (GET)
+        [HttpGet]
+        public async Task<IActionResult> UpdateUser(string userId, string role)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UpdateUsersViewModel
+            {
+                UserId = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                ContactNumber = user.ContactNumber,
+                Role = role,
+                IsActive = user.IsActive
+            };
+
+            // Populate role-specific properties
+            if (role == "Admin")
+            {
+                // No additional properties for Admin
+            }
+            else if (role == "Surgeon")
+            {
+                var surgeon = await _context.Surgeons.Include(s => s.ApplicationUser).FirstOrDefaultAsync(s => s.ApplicationUser.Id == userId);
+                if (surgeon != null)
+                {
+                   // model.HPCSANumber = surgeon.HPCSANumber;
+                    model.Specialization = surgeon.Specialization;
+                    model.LicenseExpiryDate = surgeon.LicenseExpiryDate;
+                }
+            }
+            else if (role == "Pharmacist")
+            {
+                var pharmacist = await _context.Pharmacists.Include(p => p.ApplicationUser).FirstOrDefaultAsync(p => p.ApplicationUser.Id == userId);
+                if (pharmacist != null)
+                {
+                   // model.PharmacyLicenseNumber = pharmacist.PharmacyLicenseNumber;
+                    model.LicenseExpiryDate = pharmacist.LicenseExpiryDate;
+                }
+            }
+            else if (role == "Nurse")
+            {
+                var nurse = await _context.Nurses.Include(n => n.ApplicationUser).FirstOrDefaultAsync(n => n.ApplicationUser.Id == userId);
+                if (nurse != null)
+                {
+                    //model.NursingLicenseNumber = nurse.NursingLicenseNumber;
+                    model.LicenseExpiryDate = nurse.LicenseExpiryDate;
+                }
+            }
+
+            return View(model);
+        }
+
+        // Update User Records (POST)
+        [HttpPost]
+        public async Task<IActionResult> UpdateUser(UpdateUsersViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(model.UserId);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                user.Email = model.Email;
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.ContactNumber = model.ContactNumber;
+                user.IsActive = model.IsActive;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    if (model.Role == "Surgeon")
+                    {
+                        var surgeon = await _context.Surgeons.Include(s => s.ApplicationUser).FirstOrDefaultAsync(s => s.ApplicationUser.Id == model.UserId);
+                        if (surgeon != null)
+                        {
+                            //surgeon.HPCSANumber = model.HPCSANumber;
+                            surgeon.Specialization = model.Specialization;
+                            surgeon.LicenseExpiryDate = model.LicenseExpiryDate;
+                            _context.Surgeons.Update(surgeon);
+                        }
+                    }
+                    else if (model.Role == "Pharmacist")
+                    {
+                        var pharmacist = await _context.Pharmacists.Include(p => p.ApplicationUser).FirstOrDefaultAsync(p => p.ApplicationUser.Id == model.UserId);
+                        if (pharmacist != null)
+                        {
+                            //pharmacist.PharmacyLicenseNumber = model.PharmacyLicenseNumber;
+                            pharmacist.LicenseExpiryDate = model.LicenseExpiryDate;
+                            _context.Pharmacists.Update(pharmacist);
+                        }
+                    }
+                    else if (model.Role == "Nurse")
+                    {
+                        var nurse = await _context.Nurses.Include(n => n.ApplicationUser).FirstOrDefaultAsync(n => n.ApplicationUser.Id == model.UserId);
+                        if (nurse != null)
+                        {
+                            //nurse.NursingLicenseNumber = model.NursingLicenseNumber;
+                            nurse.LicenseExpiryDate = model.LicenseExpiryDate;
+                            _context.Nurses.Update(nurse);
+                        }
+                    }
+
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = $"{model.Role} has been updated successfully!";
+                    return RedirectToAction("Users", "Admin");
+                }
+
+                AddErrors(result);
+            }
+
+            return View(model);
+        }
+
     }
 }

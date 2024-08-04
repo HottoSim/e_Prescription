@@ -1,0 +1,47 @@
+﻿@using e_Prescription.Models.Account
+@model UpdateUsersViewModel
+
+@{
+    ViewData["Title"] = "Update User";
+    Layout = "_Lyout2";
+}
+
+<div class="container">
+    <h2>Update User</h2>
+    <form asp-action="UpdateUser" method="post">
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="Role" />
+
+        <div class="form-group">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="FirstName"></label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="LastName"></label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ContactNumber"></label>
+            <input asp-for="ContactNumber" class="form-control" />
+            <span asp-validation-for="ContactNumber" class="text-danger"></span>
+        </div>
+        @if(Model.Role != "Admin")
+        {
+            <div class="form-group">
+                <label asp-for="LicenseExpiryDate"></label>
+                <input asp-for="LicenseExpiryDate" class="form-control" />
+                <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
+            </div>
+        }
+        
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+</div>
+
