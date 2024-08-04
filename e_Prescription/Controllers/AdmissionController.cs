@@ -625,8 +625,9 @@ namespace e_Prescription.Controllers
 
             bed.IsAvailable = true;
             context.SaveChanges(); // Save changes to update the bed's availability
+            TempData["SuccessMessage"] = $"{admission.Patient.Lastname} been discharged successfully...";
 
-            return RedirectToAction("ViewAdmission");
+            return RedirectToAction("NursePatients");
         }
 
 

@@ -321,6 +321,30 @@ namespace e_Prescription.Controllers
 
             return View(model); // Return the main view on validation failure
         }
+        // Deactivate users
+        [HttpPost]
+        public async Task<IActionResult> ToggleUserStatus(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.IsActive = false;
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "User status updated successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Error updating user status.";
+            }
+
+            return RedirectToAction("Users", "Admin"); // Adjust this as per your actual action/view name
+        }
 
     }
 }
