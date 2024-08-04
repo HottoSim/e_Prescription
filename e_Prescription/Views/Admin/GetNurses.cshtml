@@ -12,6 +12,18 @@
         margin-top: 20px; /* Add margin to create space between header and dashboard */
     }
 
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 30px; /* Adjust the gap size as needed */
+    }
+
+    .btn-large {
+        width: 150px; /* Adjust as needed */
+        padding: 10px 20px;
+        font-size: 1.25rem;
+    }
 </style>
 
 <div class="col-md-12 mx-auto pt-0 p-0">
@@ -19,27 +31,24 @@
         <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
             <h4 class="text-center">Manage Nurses</h4>
         </div>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>
-                        Full Name
-                    </th>
-                    <th>
-                        License Number
-                    </th>
-                    <th>
-                        License Expiry Date
-                    </th>
-                    <th>
-                        Contact
-                    </th>
-                    <th>
-                        Email
-                    </th>
-                    <th>
-                        Status
-                    </th>
+                    <th>Full Name</th>
+                    <th>License Number</th>
+                    <th>License Expiry Date</th>
+                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -47,21 +56,11 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ApplicationUser.FirstName) @Html.DisplayFor(modelItem => item.ApplicationUser.LastName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.NursingLicenseNumber)
-                        </td>
-                        <td>
-                            @item.LicenseExpiryDate.ToShortDateString()
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ApplicationUser.ContactNumber)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ApplicationUser.Email)
-                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.ApplicationUser.FirstName) @Html.DisplayFor(modelItem => item.ApplicationUser.LastName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.NursingLicenseNumber)</td>
+                        <td>@item.LicenseExpiryDate.ToShortDateString()</td>
+                        <td>@Html.DisplayFor(modelItem => item.ApplicationUser.ContactNumber)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ApplicationUser.Email)</td>
                         <td>
                             @if (item.ApplicationUser.IsActive)
                             {
@@ -73,33 +72,21 @@
                             }
                         </td>
                         <td>
-                            <a asp-action="Update" asp-controller="Account" class="btn btn-info" onclick="openUpdateModal('@Url.Action("UpdateUser", "Account")', '@item.ApplicationUser.Id', '@item.ApplicationUser.Role')">Update</a>
-                            <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.UserId">Delete</a>
+                            <a asp-action="UpdateUser" asp-controller="Account" asp-route-userId="@item.ApplicationUser.Id" asp-route-role="@item.ApplicationUser.Role" class="btn btn-info"><i class="fas fa-edit"></i></a>
+                            <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.UserId">
+                                <i class="fas fa-user-slash"></i>
+                            </a>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="updateUserModal" tabindex="-1" role="dialog" aria-labelledby="updateUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog  modal-xl" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title text-center" id="updateUserModalLabel">Update User</h5>
-                    <button type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="updateUserModalBody">
-                    <!-- Content loaded dynamically -->
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-info" onclick="history.back()">Go Back</button>
         </div>
     </div>
-
 </div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -111,15 +98,6 @@
     <!-- Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script>
-        function openUpdateModal(url, userId, role) {
-            var fullUrl = url + "?userId=" + encodeURIComponent(userId) + "&role=" + encodeURIComponent(role);
-            $('#updateUserModal .modal-body').load(fullUrl, function () {
-                $('#updateUserModal').modal('show');
-            });
-        }
-    </script>
-
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 }
-
-
