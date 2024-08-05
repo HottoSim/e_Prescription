@@ -40,7 +40,11 @@ namespace e_Prescription.Controllers
             {
                 NurseName = nurseName,
                 AdmittedPatientsCount = admittedPatientsCount,
-                BookedPatientsCount = bookedPatientsCount
+                BookedPatientsCount = bookedPatientsCount,
+
+                AdmittedCount = context.Admissions.Where(a => !a.IsDischarged).Count(),
+                DischargedCount = context.Admissions.Where(a => a.IsDischarged).Count(),
+                BookedPatients = context.BookingTreatments.Where(p => p.PatientBooking.Patient.IsActive).Count() // Example dat
             };
 
             return View(model);
