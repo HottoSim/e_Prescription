@@ -34,9 +34,19 @@
             <h4 class="text-center">Manage Medication</h4>
         </div>
 
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
         <div class="d-flex justify-content-end btn1">
             <button class="btn btn-primary" onclick="openMedicationModal('@Url.Action("AddMedication", "Admin")')">Add medication</button>
-            <button class="btn btn-primary" onclick="openMedicationModal('@Url.Action("AddMedication", "Admin")')">Add ingredients</button>
+            <button class="btn btn-primary" onclick="openMedicationModal('@Url.Action("AddMedicationIngredient", "Admin")')">Add ingredients</button>
         </div>
 
 

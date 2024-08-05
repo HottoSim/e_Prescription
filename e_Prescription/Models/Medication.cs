@@ -7,7 +7,7 @@ namespace e_Prescription.Models
         [Key]
         public int MedicationId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string MedicationName { get; set; }
     }
 }

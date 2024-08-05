@@ -149,8 +149,25 @@ namespace e_Prescription.Controllers
             return View(medication);
         }
 
+        //Add Medication
         [HttpGet]
         public IActionResult AddMedication()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddMedication(Medication medication)
+        {
+            _context.Medications.Add(medication);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Medication has been successfully added...";
+
+            return RedirectToAction("ManageMedication");
+        }
+
+        [HttpGet]
+        public IActionResult AddMedicationIngredient()
         {
             // Initialize ViewBag with SelectList for dropdowns
             ViewBag.getMedication = new SelectList(_context.Medications, "MedicationId", "MedicationName");
@@ -160,7 +177,7 @@ namespace e_Prescription.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddMedication(MedicationIngredient medicationIngredient)
+        public async Task<IActionResult> AddMedicationIngredient(MedicationIngredient medicationIngredient)
         {
 
             _context.MedicationIngredients.Add(medicationIngredient);
@@ -168,6 +185,9 @@ namespace e_Prescription.Controllers
             // If ModelState is not valid, repopulate the dropdown lists
             ViewBag.getMedication = new SelectList(_context.Medications, "MedicationId", "MedicationName");
             ViewBag.getIngredient = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+
+            TempData["SuccessMessage"] = "Medication ingredients has been successfully added...";
+
             // Redirect to the list view (Index) after successful addition
             return RedirectToAction("ManageMedication");
 
