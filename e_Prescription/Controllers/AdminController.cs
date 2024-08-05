@@ -152,14 +152,28 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult AddMedication()
         {
+            // Initialize ViewBag with SelectList for dropdowns
+            ViewBag.getMedication = new SelectList(_context.Medications, "MedicationId", "MedicationName");
+            ViewBag.getIngredient = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+
             return View();
         }
 
         [HttpPost]
-        public IActionResult AddMedication(Medication medication)
+        public async Task<IActionResult> AddMedication(MedicationIngredient medicationIngredient)
         {
-            return View(medication);
+
+            _context.MedicationIngredients.Add(medicationIngredient);
+            await _context.SaveChangesAsync();
+            // If ModelState is not valid, repopulate the dropdown lists
+            ViewBag.getMedication = new SelectList(_context.Medications, "MedicationId", "MedicationName");
+            ViewBag.getIngredient = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+            // Redirect to the list view (Index) after successful addition
+            return RedirectToAction("ManageMedication");
+
         }
+
+
 
 
         //Return Active Ingredients
