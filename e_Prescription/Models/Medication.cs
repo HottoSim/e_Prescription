@@ -9,5 +9,11 @@ namespace e_Prescription.Models
 
         [Required(ErrorMessage = "*Required")]
         public string MedicationName { get; set; }
+
+        [Required(ErrorMessage = "*Required")]
+        public string DosageForm { get; set; }
+
+        [Required(ErrorMessage = "*Required")]
+        public string Schedule { get; set; }
     }
 }

@@ -8,6 +8,9 @@ namespace e_Prescription.Models
         public int ChronicCondotionId { get; set; }
 
         [Required(ErrorMessage = "*Required")]
-        public string ConditionName { get; set; }
+        public string ICD_10_CODE { get; set; }
+
+        [Required(ErrorMessage = "*Required")]
+        public string Diagnosis { get; set; }
     }
 }

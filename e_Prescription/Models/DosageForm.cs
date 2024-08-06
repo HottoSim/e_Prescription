@@ -7,7 +7,7 @@ namespace e_Prescription.Models
         [Key]
         public int DosageFormId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string Description { get; set; }
     }
 }
