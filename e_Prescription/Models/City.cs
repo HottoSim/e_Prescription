@@ -8,14 +8,14 @@ namespace e_Prescription.Models
         [Key]
         public int CityId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string CityName { get; set; }
 
-        [Required]
-        public int PostalCode { get; set; }
-
+        [Required(ErrorMessage = "*Required")]
         [ForeignKey("Province")]
         public int ProvinceId { get; set; }
         public virtual Province Province { get; set; }
+
+        public virtual ICollection<Suburb> Suburbs { get; set; }
     }
 }

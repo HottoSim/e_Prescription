@@ -9,5 +9,7 @@ namespace e_Prescription.Models
 
         [Required(ErrorMessage = "*Required")]
         public string ProvinceName { get; set; }
+
+        public virtual ICollection<City> Cities { get; set; }
     }
 }

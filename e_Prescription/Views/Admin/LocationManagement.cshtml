@@ -1,0 +1,141 @@
+﻿@model IEnumerable<e_Prescription.Models.ViewModels.ProvinceViewModel>
+
+@{
+    ViewData["Title"] = "List of Locations";
+}
+
+<style>
+    .dashboard {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px; /* Add margin to create space between header and dashboard */
+    }
+
+    .align-left {
+        align-items: flex-end;
+        text-align: left;
+    }
+
+    .btn1 {
+        margin-top: 20px;
+        margin-bottom: 5px;
+        padding: 5px;
+    }
+
+        .btn1 .btn {
+            margin-right: 10px; /* Adjust the value as needed */
+        }
+
+</style>
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Manage Locations</h4>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
+        <div class="d-flex justify-content-end btn1">
+            <button class="btn btn-primary" onclick="openMedicationModal('@Url.Action("AddMedication", "Admin")')">Add city</button>
+            <button class="btn btn-primary" onclick="openIngredientModal('@Url.Action("AddMedicationIngredient", "Admin")')">Add suburb</button>
+        </div>
+
+        <div class="container">
+
+            <div class="row">
+                @for (int i = 0; i < Model.Count(); i += 2)
+                {
+                    <div class="col-md-6">
+                        @if (i < Model.Count())
+                        {
+                            var province = Model.ElementAt(i);
+                            <div class="card mb-3">
+                                <div class="card-header bg-success text-white text-center" style="height: 35px; display: flex; align-items: center; justify-content: center;">
+                                    <h5 class="mb-0">@province.ProvinceName</h5>
+                                </div>
+
+                                <div class="card-body">
+                                    @foreach (var city in province.Cities)
+                                    {
+                                        <div class="mb-3">
+                                            <h6 class="text-center"><strong>@city.CityName</strong></h6>
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Suburb name</th>
+                                                        <th>Postal code</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var suburb in city.Suburbs)
+                                                    {
+                                                        <tr>
+                                                            <td>@suburb.SuburbName</td>
+                                                            <td>@suburb.PostalCode</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @if (i + 1 < Model.Count())
+                    {
+                        <div class="col-md-6">
+                            @{
+                                var province = Model.ElementAt(i + 1);
+                            }
+                            <div class="card mb-3">
+                                <div class="card-header bg-success text-white text-center" style="height: 35px; display: flex; align-items: center; justify-content: center;">
+                                    <h5 class="mb-0">@province.ProvinceName</h5>
+                                </div>
+
+                                <div class="card-body">
+                                    @foreach (var city in province.Cities)
+                                    {
+                                        <div class="mb-3">
+                                            <h6 class="text-center"><strong>@city.CityName</strong></h6>
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Suburb name</th>
+                                                        <th>Postal code</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var suburb in city.Suburbs)
+                                                    {
+                                                        <tr>
+                                                            <td>@suburb.SuburbName</td>
+                                                            <td>@suburb.PostalCode</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+

@@ -5,6 +5,7 @@ using e_Prescription.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Build.ObjectModelRemoting;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using  e_Prescription.Models.ViewModels;
 
 namespace e_Prescription.Controllers
 {
@@ -307,5 +308,77 @@ namespace e_Prescription.Controllers
             TempData["SuccessMessage"] = "Successfully added...";
             return RedirectToAction("ManageTheatre");
         }
+
+        // Manage location 
+        [HttpGet]
+        public IActionResult AddProvince()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddProvince(Province province)
+        {
+            _context.Provinces.Add(province);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Province has been successfully added...";
+            return RedirectToAction("ManageLocations");
+        }
+
+        [HttpGet]
+        public IActionResult AddCity()
+        {
+            ViewBag.getProvince = new SelectList(_context.Provinces, "ProvinceId", "ProvinceName");
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddCity(City city)
+        {
+            _context.Cities.Add(city);
+            await _context.SaveChangesAsync();
+            ViewBag.getProvince = new SelectList(_context.Provinces, "ProvinceId", "ProvinceName");
+            TempData["SuccessMessage"] = "City has been successfully added...";
+            return RedirectToAction("ManageLocations");
+        }
+
+        [HttpGet]
+        public IActionResult AddSuburb()
+        {
+            ViewBag.getCity = new SelectList(_context.Provinces, "CityId", "CityName");
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddSuburb(Suburb suburb)
+        {
+            _context.Suburbs.Add(suburb);
+            await _context.SaveChangesAsync();
+            ViewBag.getCity = new SelectList(_context.Provinces, "CityId", "CityName");
+            TempData["SuccessMessage"] = "Suburb has been successfully added...";
+            return RedirectToAction("ManageLocations");
+        }
+
+        //Return locations 
+        public IActionResult LocationManagement()
+        {
+            var provinces = _context.Provinces
+                .Select(p => new ProvinceViewModel
+                {
+                    ProvinceId = p.ProvinceId,
+                    ProvinceName = p.ProvinceName,
+                    Cities = p.Cities.Select(c => new CityViewModel
+                    {
+                        CityId = c.CityId,
+                        CityName = c.CityName,
+                        Suburbs = c.Suburbs.Select(s => new SuburbViewModel
+                        {
+                            SuburbId = s.SuburbId,
+                            SuburbName = s.SuburbName,
+                            PostalCode = s.PostalCode
+                        }).ToList()
+                    }).ToList()
+                }).ToList();
+
+            return View(provinces);
+        }
     }
 }
+
