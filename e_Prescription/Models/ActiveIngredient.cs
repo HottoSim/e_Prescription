@@ -7,7 +7,7 @@ namespace e_Prescription.Models
         [Key]
         public int ActiveIngredientId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="*Required")]
         public string IngredientName { get; set; }
     }
 }

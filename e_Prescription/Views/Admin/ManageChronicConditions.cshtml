@@ -1,7 +1,7 @@
-﻿@model IEnumerable<e_Prescription.Models.TreatmentCode>
+﻿@model IEnumerable<e_Prescription.Models.ChronicCondition>
 
 @{
-    ViewData["Title"] = "Manage Treatment Codes";
+    ViewData["Title"] = "ManageChronicConditions";
 }
 
 <style>
@@ -23,10 +23,11 @@
     }
 
 </style>
+
 <div class="col-md-12 mx-auto pt-0 p-0">
     <div class="card">
         <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
-            <h4 class="text-center">Manage Treatment Codes</h4>
+            <h4 class="text-center">Manage chronic conditions</h4>
         </div>
 
         @if (TempData["SuccessMessage"] != null)
@@ -40,8 +41,9 @@
         }
 
         <div class="d-flex justify-content-end btn1">
-            <button class="btn btn-primary" onclick="openCodeModal('@Url.Action("AddTreatmentCode", "Admin")')">Create New</button>
+            <button class="btn btn-primary" onclick="openVitalModal('@Url.Action("AddChronicCondtion", "Admin")')">Create New</button>
         </div>
+
         <table class="table">
             <thead>
                 <tr>
@@ -49,9 +51,9 @@
                         ICD 10 CODE
                     </th>
                     <th>
-                        Description
+                        @Html.DisplayNameFor(model => model.Diagnosis)
                     </th>
-                    <th>Action</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -62,26 +64,25 @@
                             @Html.DisplayFor(modelItem => item.ICD_10_CODE)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.TreatmentCodeDescription)
+                            @Html.DisplayFor(modelItem => item.Diagnosis)
                         </td>
                         <td>
-                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.TreatmentCodeId">Update</a>
-                           
+                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.ChronicCondotionId">Edit</a>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-        <div class="modal fade" id="CodeModal" tabindex="-1" role="dialog" aria-labelledby="CodeModalLabel" aria-hidden="true">
+        <div class="modal fade" id="VitalModal" tabindex="-1" role="dialog" aria-labelledby="VitalModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title text-center" id="CodeModalLabel">Add new treatment code</h5>
-                        <button type="button" class="close" onclick="window.location.href='@Url.Action("ManageTreatmentCodes", "Admin")'" data-dismiss="modal" aria-label="Close">
+                        <h5 class="modal-title text-center" id="VitalModalLabel">Add new ingredient</h5>
+                        <button type="button" class="close" onclick="window.location.href='@Url.Action("ManageChronicConditions", "Admin")'" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body" id="CodeModalBody">
+                    <div class="modal-body" id="VitalModalBody">
                         <!-- Content loaded dynamically -->
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
@@ -90,17 +91,20 @@
         </div>
     </div>
 </div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
     <script>
-        function openCodeModal(url) {
-            $('#CodeModalBody').load(url, function () {
-                $('#CodeModal').modal('show');
+        function openVitalModal(url) {
+            $('#VitalModalBody').load(url, function () {
+                $('#VitalModal').modal('show');
             });
         }
     </script>
 }
+
+
 

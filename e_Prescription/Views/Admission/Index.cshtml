@@ -70,7 +70,7 @@
                             <td>@patientBooking.PatientBooking.Date.ToShortDateString()</td>
                             <td>@patientBooking.PatientBooking.Patient?.Gender</td>
                             <td>Dr. @patientBooking.PatientBooking.ApplicationUser?.FirstName &nbsp;@patientBooking.PatientBooking.ApplicationUser?.LastName</td>
-                            <td>@patientBooking.TreatmentCode?.TreatmentCodeName</td>
+                            <td>@patientBooking.TreatmentCode?.ICD_10_CODE</td>
                             <td>@patientBooking.PatientBooking.Theatre?.TheatreName</td>
                             <td>
                                 <a asp-controller="Admission" class="btn btn-success" asp-action="Contacts" asp-route-patientId="@patientBooking.PatientBooking.Patient?.PatientId">

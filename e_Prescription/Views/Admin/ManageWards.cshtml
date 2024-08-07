@@ -20,18 +20,19 @@
     .btn1 {
         margin-top: 20px;
         margin-bottom: 5px;
+        padding: 5px;
     }
+
+        .btn1 .btn {
+            margin-right: 10px; /* Adjust the value as needed */
+        }
 </style>
 
 <div class="col-md-12 mx-auto pt-0 p-0">
     <div class="card">
         <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
-            <h4 class="text-center">Manage Beds</h4>
+            <h4 class="text-center">Manage wards and beds</h4>
         </div>
-        <div class="d-flex justify-content-end btn1">
-            <button class="btn btn-primary" onclick="openBedsModal('@Url.Action("AddBed", "Admin")')">Create New</button>
-        </div>
-
         @if (TempData["SuccessMessage"] != null)
         {
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -42,11 +43,16 @@
             </div>
         }
 
+        <div class="d-flex justify-content-end btn1">
+            <button class="btn btn-primary" onclick="openWardsModal('@Url.Action("AddWard", "Admin")')">Add ward</button>
+            <button class="btn btn-primary" onclick="openBedsModal('@Url.Action("AddBed", "Admin")')">Add bed</button>
+        </div>
+
         <table class="table">
             <thead>
                 <tr>
-                    <th>Ward Name</th>
-                    <th>Bed Name</th>
+                    <th>Ward name</th>
+                    <th>Bed name</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -91,6 +97,22 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="WardsModal" tabindex="-1" role="dialog" aria-labelledby="WardsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="WardsModalLabel">Add new ward</h5>
+                        <button type="button" class="close" onclick="window.location.href='@Url.Action("ManageWards", "Admin")'" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="WardsModalBody">
+                        <!-- Content loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -102,6 +124,12 @@
         function openBedsModal(url) {
             $('#BedsModalBody').load(url, function () {
                 $('#BedsModal').modal('show');
+            });
+        }
+
+        function openWardsModal(url) {
+            $('#WardsModalBody').load(url, function () {
+                $('#WardsModal').modal('show');
             });
         }
     </script>

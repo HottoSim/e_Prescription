@@ -8,7 +8,7 @@ namespace e_Prescription.Models
         public int TreatmentCodeId { get; set; }
 
         [Required(ErrorMessage = "*Required")]
-        public string TreatmentCodeName { get; set; }
+        public string ICD_10_CODE { get; set; }
 
         [Required(ErrorMessage = "*Required")]
         public string TreatmentCodeDescription { get; set; }

@@ -119,6 +119,23 @@ namespace e_Prescription.Controllers
             return View(beds);
         }
 
+        //Add wards
+        [HttpGet]
+        public IActionResult AddWard()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddWard(Ward ward)
+        {
+            _context.Wards.Add(ward);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Ward has been successfully added...";
+            return RedirectToAction("ManageWards");
+        }
+
+
         [HttpGet]
         public IActionResult AddBed()
         {
@@ -153,6 +170,7 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult AddMedication()
         {
+            ViewBag.getDosage = new SelectList(_context.DosageForms, "DosageFormId", "Description");
             return View();
         }
 
@@ -162,6 +180,7 @@ namespace e_Prescription.Controllers
             _context.Medications.Add(medication);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Medication has been successfully added...";
+            ViewBag.getDosage = new SelectList(_context.DosageForms, "DosageFormId", "Description");
 
             return RedirectToAction("ManageMedication");
         }
@@ -193,8 +212,31 @@ namespace e_Prescription.Controllers
 
         }
 
+        //Return Chronic conditions 
+        [HttpGet]
+        public IActionResult ManageChronicConditions()
+        {
+            var conditions = _context.ChronicConditions.ToList();
+            return View(conditions);
+        }
 
+        //Add new conditions
+        [HttpGet]
+        public IActionResult AddChronicCondtion()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> AddChronicCondtion(ChronicCondition condition)
+        {
+            _context.ChronicConditions.Add(condition);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Medication ingredients has been successfully added...";
+
+            return RedirectToAction("ManageChronicConditions");
+
+        }
 
         //Return Active Ingredients
         [HttpGet]
@@ -212,6 +254,9 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public IActionResult AddActiveIngredient(ActiveIngredient activeIngredient)
         {
+            _context.ActiveIngredients.Add(activeIngredient);
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Ingredient has been added...";
             return View();
         }
 
