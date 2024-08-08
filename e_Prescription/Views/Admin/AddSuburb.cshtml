@@ -5,42 +5,76 @@
     Layout = "_Layout2";
 }
 
-
 <div class="row">
     <div class="col-md-10">
         <form asp-action="AddSuburb">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label asp-for="SuburbName" class="control-label"></label>
+                    <label asp-for="SuburbName" class="control-label">Suburb</label>
                     <input asp-for="SuburbName" class="form-control" />
                     <span asp-validation-for="SuburbName" class="text-danger"></span>
                 </div>
             </div>
-           <div class="form-row">
+
+            <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label asp-for="CityId" class="control-label"></label>
-                    <select asp-for="CityId" class="form-control" asp-items="@ViewBag.getCity">
+                    <label asp-for="ProvinceId" class="control-label">Province</label>
+                    <select asp-for="ProvinceId" class="form-control" asp-items="@ViewBag.getProvince" id="ProvinceId">
+                        <option selected disabled>--Select province--</option>
+                    </select>
+                    <span asp-validation-for="ProvinceId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label asp-for="CityId" class="control-label">City</label>
+                    <select asp-for="CityId" class="form-control" asp-items="@ViewBag.getCity" id="CityId">
                         <option selected disabled>--Select city--</option>
                     </select>
                     <span asp-validation-for="CityId" class="text-danger"></span>
                 </div>
+            </div>
+
+            <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label asp-for="PostalCode" class="control-label"></label>
+                    <label asp-for="PostalCode" class="control-label">Postal code</label>
                     <input asp-for="PostalCode" class="form-control" />
                     <span asp-validation-for="PostalCode" class="text-danger"></span>
                 </div>
-           </div>
+            </div>
+
             <div class="d-flex justify-content-center">
                 <input type="submit" value="Create" class="btn btn-success" />
             </div>
         </form>
     </div>
 </div>
+
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#ProvinceId').change(function() {
+                var provinceId = $(this).val();
+                if (provinceId) {
+                    $.getJSON('@Url.Action("GetCitiesByProvince")', { provinceId: provinceId }, function(data) {
+                        var citySelect = $('#CityId');
+                        citySelect.empty();
+                        citySelect.append('<option selected disabled>--Select city--</option>');
+                        $.each(data, function(index, city) {
+                            citySelect.append('<option value="' + city.cityId + '">' + city.cityName + '</option>');
+                        });
+                    });
+                } else {
+                    $('#CityId').empty();
+                    $('#CityId').append('<option selected disabled>--Select city--</option>');
+                }
+            });
+        });
+    </script>
+
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
-
-

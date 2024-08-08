@@ -343,18 +343,42 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult AddSuburb()
         {
-            ViewBag.getCity = new SelectList(_context.Cities, "CityId", "CityName");
+            // Fetch all provinces for the Province dropdown
+            ViewBag.getProvince = new SelectList(_context.Provinces, "ProvinceId", "ProvinceName");
+
+            // Initially, the City dropdown will be empty
+            ViewBag.getCity = new SelectList(Enumerable.Empty<SelectListItem>());
+
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> AddSuburb(Suburb suburb)
         {
+
             _context.Suburbs.Add(suburb);
             await _context.SaveChangesAsync();
-            ViewBag.getCity = new SelectList(_context.Provinces, "CityId", "CityName");
             TempData["SuccessMessage"] = "Suburb has been successfully added...";
+
+            // If model state is invalid, reload the form with the selections
+            ViewBag.getProvince = new SelectList(_context.Provinces, "ProvinceId", "ProvinceName");
+            ViewBag.getCity = new SelectList(_context.Cities.Where(c => c.ProvinceId == suburb.ProvinceId), "CityId", "CityName");
+
             return RedirectToAction("LocationManagement");
+
         }
+
+        [HttpGet]
+        public JsonResult GetCitiesByProvince(int provinceId)
+        {
+            var cities = _context.Cities
+                .Where(c => c.ProvinceId == provinceId)
+                .Select(c => new { c.CityId, c.CityName })
+                .ToList();
+
+            return Json(cities);
+        }
+
 
         //Return locations 
         public IActionResult LocationManagement()

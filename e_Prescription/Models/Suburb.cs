@@ -11,6 +11,10 @@ namespace e_Prescription.Models
         [Required(ErrorMessage = "*Required")]
         public string SuburbName { get; set; }
 
+        [Required(ErrorMessage ="*Required")]
+        public int ProvinceId { get; set; }
+        public virtual Province Province { get; set; }
+
         // City foreign key
         [Required(ErrorMessage = "*Required")]
         [ForeignKey("City")]
