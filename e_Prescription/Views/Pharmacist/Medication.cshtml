@@ -1,0 +1,125 @@
+﻿@model IEnumerable<e_Prescription.Models.Medication>
+
+@{
+    ViewData["Title"] = "Medications";
+}
+
+<style>
+    .dashboard {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 20px; /* Add margin to create space between header and dashboard */
+    }
+
+    .align-left {
+        align-items: flex-end;
+        text-align: left;
+    }
+
+    .btn1 {
+        margin-top: 20px;
+        margin-bottom: 5px;
+    }
+
+</style>
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Medications</h4>
+        </div>
+        <div class="d-flex justify-content-end btn1">
+            <button class="btn btn-primary" onclick="openMedicationModal('@Url.Action("AddMedication", "Pharmacist")')">ADD MED</button>
+        </div>
+
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Medication Name
+                    </th>
+                    <th>
+                        Dosage
+                    </th>
+                    <th>
+                        Schedule
+                    </th>
+                    <th>
+                        ReOrder Level
+                    </th>
+                    <th>
+                        Active Ingredients
+                    </th>
+                    <th>
+                        Strength
+                    </th>
+                    <th>
+                        Action
+                    </th>
+                </tr>
+            </thead>
+            @* <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                           @Html.DisplayFor(modelItem => item.VitalName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LowLimit)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.HighLimit)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Units)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.VitalId">Update</a>
+                        </td>
+                    </tr>
+                }
+            </tbody> *@
+        </table>
+        <div class="modal fade" id="MedicationModal" tabindex="-1" role="dialog" aria-labelledby="MedicationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title text-center" id="MedicationModalLabel">Add New Med</h5>
+                        <button type="button" class="close" onclick="window.location.href='@Url.Action("Medication", "Pharmacist")'" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="MedicationModalBody">
+                        <!-- Content loaded dynamically -->
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function openMedicationModal(url) {
+            $('#MedicationModalBody').load(url, function () {
+                $('#MedicationModal').modal('show');
+            });
+        }
+    </script>
+}

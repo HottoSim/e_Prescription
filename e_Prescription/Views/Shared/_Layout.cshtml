@@ -167,6 +167,44 @@
             </div>
         </nav>
     }
+    @if (User.IsInRole("Pharmacist"))
+    {
+        <nav class="navbar-container">
+            <div class="nav flex-column navbar-vertical nav-vt" role="tablist" aria-orientation="vertical">
+                <a class="nav-link navbar-item text-white active" href="@Url.Action("GetPrescriptions","Pharmacist")">
+                    <i class="fas fa-prescription"></i>
+                    Prescriptions
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action()">
+                    <i class="fas fa-exclamation"></i>
+                    Urgent Prescriptions
+                </a>              
+                <a class="nav-link navbar-item text-white" href="@Url.Action("Medication","Pharmacist")">
+                    <i class="fas fa-pills"></i>
+                    Medications
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action()">
+                    <i class="fas fa-clipboard"></i>
+                    Stock Records
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action()">
+                    <i class="fas fa-check"></i>
+                    Stock Received
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action()">
+                    <i class="fas fa-marker"></i>
+                    Stock Order
+                </a>
+            </div>
+            <div class="content1">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </nav>
+    }
+
+
     <div class="container" style="padding-top: 90px;">
         <!-- Adjust padding to prevent content overlap -->
         <main role="main" class="pb-3">

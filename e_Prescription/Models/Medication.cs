@@ -9,5 +9,11 @@ namespace e_Prescription.Models
 
         [Required]
         public string MedicationName { get; set; }
+        //[Required]
+        //public string Dosage { get; set; }
+        //[Required]
+        //public string Schedule { get; set; }
+        //[Required]
+        //public int ReOrderLevel { get; set; }
     }
 }
