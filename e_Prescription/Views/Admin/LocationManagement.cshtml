@@ -46,8 +46,8 @@
         }
 
         <div class="d-flex justify-content-end btn1">
-            <button class="btn btn-primary" onclick="openMedicationModal('@Url.Action("AddMedication", "Admin")')">Add city</button>
-            <button class="btn btn-primary" onclick="openIngredientModal('@Url.Action("AddMedicationIngredient", "Admin")')">Add suburb</button>
+            <button class="btn btn-primary" onclick="openCityModal('@Url.Action("AddCity", "Admin")')">Add city</button>
+            <button class="btn btn-primary" onclick="openSuburbModal('@Url.Action("AddSuburb", "Admin")')">Add suburb</button>
         </div>
 
         <div class="container">
@@ -134,8 +134,60 @@
                     }
                 }
             </div>
+            <div class="modal fade" id="CityModal" tabindex="-1" role="dialog" aria-labelledby="CityModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title text-center" id="CityModalLabel">Add city</h5>
+                            <button type="button" class="close" onclick="window.location.href='@Url.Action("LocationManagement", "Admin")'" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="CityModalBody">
+                            <!-- Content loaded dynamically -->
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="SuburbModal" tabindex="-1" role="dialog" aria-labelledby="SuburbModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title text-center" id="SuburbModalLabel">Add suburb</h5>
+                            <button type="button" class="close" onclick="window.location.href='@Url.Action("LocationManagement", "Admin")'" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="SuburbModalBody">
+                            <!-- Content loaded dynamically -->
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
 </div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function openCityModal(url) {
+            $('#CityModalBody').load(url, function () {
+                $('#CityModal').modal('show');
+            });
+        }
+
+        function openSuburbModal(url) {
+            $('#SuburbModalBody').load(url, function () {
+                $('#SuburbModal').modal('show');
+            });
+        }
+    </script>
+}
 

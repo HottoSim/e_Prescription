@@ -321,7 +321,7 @@ namespace e_Prescription.Controllers
             _context.Provinces.Add(province);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Province has been successfully added...";
-            return RedirectToAction("ManageLocations");
+            return RedirectToAction("LocationManagement");
         }
 
         [HttpGet]
@@ -337,13 +337,13 @@ namespace e_Prescription.Controllers
             await _context.SaveChangesAsync();
             ViewBag.getProvince = new SelectList(_context.Provinces, "ProvinceId", "ProvinceName");
             TempData["SuccessMessage"] = "City has been successfully added...";
-            return RedirectToAction("ManageLocations");
+            return RedirectToAction("LocationManagement");
         }
 
         [HttpGet]
         public IActionResult AddSuburb()
         {
-            ViewBag.getCity = new SelectList(_context.Provinces, "CityId", "CityName");
+            ViewBag.getCity = new SelectList(_context.Cities, "CityId", "CityName");
             return View();
         }
         [HttpPost]
@@ -353,7 +353,7 @@ namespace e_Prescription.Controllers
             await _context.SaveChangesAsync();
             ViewBag.getCity = new SelectList(_context.Provinces, "CityId", "CityName");
             TempData["SuccessMessage"] = "Suburb has been successfully added...";
-            return RedirectToAction("ManageLocations");
+            return RedirectToAction("LocationManagement");
         }
 
         //Return locations 
