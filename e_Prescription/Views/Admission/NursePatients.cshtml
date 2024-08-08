@@ -1,117 +1,168 @@
 ﻿@model IEnumerable<e_Prescription.Models.Admission>
 
 @{
-    Layout = "_Layout"; // Assuming "_Layout2" is your layout file
+    // Layout = "_Layout"; 
 }
 
-<style>
-    .card {
-        background-color: lightgray;
-        color: #000;
-    }
+<head>
+    <style>
+        .form-card {
+            border: 5px solid #f5f5f5;
+            padding: 10px;
+            overflow: hidden;
+            background: linear-gradient(to bottom right, #ffffff, #f0f0f0), radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 60%, rgba(230,230,230,1) 100%);
+            background-blend-mode: overlay;
+            border-radius: 20px;
+            box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+        }
 
-    .container {
-        border: 5px solid #f5f5f5; /* Whitish color */
-        /* padding: 10px; */
-        overflow: hidden; /* Ensures content doesn't overflow the rounded corners */
-        background-color: #f5f5f5;
-    }
-</style>
+        .card {
+            background-color: lightgray;
+            color: #000;
+            border-radius: 15px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        }
 
-<div class="row d-flex justify-content-center align-items-center h-100 container">
-    <div class="form-group">
-        <div class="col-12 text-center card-header bg-success" style="height: 45px;">
-            <h4>List of all your patients</h4>
-        </div>
-    </div>
+        /* .container {
+            border: 5px solid #f5f5f5;
+            overflow: hidden;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 20px;
+        } */
 
-    <!-- Search by ID form -->
-    <div class="row mt-3 mb-3">
-        <div class="col-md-6 offset-md-3">
-            <form asp-controller="Admission" asp-action="NursePatients" method="get" class="form-inline justify-content-center">
-                <div class="input-group">
-                    <input type="text" name="patientId" class="form-control" placeholder="Search by ID Number">
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+        .card-header {
+            background-color: #28a745;
+            color: #ffffff;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .table {
+            margin-top: 20px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .btn-primary,
+        .btn-success,
+        .btn-info {
+            border-radius: 10px;
+        }
+
+        .text-center h4 {
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-card">
+            <div class="form-group">
+                <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+                    <h4 class="text-center">List of your patients</h4>
+                </div>
+            </div>
+
+            <!-- Search by ID form -->
+            <div class="row mt-3 mb-3">
+                <div class="col-md-6 offset-md-3">
+                    <form asp-controller="Admission" asp-action="NursePatients" method="get" class="form-inline justify-content-center">
+                        <div class="input-group">
+                            <input type="text" name="patientId" class="form-control" placeholder="Search by ID Number">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
+            @if (Model != null && Model.Any())
+            {
+                <!-- Table displaying admitted patients -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID Number</th>
+                                    <th>
+                                        First name
+                                        <div class="btn-group" role="group" style="margin-left: 5px;">
+                                            <a class="btn text-black p-0" asp-action="NursePatients" asp-route-sortOrder="FirstName">
+                                                ⬆ <!-- Bold Up arrow for ascending -->
+                                            </a>
+                                            <a class="btn text-black p-0" asp-action="NursePatients" asp-route-sortOrder="FirstName_desc">
+                                                ⬇ <!-- Bold Down arrow for descending -->
+                                            </a>
+                                        </div>
+                                    </th>
+                                    <th>Last name</th>
+                                    <th>Gender</th>
+                                    <th>Admission time</th>
+                                    <th>Ward and Bed</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var admission in Model)
+                                {
+                                    <tr>
+                                        <td>@admission.Patient.IdNumber</td>
+                                        <td>@admission.Patient.Firstname</td>
+                                        <td>@admission.Patient.Lastname</td>
+                                        <td>@admission.Patient.Gender</td>
+                                        <td>@admission.AdmissionDate.ToShortTimeString()</td>
+                                        <td>@admission.Ward.WardName - @admission.Bed.BedName</td>
+                                        <td>
+                                            <a class="btn btn-primary" asp-controller="Admission" asp-action="ViewAdmission" asp-route-patientId="@admission.Patient.IdNumber">
+                                                <i class="fas fa-edit"></i> Manage
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
+            }
+            else
+            {
+                <!-- No admitted patients found -->
+                <div class="text-center">
+                    <h4>You do not have any admissions...</h4>
+                </div>
+            }
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["SuccessMessage"]
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    }
-
-    @if (Model != null && Model.Any())
-    {
-        <!-- Table displaying admitted patients -->
-        <div class="row">
-            <div class="col-md-12">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID Number</th>
-                            <th>
-                                First name
-                                <div class="btn-group" role="group" style="margin-left: 5px;">
-                                    <a class="btn text-black p-0" asp-action="NursePatients" asp-route-sortOrder="FirstName">
-                                        ⬆ <!-- Bold Up arrow for ascending -->
-                                    </a>
-                                    <a class="btn text-black p-0" asp-action="NursePatients" asp-route-sortOrder="FirstName_desc">
-                                        ⬇ <!-- Bold Down arrow for descending -->
-                                    </a>
-                                </div>
-                            </th>
-                            <th>Last name</th>
-                            <th>Gender</th>
-                            <th>Admission time</th>
-                            <th>Ward and Bed</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var admission in Model)
-                        {
-                            <tr>
-                                <td>@admission.Patient.IdNumber</td>
-                                <td>@admission.Patient.Firstname</td>
-                                <td>@admission.Patient.Lastname</td>
-                                <td>@admission.Patient.Gender</td>
-                                <td>@admission.AdmissionDate.ToShortTimeString()</td>
-                                <td>@admission.Ward.WardName - @admission.Bed.BedName</td>
-                                <td>
-                                    <a class="btn btn-primary" asp-controller="Admission" asp-action="ViewAdmission" asp-route-patientId="@admission.Patient.IdNumber">
-                                        <i class="fas fa-edit"></i> Manage
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            <div class="d-flex justify-content-center mt-4">
+                <button type="button" class="btn btn-info" onclick="history.back()">Go Back</button>
             </div>
         </div>
-    }
-    else
-    {
-        <!-- No admitted patients found -->
-        <div class="text-center mt-4">
-            <h4>You do not have any admissions...</h4>
-        </div>
-    }
-    <div class="d-flex justify-content-center">
-        <button type="button" class="btn btn-info" onclick="history.back()">Go Back</button>
     </div>
-</div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
     }
-}
+</body>
