@@ -1,14 +1,14 @@
-﻿@model e_Prescription.Models.TreatmentCode
+﻿@model e_Prescription.Models.ChronicCondition
 
 @{
-    ViewData["Title"] = "AddTreatmentCode";
+    ViewData["Title"] = "AddChronicCondtion";
     Layout = "_Layout2";
 }
 
-
+<hr />
 <div class="row">
     <div class="col-md-10">
-        <form asp-action="AddTreatmentCode">
+        <form asp-action="AddChronicCondtion">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-row">
                 <div class="form-group col-md-6">
@@ -16,10 +16,10 @@
                     <input asp-for="ICD_10_CODE" class="form-control" />
                     <span asp-validation-for="ICD_10_CODE" class="text-danger"></span>
                 </div>
-                <div class="form-group  col-md-6">
-                    <label asp-for="TreatmentCodeDescription" class="control-label">Description</label>
-                    <input asp-for="TreatmentCodeDescription" class="form-control" />
-                    <span asp-validation-for="TreatmentCodeDescription" class="text-danger"></span>
+                <div class="form-group col-md-6">
+                    <label asp-for="Diagnosis" class="control-label"></label>
+                    <input asp-for="Diagnosis" class="form-control" />
+                    <span asp-validation-for="Diagnosis" class="text-danger"></span>
                 </div>
             </div>
             <div class="d-flex justify-content-center">
@@ -30,7 +30,5 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

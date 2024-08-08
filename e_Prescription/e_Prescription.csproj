@@ -29,7 +29,6 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
-    <Folder Include="Models\ViewModels\" />
     <Folder Include="wwwroot\js\" />
     <Folder Include="wwwroot\lib\bootstrap\" />
     <Folder Include="wwwroot\lib\bootstrap\dist\css\" />

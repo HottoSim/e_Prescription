@@ -40,7 +40,11 @@ namespace e_Prescription.Controllers
             {
                 NurseName = nurseName,
                 AdmittedPatientsCount = admittedPatientsCount,
-                BookedPatientsCount = bookedPatientsCount
+                BookedPatientsCount = bookedPatientsCount,
+
+                AdmittedCount = context.Admissions.Where(a => !a.IsDischarged).Count(),
+                DischargedCount = context.Admissions.Where(a => a.IsDischarged).Count(),
+                BookedPatients = context.BookingTreatments.Where(p => p.PatientBooking.Patient.IsActive).Count() // Example dat
             };
 
             return View(model);
@@ -239,7 +243,7 @@ namespace e_Prescription.Controllers
                     ViewBag.Notifications = notifications;
                 }
 
-                ViewBag.AlertMessage = "Vitals Back to normal!";
+                ViewBag.AlertMessage = "Vital is back to normal!";
             }
             catch (Exception ex)
             {
@@ -431,19 +435,45 @@ namespace e_Prescription.Controllers
         }
 
         //Retrieve all admitted patients by the Nurse
-        public async Task<IActionResult> NursePatients()
+        public async Task<IActionResult> NursePatients(string patientId, string sortOrder)
         {
             var user = await userManager.GetUserAsync(User);
-            var admittedPatients = context.Admissions
+
+            // Query for admitted patients
+            var admittedPatientsQuery = context.Admissions
                 .Where(a => a.NurseId == user.Id && !a.IsDischarged)
                 .Include(a => a.Patient)
                 .Include(a => a.ApplicationUser)
                 .Include(a => a.Ward)
                 .Include(a => a.Bed)
-                .ToList();
+                .AsQueryable();  // Ensure queryable for further querying
+
+            // Filter by patient ID if provided
+            if (!string.IsNullOrEmpty(patientId))
+            {
+                admittedPatientsQuery = admittedPatientsQuery.Where(a => a.Patient.IdNumber.Contains(patientId));
+            }
+
+            // Sorting logic
+            ViewData["FirstNameSortParam"] = sortOrder == "FirstName" ? "FirstName_desc" : "FirstName";
+            switch (sortOrder)
+            {
+                case "FirstName_desc":
+                    admittedPatientsQuery = admittedPatientsQuery.OrderByDescending(a => a.Patient.Firstname);
+                    break;
+                case "FirstName":
+                    admittedPatientsQuery = admittedPatientsQuery.OrderBy(a => a.Patient.Firstname);
+                    break;
+                default:
+                    admittedPatientsQuery = admittedPatientsQuery.OrderBy(a => a.Patient.IdNumber);
+                    break;
+            }
+
+            var admittedPatients = await admittedPatientsQuery.ToListAsync();
 
             return View(admittedPatients);
         }
+
 
         //Retrieve Patient admission from the database
         public async Task<IActionResult> ViewAdmission(string patientId, int admissionId)
@@ -599,8 +629,9 @@ namespace e_Prescription.Controllers
 
             bed.IsAvailable = true;
             context.SaveChanges(); // Save changes to update the bed's availability
+            TempData["SuccessMessage"] = "Patient has been discharged successfully...";
 
-            return RedirectToAction("ViewAdmission");
+            return RedirectToAction("NursePatients");
         }
 
 

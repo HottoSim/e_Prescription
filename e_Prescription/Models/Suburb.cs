@@ -16,5 +16,8 @@ namespace e_Prescription.Models
         [ForeignKey("City")]
         public int CityId { get; set; }
         public virtual City City { get; set; }
+
+        [Required(ErrorMessage ="*Required")]
+        public string PostalCode { get; set; }
     }
 }

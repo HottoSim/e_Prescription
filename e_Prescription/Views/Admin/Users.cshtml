@@ -33,25 +33,34 @@
                 text-align: center;
             }
 
+            .tile .btn-container {
+                width: 270px;
+                display: flex;
+                justify-content: space-between;
+                position: absolute;
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+            }
+
+            .tile a,
             .tile button {
-                width: 45%;
+                width: calc(50% - 5px); /* Ensures buttons are of equal size and fit within the tile */
                 padding: 10px;
                 border: none;
                 border-radius: 5px;
                 cursor: pointer;
                 color: white;
-                position: absolute;
-                bottom: 10px;
+                text-align: center;
+                text-decoration: none;
             }
 
             .tile .btn-view {
                 background-color: #17a2b8;
-                left: 10px;
             }
 
             .tile .btn-register {
                 background-color: #28a745;
-                right: 10px;
             }
 
         .tile-users {
@@ -98,7 +107,6 @@
         <div class="card" id="card-content">
             <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
                 <h4 class="text-center">System Users</h4>
-                @* <button onclick="downloadPDF()" class="btn btn-primary float-right">Download PDF</button> *@
             </div>
             @if (TempData["SuccessMessage"] != null)
             {
@@ -116,8 +124,10 @@
                         <p>Active: <span id="active-nurses">@Model.NurseCount</span></p>
                         <p>Inactive: <span id="inactive-nurses">@Model.NoNurseCount</span></p>
                     </div>
-                    <button class="btn-view" onclick="openViewModal('@Url.Action("GetNurses", "Admin")')">View</button>
-                    <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Nurse" })')">Register</button>
+                    <div class="btn-container">
+                        <a class="btn-view" href="@Url.Action("GetNurses", "Admin")">View</a>
+                        <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Nurse" })')">Register</button>
+                    </div>
                 </div>
 
                 <div class="tile tile-users">
@@ -126,8 +136,10 @@
                         <p>Active: <span id="active-doctors">@Model.SurgeonCount</span></p>
                         <p>Inactive: <span id="inactive-doctors">@Model.NoSurgeonCount</span></p>
                     </div>
-                    <button class="btn-view" onclick="openViewModal('@Url.Action("GetSurgeons", "Admin")')">View</button>
-                    <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Surgeon" })')">Register</button>
+                    <div class="btn-container">
+                        <a class="btn-view" href="@Url.Action("GetSurgeons", "Admin")">View</a>
+                        <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Surgeon" })')">Register</button>
+                    </div>
                 </div>
 
                 <div class="tile tile-reports">
@@ -136,17 +148,22 @@
                         <p>Active: <span id="active-pharmacists">@Model.PharmacistCount</span></p>
                         <p>Inactive: <span id="inactive-pharmacists">@Model.NoPharmacistCount</span></p>
                     </div>
-                    <button class="btn-view" onclick="openViewModal('@Url.Action("GetPharmacists", "Admin")')">View</button>
-                    <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Pharmacist" })')">Register</button>
+                    <div class="btn-container">
+                        <a class="btn-view" href="@Url.Action("GetPharmacists", "Admin")">View</a>
+                        <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Pharmacist" })')">Register</button>
+                    </div>
                 </div>
+
                 <div class="tile tile-settings">
                     <div class="stats">
                         <h4>Admins</h4>
                         <p>Active: <span id="active-admins">@Model.AdminCount</span></p>
                         <p>Inactive: <span id="inactive-admins">@Model.NoAdminCount</span></p>
                     </div>
-                    <button class="btn-view" onclick="openViewModal('@Url.Action("GetAdmins", "Admin")')">View</button>
-                    <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Admin" })')">Register</button>
+                    <div class="btn-container">
+                        <a class="btn-view" href="@Url.Action("GetAdmins", "Admin")">View</a>
+                        <button class="btn-register" onclick="openRegisterModal('@Url.Action("Register", "Account", new { role = "Admin" })')">Register</button>
+                    </div>
                 </div>
             </div>
 
@@ -173,25 +190,6 @@
             </div>
         </div>
     </div>
-    <!-- Modal 2 -->
-    <div class="modal fade" id="ViewModal" tabindex="-1" role="dialog" aria-labelledby="ViewModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title text-center" id="ViewModalLabel">View</h5>
-                    <button type="button" class="close" onclick="window.location.href='@Url.Action("Users", "Admin")'" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="ViewModalBody">
-                    <!-- Content loaded dynamically -->
-                </div>
-                <div class="modal-footer d-flex justify-content-end">
-                    <button type="button" class="btn btn-danger" onclick="window.location.href='@Url.Action("Users", "Admin")'">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Add Bootstrap JS -->
     @section Scripts {
@@ -205,12 +203,6 @@
             function openRegisterModal(url) {
                 $('#RegisterModalBody').load(url, function () {
                     $('#RegisterModal').modal('show');
-                });
-            }
-
-            function openViewModal(url) {
-                $('#ViewModalBody').load(url, function () {
-                    $('#ViewModal').modal('show');
                 });
             }
 
@@ -237,17 +229,6 @@
                     }
                 });
             });
-
-            // function downloadPDF() {
-            //     const element = document.getElementById('card-content');
-            //     html2pdf(element, {
-            //         margin: 10,
-            //         filename: 'admission_data.pdf',
-            //         image: { type: 'jpeg', quality: 0.98 },
-            //         html2canvas: { scale: 2 },
-            //         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            //     });
-            // }
         </script>
     }
 </body>

@@ -1,0 +1,44 @@
+﻿@model e_Prescription.Models.Medication
+
+@{
+    ViewData["Title"] = "AddMedication";
+    Layout = "_Layout2";
+}
+
+
+<div class="row">
+    <div class="col-md-10">
+        <form asp-action="AddMedication">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label asp-for="MedicationName" class="control-label">Medication name</label>
+                    <input asp-for="MedicationName" class="form-control" />
+                    <span asp-validation-for="MedicationName" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="DosageFormId" class="control-label">Dosage form</label>
+                    <select asp-for="DosageFormId" class="form-control" asp-items="@ViewBag.getDosage">
+                        <option selected disabled>--Select dosage form--</option>
+                    </select>
+                    <span asp-validation-for="DosageFormId" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="Schedule" class="control-label">Schedule</label>
+                    <input asp-for="Schedule" class="form-control" />
+                    <span asp-validation-for="Schedule" class="text-danger"></span>
+                </div>
+            </div>
+           
+            <div class="d-flex justify-content-center">
+                <input type="submit" value="Create" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

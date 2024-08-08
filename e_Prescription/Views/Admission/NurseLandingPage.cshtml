@@ -11,23 +11,23 @@
     }
 
     .container {
-        border: 5px solid #f5f5f5; /* Whitish color */
+        border: 5px solid #f5f5f5;
         padding: 10px;
-        overflow: hidden; /* Ensures content doesn't overflow the rounded corners */
+        overflow: hidden;
         background-color: #f5f5f5;
     }
 
     .card-header {
-        border-radius: 0; /* Ensures card header has no rounded corners */
+        border-radius: 0;
     }
 
     .modal-content {
-        border-radius: 0; /* Ensures modal content has no rounded corners */
+        border-radius: 0;
     }
 
     .card-title i {
-        font-size: 3rem; /* Adjust icon size directly */
-        margin-right: 10px; /* Space between icon and text */
+        font-size: 3rem;
+        margin-right: 10px;
     }
 </style>
 
@@ -50,11 +50,10 @@
                         Admit Patients
                     </h5>
                     <p class="card-text">Number of patients booked and ready for admission: @Model.BookedPatientsCount</p>
-                    <a class="btn btn-primary" href="@Url.Action("Index", "Admission")">View Booked Patients</a>
+                    <a class="btn btn-primary" href="@Url.Action("Index", "Admission")">View booked patients</a>
                 </div>
             </div>
         </div>
-
         <div class="col-md-6">
             <div class="card text-center">
                 <div class="card-body">
@@ -63,31 +62,51 @@
                         View Admitted Patients
                     </h5>
                     <p class="card-text">Number of patients admitted by you: @Model.AdmittedPatientsCount</p>
-                    <a onclick="openAdmissionModal('@Url.Action("NursePatients", "Admission")')" class="btn btn-success">View Admitted Patients</a>
+                    <a href="@Url.Action("NursePatients", "Admission")" class="btn btn-success">View admitted patients</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal 2 -->
-    <div class="modal fade" id="AdmissionModal" tabindex="-1" role="dialog" aria-labelledby="AdmissionModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title text-center" id="AdmissionModalLabel">View Admitted</h5>
-                    <button type="button" class="close" onclick="window.location.href='@Url.Action("NurseLandingPage", "Admission")'" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    Patient Statistics & Helpful Resources
                 </div>
-                <div class="modal-body" id="AdmissionModalBody">
-                    <!-- Content loaded dynamically -->
-                </div>
-                <div class="modal-footer d-flex justify-content-end">
-                    <button type="button" class="btn btn-danger" onclick="window.location.href='@Url.Action("NurseLandingPage", "Admission")'">Close</button>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <!-- Chart.js integration -->
+                            <canvas id="patientStatisticsChart" width="380" height="205"></canvas>
+                        </div>
+                        <div class="col-md-4">
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <i class="fas fa-book"></i>
+                                    <a href="#">Hospital Guidelines</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-ambulance"></i>
+                                    <a href="#">Emergency Protocols</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-procedures"></i>
+                                    <a href="#">Nursing Procedures</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="fas fa-comments"></i>
+                                    <a href="#">Staff Chats</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+
 </div>
 
 @section Scripts {
@@ -96,12 +115,26 @@
     }
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
     <script>
-        function openAdmissionModal(url) {
-            $('#AdmissionModalBody').load(url, function () {
-                $('#AdmissionModal').modal('show');
+        document.addEventListener("DOMContentLoaded", function () {
+            var ctx = document.getElementById('patientStatisticsChart').getContext('2d');
+            var patientStatisticsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Active Bookings', 'Admitted', 'Discharged'],
+                    datasets: [{
+                        label: 'Patient Statistics',
+                        data: [@Model.BookedPatientsCount, @Model.AdmittedCount, @Model.DischargedCount],
+                        backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)'],
+                        borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
             });
-        }
+        });
     </script>
 }

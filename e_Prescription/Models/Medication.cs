@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace e_Prescription.Models
 {
@@ -7,13 +8,15 @@ namespace e_Prescription.Models
         [Key]
         public int MedicationId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string MedicationName { get; set; }
-        //[Required]
-        //public string Dosage { get; set; }
-        //[Required]
-        //public string Schedule { get; set; }
-        //[Required]
-        //public int ReOrderLevel { get; set; }
+
+        [Required(ErrorMessage = "*Required")]
+        [ForeignKey("Dosage")]
+        public int DosageFormId { get; set; }
+        public virtual DosageForm DosageForm { get; set; }
+
+        [Required(ErrorMessage = "*Required")]
+        public string Schedule { get; set; }
     }
 }

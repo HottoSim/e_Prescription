@@ -20,7 +20,12 @@
     .btn1 {
         margin-top: 20px;
         margin-bottom: 5px;
+        padding: 5px;
     }
+
+        .btn1 .btn {
+            margin-right: 10px; /* Adjust the value as needed */
+        }
 
 </style>
 <div class="col-md-12 mx-auto pt-0 p-0">
@@ -29,21 +34,33 @@
             <h4 class="text-center">Manage Medication</h4>
         </div>
 
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
         <div class="d-flex justify-content-end btn1">
-            <button class="btn btn-primary" onclick="openVitalModal('@Url.Action("AddMedication", "Admin")')">Create New</button>
+            <button class="btn btn-primary" onclick="openMedicationModal('@Url.Action("AddMedication", "Admin")')">Add medication</button>
+            <button class="btn btn-primary" onclick="openIngredientModal('@Url.Action("AddMedicationIngredient", "Admin")')">Add ingredients</button>
         </div>
+
 
         <table class="table">
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Medication)
+                        Medication name
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.ActiveIngredient)
+                        Active ingredient
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.IngredientStrength)
+                        Strenght
                     </th>
                     <th></th>
                 </tr>
@@ -70,16 +87,33 @@
             </tbody>
         </table>
 
-        <div class="modal fade" id="VitalModal" tabindex="-1" role="dialog" aria-labelledby="VitalModalLabel" aria-hidden="true">
+        <div class="modal fade" id="MedicationModal" tabindex="-1" role="dialog" aria-labelledby="MedicationModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title text-center" id="VitalModalLabel">Add New Vital</h5>
+                        <h5 class="modal-title text-center" id="MedicationModalLabel">Add medication</h5>
                         <button type="button" class="close" onclick="window.location.href='@Url.Action("ManageMedication", "Admin")'" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body" id="VitalModalBody">
+                    <div class="modal-body" id="MedicationModalBody">
+                        <!-- Content loaded dynamically -->
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="IngredientModal" tabindex="-1" role="dialog" aria-labelledby="IngredientModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title text-center" id="IngredientModalLabel">Add medication ingredient</h5>
+                        <button type="button" class="close" onclick="window.location.href='@Url.Action("ManageMedication", "Admin")'" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="IngredientModalBody">
                         <!-- Content loaded dynamically -->
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
@@ -94,9 +128,15 @@
     }
 
     <script>
-        function openVitalModal(url) {
-            $('#VitalModalBody').load(url, function () {
-                $('#VitalModal').modal('show');
+        function openMedicationModal(url) {
+            $('#MedicationModalBody').load(url, function () {
+                $('#MedicationModal').modal('show');
+            });
+        }
+
+        function openIngredientModal(url) {
+            $('#IngredientModalBody').load(url, function () {
+                $('#IngredientModal').modal('show');
             });
         }
     </script>

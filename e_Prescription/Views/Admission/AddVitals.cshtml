@@ -22,7 +22,7 @@
 
     .modal-header {
         background-color: #dc3545; /* Primary color */
-        color: #fff; 
+        color: #fff;
     }
 
     .modal-header1 {
@@ -32,7 +32,6 @@
 
     .container {
         border: 5px solid #f5f5f5; /* Whitish color */
-        /* padding: 10px; */
         overflow: hidden; /* Ensures content doesn't overflow the rounded corners */
         background-color: #f5f5f5;
     }
@@ -53,7 +52,7 @@
                 @if (hasNotifications)
                 {
                     <div class="notification">
-                        <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -76,7 +75,7 @@
                 else if (hasAlertMessage)
                 {
                     <div class="alert">
-                        <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header1">
@@ -119,7 +118,8 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="PatientVitals[@i].Reading" class="form-control" aria-required="true" required />
+                                        <input type="text" name="PatientVitals[@i].Reading" class="form-control" aria-required="true" required oninput="validateReading(this)" />
+                                        <div class="invalid-feedback" style="display:none;">Please enter a valid reading.</div>
                                     </td>
                                     <td>
                                         <input type="time" name="PatientVitals[@i].Time" class="form-control" aria-required="true" required />
@@ -147,14 +147,13 @@
                     </div>
                 }
 
-                
+
             </div>
         </form>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-@* <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script> *@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
@@ -181,14 +180,14 @@
             let cell4 = newRow.insertCell(3);
 
             cell1.innerHTML = `<select name="PatientVitals[${vitalIndex}].VitalId" class="form-control">
-                                        <option value="">Select Vital</option>
+                                                <option value="">Select Vital</option>
         @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.VitalNames)
         {
-                                                <option value="@item.Value">@item.Text</option>
+                                                            <option value="@item.Value">@item.Text</option>
         }
-                                    </select>`;
+                                            </select>`;
 
-            cell2.innerHTML = `<input type="text" name="PatientVitals[${vitalIndex}].Reading" class="form-control" />`;
+            cell2.innerHTML = `<input type="text" name="PatientVitals[${vitalIndex}].Reading" class="form-control" oninput="validateReading(this)" />`;
             cell3.innerHTML = `<input type="time" name="PatientVitals[${vitalIndex}].Time" class="form-control" />`;
             cell4.innerHTML = `<button type="button" class="btn btn-sm btn-danger delete-button" onclick="DeleteItem(this)">Delete</button>`;
 
@@ -210,10 +209,26 @@
             var hasAlertMessage = @Html.Raw(Json.Serialize(hasAlertMessage));
 
             if (hasNotifications) {
-                $('#notificationModal').modal('show');
+                $('#notificationModal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                }).modal('show');
             } else if (hasAlertMessage) {
-                $('#alertModal').modal('show');
+                $('#alertModal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                }).modal('show');
             }
         });
+
+        function validateReading(input) {
+            const value = input.value;
+            const feedback = input.nextElementSibling;
+            if (isNaN(value) || value.trim() === "") {
+                feedback.style.display = "block";
+            } else {
+                feedback.style.display = "none";
+            }
+        }
     </script>
 }

@@ -5,6 +5,7 @@ using e_Prescription.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Build.ObjectModelRemoting;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using  e_Prescription.Models.ViewModels;
 
 namespace e_Prescription.Controllers
 {
@@ -119,6 +120,23 @@ namespace e_Prescription.Controllers
             return View(beds);
         }
 
+        //Add wards
+        [HttpGet]
+        public IActionResult AddWard()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddWard(Ward ward)
+        {
+            _context.Wards.Add(ward);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Ward has been successfully added...";
+            return RedirectToAction("ManageWards");
+        }
+
+
         [HttpGet]
         public IActionResult AddBed()
         {
@@ -149,18 +167,77 @@ namespace e_Prescription.Controllers
             return View(medication);
         }
 
+        //Add Medication
         [HttpGet]
         public IActionResult AddMedication()
+        {
+            ViewBag.getDosage = new SelectList(_context.DosageForms, "DosageFormId", "Description");
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddMedication(Medication medication)
+        {
+            _context.Medications.Add(medication);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Medication has been successfully added...";
+            ViewBag.getDosage = new SelectList(_context.DosageForms, "DosageFormId", "Description");
+
+            return RedirectToAction("ManageMedication");
+        }
+
+        [HttpGet]
+        public IActionResult AddMedicationIngredient()
+        {
+            // Initialize ViewBag with SelectList for dropdowns
+            ViewBag.getMedication = new SelectList(_context.Medications, "MedicationId", "MedicationName");
+            ViewBag.getIngredient = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddMedicationIngredient(MedicationIngredient medicationIngredient)
+        {
+
+            _context.MedicationIngredients.Add(medicationIngredient);
+            await _context.SaveChangesAsync();
+            // If ModelState is not valid, repopulate the dropdown lists
+            ViewBag.getMedication = new SelectList(_context.Medications, "MedicationId", "MedicationName");
+            ViewBag.getIngredient = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+
+            TempData["SuccessMessage"] = "Medication ingredients has been successfully added...";
+
+            // Redirect to the list view (Index) after successful addition
+            return RedirectToAction("ManageMedication");
+
+        }
+
+        //Return Chronic conditions 
+        [HttpGet]
+        public IActionResult ManageChronicConditions()
+        {
+            var conditions = _context.ChronicConditions.ToList();
+            return View(conditions);
+        }
+
+        //Add new conditions
+        [HttpGet]
+        public IActionResult AddChronicCondtion()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult AddMedication(Medication medication)
+        public async Task<IActionResult> AddChronicCondtion(ChronicCondition condition)
         {
-            return View(medication);
-        }
+            _context.ChronicConditions.Add(condition);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Medication ingredients has been successfully added...";
 
+            return RedirectToAction("ManageChronicConditions");
+
+        }
 
         //Return Active Ingredients
         [HttpGet]
@@ -178,6 +255,9 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public IActionResult AddActiveIngredient(ActiveIngredient activeIngredient)
         {
+            _context.ActiveIngredients.Add(activeIngredient);
+            _context.SaveChanges();
+            TempData["SuccessMessage"] = "Ingredient has been added...";
             return View();
         }
 
@@ -228,5 +308,77 @@ namespace e_Prescription.Controllers
             TempData["SuccessMessage"] = "Successfully added...";
             return RedirectToAction("ManageTheatre");
         }
+
+        // Manage location 
+        [HttpGet]
+        public IActionResult AddProvince()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddProvince(Province province)
+        {
+            _context.Provinces.Add(province);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Province has been successfully added...";
+            return RedirectToAction("LocationManagement");
+        }
+
+        [HttpGet]
+        public IActionResult AddCity()
+        {
+            ViewBag.getProvince = new SelectList(_context.Provinces, "ProvinceId", "ProvinceName");
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddCity(City city)
+        {
+            _context.Cities.Add(city);
+            await _context.SaveChangesAsync();
+            ViewBag.getProvince = new SelectList(_context.Provinces, "ProvinceId", "ProvinceName");
+            TempData["SuccessMessage"] = "City has been successfully added...";
+            return RedirectToAction("LocationManagement");
+        }
+
+        [HttpGet]
+        public IActionResult AddSuburb()
+        {
+            ViewBag.getCity = new SelectList(_context.Cities, "CityId", "CityName");
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddSuburb(Suburb suburb)
+        {
+            _context.Suburbs.Add(suburb);
+            await _context.SaveChangesAsync();
+            ViewBag.getCity = new SelectList(_context.Provinces, "CityId", "CityName");
+            TempData["SuccessMessage"] = "Suburb has been successfully added...";
+            return RedirectToAction("LocationManagement");
+        }
+
+        //Return locations 
+        public IActionResult LocationManagement()
+        {
+            var provinces = _context.Provinces
+                .Select(p => new ProvinceViewModel
+                {
+                    ProvinceId = p.ProvinceId,
+                    ProvinceName = p.ProvinceName,
+                    Cities = p.Cities.Select(c => new CityViewModel
+                    {
+                        CityId = c.CityId,
+                        CityName = c.CityName,
+                        Suburbs = c.Suburbs.Select(s => new SuburbViewModel
+                        {
+                            SuburbId = s.SuburbId,
+                            SuburbName = s.SuburbName,
+                            PostalCode = s.PostalCode
+                        }).ToList()
+                    }).ToList()
+                }).ToList();
+
+            return View(provinces);
+        }
     }
 }
+

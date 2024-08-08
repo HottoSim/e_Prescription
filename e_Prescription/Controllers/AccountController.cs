@@ -5,6 +5,7 @@ using e_Prescription.Data;
 using e_Prescription.Models.Account;
 using System.Threading.Tasks;
 using e_Prescription.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace e_Prescription.Controllers
 {
@@ -213,7 +214,7 @@ namespace e_Prescription.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
 
         private async Task EnsureRoleExistsAsync(string role)
@@ -240,5 +241,110 @@ namespace e_Prescription.Controllers
             }
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
+
+        // Update User Records (GET)
+        [HttpGet]
+        public async Task<IActionResult> UpdateUser(string userId, string role)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UpdateUsersViewModel
+            {
+                UserId = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                ContactNumber = user.ContactNumber,
+                Role = role,
+                IsActive = user.IsActive
+            };
+
+            // Populate role-specific properties
+            if (role == "Nurse")
+            {
+                var nurse = await _context.Nurses.Include(n => n.ApplicationUser).FirstOrDefaultAsync(n => n.ApplicationUser.Id == userId);
+                if (nurse != null)
+                {
+                    model.LicenseExpiryDate = nurse.LicenseExpiryDate;
+                }
+            }
+
+            return View(model); // Return view for updating the user
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateUser(UpdateUsersViewModel model)
+        {
+
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.Email = model.Email;
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.ContactNumber = model.ContactNumber;
+            user.IsActive = true;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                if (model.Role == "Nurse")
+                {
+                    var nurse = await _context.Nurses.Include(n => n.ApplicationUser).FirstOrDefaultAsync(n => n.ApplicationUser.Id == model.UserId);
+                    if (nurse != null)
+                    {
+                        nurse.LicenseExpiryDate = model.LicenseExpiryDate;
+                        _context.Nurses.Update(nurse);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"{model.Role} has been updated successfully!";
+                return RedirectToAction("Users", "Admin");
+            }
+
+            AddErrors(result);
+
+            return View(model); // Return the main view on validation failure
+        }
+        // Deactivate users
+        [HttpPost]
+        public async Task<IActionResult> ToggleUserStatus(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.IsActive = false;
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "User status updated successfully.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Error updating user status.";
+            }
+
+            return RedirectToAction("Users", "Admin"); // Adjust this as per your actual action/view name
+        }
+
     }
 }

@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Administrators";
-    Layout = null;
+    //Layout = null;
 }
 
 <style>
@@ -60,22 +60,72 @@
                         <td>
                             @if (item.ApplicationUser.IsActive)
                             {
-                                <text>Active</text>
+                                <span class="badge badge-success">Active</span>
                             }
                             else
                             {
-                                <text>Not Active</text>
+                                <span class="badge badge-secondary">Not Active</span>
                             }
                         </td>
                         <td>
-                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.UserId">Update</a>
-                            <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.UserId">Delete</a>
+                            <a asp-action="UpdateUser" asp-controller="Account" asp-route-userId="@item.ApplicationUser.Id" asp-route-role="@item.ApplicationUser.Role" class="btn btn-info"><i class="fas fa-edit"></i></a>
+                            <button class="btn btn-danger" onclick="confirmToggleUserStatus('@item.ApplicationUser.Id')">
+                                <i class="fas fa-user-slash"></i>
+                            </button>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-info" onclick="history.back()">Go Back</button>
+        </div>
     </div>
 </div>
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmToggleUserStatusModal" tabindex="-1" role="dialog" aria-labelledby="confirmToggleUserStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="confirmToggleUserStatusModalLabel">Confirm Action</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to deactivate this user account?
+            </div>
+            <div class="modal-footer">
+                <form id="toggleUserStatusForm" asp-controller="Account" asp-action="ToggleUserStatus" method="post">
+                    <input type="hidden" name="userId" id="toggleUserStatusUserId" />
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+        function confirmToggleUserStatus(userId) {
+            $('#toggleUserStatusUserId').val(userId);
+            $('#confirmToggleUserStatusModal').modal('show');
+        }
+    </script>
+}
 
 

@@ -1,0 +1,28 @@
+﻿@model e_Prescription.Models.Ward
+
+@{
+    ViewData["Title"] = "AddWard";
+    Layout = "_Layout2";
+}
+
+<div class="row">
+    <div class="col-md-10">
+        <form asp-action="AddWard">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label asp-for="WardName" class="control-label">Ward name</label>
+                    <input asp-for="WardName" class="form-control" />
+                    <span asp-validation-for="WardName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <input type="submit" value="Create" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

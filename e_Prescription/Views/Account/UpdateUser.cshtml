@@ -1,0 +1,103 @@
+﻿@model e_Prescription.Models.Account.UpdateUsersViewModel
+
+@{
+    ViewData["Title"] = "Update User";
+}
+
+<style>
+    .centered-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 30px; /* Adjust the gap size as needed */
+    }
+</style>
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Update @Model.Role details</h4>
+        </div>
+        <div class="card-body">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <form asp-action="UpdateUser" method="post">
+                            <input type="hidden" asp-for="UserId" />
+                            <input type="hidden" asp-for="Role" />
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="Email">Email</label>
+                                        <input asp-for="Email" class="form-control" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="FirstName">First name</label>
+                                        <input asp-for="FirstName" class="form-control" />
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="LastName">Last name</label>
+                                        <input asp-for="LastName" class="form-control" />
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="ContactNumber">Contact number</label>
+                                        <input asp-for="ContactNumber" class="form-control" />
+                                        <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (Model.Role == "Nurse")
+                            {
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="LicenseExpiryDate">License expiry date</label>
+                                            <input asp-for="LicenseExpiryDate" class="form-control" type="date" min="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
+                                            <span asp-validation-for="LicenseExpiryDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="centered-container">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-info" onclick="history.back()">Back</button>
+                                    <input type="submit" value="Update" class="btn btn-success" />
+                                </div>
+                            </div>
+                            <br />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

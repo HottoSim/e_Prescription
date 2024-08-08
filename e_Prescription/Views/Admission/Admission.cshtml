@@ -64,7 +64,7 @@
                         if (notifications != null && notifications.Any())
                         {
                             <div class="notification">
-                                <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+                                <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -88,7 +88,7 @@
                     else if (ViewBag.AlertMessage != null)
                     {
                         <div class="alert">
-                            <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+                            <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header1">
@@ -170,7 +170,8 @@
                                                 <input type="hidden" name="PatientVitals[@i].VitalId" value="@vitals[i].VitalId" />
                                             </td>
                                             <td>
-                                                <input type="text" name="PatientVitals[@i].Reading" class="form-control equal-input" aria-required="true" required />
+                                                <input type="text" name="PatientVitals[@i].Reading" class="form-control equal-input" aria-required="true" required oninput="validateReading(this)" />
+                                                <div class="invalid-feedback" style="display:none;">Please enter a valid reading.</div>
                                             </td>
                                             <td>
                                                 @vitals[i].LowLimit - @vitals[i].HighLimit @vitals[i].Units
@@ -237,6 +238,16 @@
                         console.error('Error fetching beds:', status, error);
                     }
                 });
+            }
+        }
+
+        function validateReading(input) {
+            const value = input.value;
+            const feedback = input.nextElementSibling;
+            if (isNaN(value) || value.trim() === "") {
+                feedback.style.display = "block";
+            } else {
+                feedback.style.display = "none";
             }
         }
     </script>
