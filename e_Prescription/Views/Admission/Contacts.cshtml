@@ -6,8 +6,6 @@
 
 @await Html.PartialAsync("StepIndicator", "Contacts")
 
-<!DOCTYPE html>
-<html>
 <head>
     <style>
         .equal-input {
@@ -18,37 +16,68 @@
         .centered-container {
             display: flex;
             justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            width: 100%;
+            margin-top: 20px; /* Adjust margin as needed */
         }
 
-        .btn-group {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            gap: 30px; /* Adjust the gap size as needed */
+        .form-card {
+            border: 5px solid #f5f5f5;
+            padding: 20px;
+            overflow: hidden;
+            background: linear-gradient(to bottom right, #ffffff, #f0f0f0), radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 60%, rgba(230,230,230,1) 100%);
+            background-blend-mode: overlay;
+            border-radius: 20px;
+            box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
         }
 
-        .btn-large {
-            width: 150px; /* Adjust as needed */
-            padding: 10px 20px;
-            font-size: 1.25rem;
+        .card {
+            background-color: lightgray;
+            color: #000;
+            border-radius: 15px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
         }
 
-        .container {
-            border: 5px solid #f5f5f5; /* Whitish color */
-            /* padding: 10px; */
-            overflow: hidden; /* Ensures content doesn't overflow the rounded corners */
+        /* .container {
+            border: 5px solid #f5f5f5;
+            overflow: hidden;
             background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 20px;
+        } */
+
+        .card-header {
+            background-color: #28a745;
+            color: #ffffff;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .btn-primary,
+        .btn-success {
+            border-radius: 10px;
+        }
+
+        .text-center h4 {
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+
+        .alert {
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 
 <body>
     <div class="col-10 mx-auto pt-0 p-0 container">
-        <div class="card justify-content-center container">
-            <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+        <div class="form-card">
+            <div class="card-header">
                 <h4 class="text-center">Contact Details for @ViewBag.PatientName</h4>
             </div>
             <form enctype="multipart/form-data" asp-action="Contacts" method="post" style="width: 100%;">
@@ -58,73 +87,63 @@
                         <input asp-for="PatientId" class="form-control" hidden />
 
                         <!-- Row 1 -->
-                        <div class="row">
+                        <div class="form-group row">
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="CellphoneNumber" class="control-label">Contact</label>
-                                    <input asp-for="CellphoneNumber" class="form-control" style="width: 100%;" />
-                                    <span asp-validation-for="CellphoneNumber" class="text-danger"></span>
-                                </div>
+                                <label asp-for="CellphoneNumber" class="control-label">Contact</label>
+                                <input asp-for="CellphoneNumber" class="form-control" style="width: 100%;" />
+                                <span asp-validation-for="CellphoneNumber" class="text-danger"></span>
                             </div>
-                            @* <em>(optional)</em> *@
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="Email" class="control-label">Email </label>
-                                    <input asp-for="Email" class="form-control" style="width: 100%;" />
-                                </div>
+                                <label asp-for="Email" class="control-label">Email</label>
+                                <input asp-for="Email" class="form-control" style="width: 100%;" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
                         </div>
 
                         <!-- Row 2 -->
-                        <div class="card justify-content-center">
-                            <div class="card-header" style="height: 40px;">
+                        <div class="card-contact">
+                            <div class="card-header">
                                 <h6 class="text-center text-black text-capitalize">Residential Address</h6>
                             </div>
-                            <div class="row">
+                            <div class="form-group row">
                                 <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label asp-for="ProvinceId" class="control-label">Province</label>
-                                        <select asp-for="ProvinceId" class="form-control" id="provinceId" asp-items="@ViewBag.Provinces">
-                                            <option selected disabled>--Select Province--</option>
-                                        </select>
-                                        <span asp-validation-for="ProvinceId" class="text-danger"></span>
-                                    </div>
+                                    <label asp-for="ProvinceId" class="control-label">Province</label>
+                                    <select asp-for="ProvinceId" class="form-control" id="provinceId" asp-items="@ViewBag.Provinces">
+                                        <option selected disabled>--Select Province--</option>
+                                    </select>
+                                    <span asp-validation-for="ProvinceId" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label asp-for="CityId" class="control-label">City</label>
-                                        <select asp-for="CityId" class="form-control" id="cityId">
-                                            <option selected disabled>--Select City--</option>
-                                        </select>
-                                        <span asp-validation-for="CityId" class="text-danger"></span>
-                                    </div>
+                                    <label asp-for="CityId" class="control-label">City</label>
+                                    <select asp-for="CityId" class="form-control" id="cityId">
+                                        <option selected disabled>--Select City--</option>
+                                    </select>
+                                    <span asp-validation-for="CityId" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label asp-for="SuburbId" class="control-label">Suburb</label>
-                                        <select asp-for="SuburbId" class="form-control" id="suburbId">
-                                            <option selected disabled>--Select Suburb--</option>
-                                        </select>
-                                        <span asp-validation-for="SuburbId" class="text-danger"></span>
-                                    </div>
+                                    <label asp-for="SuburbId" class="control-label">Suburb</label>
+                                    <select asp-for="SuburbId" class="form-control" id="suburbId">
+                                        <option selected disabled>--Select Suburb--</option>
+                                    </select>
+                                    <span asp-validation-for="SuburbId" class="text-danger"></span>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label asp-for="StreetAddress" class="control-label">Street Address</label>
-                                        <input asp-for="StreetAddress" class="form-control" style="width: 100%;" />
-                                        <span asp-validation-for="StreetAddress" class="text-danger"></span>
-                                    </div>
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label asp-for="StreetAddress" class="control-label">Street Address</label>
+                                    <input asp-for="StreetAddress" class="form-control" style="width: 100%;" />
+                                    <span asp-validation-for="StreetAddress" class="text-danger"></span>
                                 </div>
                             </div>
                         </div>
+
                         <div class="centered-container">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-info" onclick="history.back()">Back</button>
-                                <input type="submit" value="Submit" class="btn btn-success" />
+                            <div class="btn-group" style="display: flex; gap: 15px; width: 50%;">
+                                <button type="button" class="btn btn-info flex-fill" onclick="history.back()">Back</button>
+                                <input type="submit" value="Submit" class="btn btn-success flex-fill" />
                             </div>
                         </div>
+
                     </div>
                 </div>
             </form>
@@ -137,7 +156,6 @@
         }
         <script>
             $(document).ready(function () {
-                // Bind change event
                 $('#provinceId').change(function () {
                     getCityByProvinceId();
                 });
@@ -146,7 +164,6 @@
                     getSuburbByCityId();
                 });
 
-                // Trigger the city and suburb population if existing contact detail
                 if ('@ViewBag.SelectedCityId' != '') {
                     $('#provinceId').change();
                     $('#cityId').val('@ViewBag.SelectedCityId').change();
@@ -165,12 +182,9 @@
                             var cityDropdown = $('#cityId');
                             cityDropdown.empty();
                             cityDropdown.append('<option selected disabled>--Select City--</option>');
-
                             $.each(data, function (index, item) {
                                 cityDropdown.append('<option value="' + item.cityId + '">' + item.cityName + '</option>');
                             });
-
-                            // Trigger suburb dropdown update
                             $('#suburbId').empty().append('<option selected disabled>--Select Suburb--</option>');
                         }
                     });
@@ -188,7 +202,6 @@
                             var suburbDropdown = $('#suburbId');
                             suburbDropdown.empty();
                             suburbDropdown.append('<option selected disabled>--Select Suburb--</option>');
-
                             $.each(data, function (index, item) {
                                 suburbDropdown.append('<option value="' + item.suburbId + '">' + item.suburbName + '</option>');
                             });
@@ -196,8 +209,6 @@
                     });
                 }
             }
-
         </script>
     }
 </body>
-</html>

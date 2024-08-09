@@ -18,8 +18,8 @@ namespace e_Prescription.Models
         public virtual Admission Admission { get; set; }
 
         [Required(ErrorMessage = "*Required")]
-        [Range(1.0, Double.MaxValue, ErrorMessage = "Reading must be a positive number.")]
-        public double? Reading { get; set; }
+        [RegularExpression(@"^\d+(\.\d{1,2})?$|^\d{2,3}\/\d{2,3}$", ErrorMessage = "Invalid reading. Must be a double or in format 150/60.")]
+        public string Reading { get; set; } // Can store either a double or a reading in the format 150/60
 
         [Required(ErrorMessage = "*Required")]
         public DateTime Time { get; set; }

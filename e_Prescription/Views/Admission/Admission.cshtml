@@ -30,20 +30,48 @@
         }
 
         .modal-header {
-            background-color: #dc3545; /* Primary color */
+            background-color: #dc3545; /* Red for notifications */
             color: #fff; /* White text */
         }
 
         .modal-header1 {
-            background-color: #28a745; /* Primary color */
+            background-color: #28a745; /* Green for alerts */
             color: #fff; /* White text */
         }
 
-        .container {
-            border: 5px solid #f5f5f5; /* Whitish color */
-            /* padding: 10px; */
-            overflow: hidden; /* Ensures content doesn't overflow the rounded corners */
-            background-color: #f5f5f5;
+        .form-card {
+            border: 5px solid #f5f5f5;
+            padding: 20px;
+            overflow: hidden;
+            background: linear-gradient(to bottom right, #ffffff, #f0f0f0), radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 60%, rgba(230,230,230,1) 100%);
+            background-blend-mode: overlay;
+            border-radius: 20px;
+            box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            background-color: lightgray;
+            color: #000;
+            border-radius: 15px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #28a745;
+            color: #ffffff;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .btn-primary,
+        .btn-success {
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -51,9 +79,10 @@
 <body>
     <div class="stepper-content py-3 container">
         <div class="col-10 mx-auto pt-0 p-0">
-            <div class="card justify-content-center">
-                <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
-                    <h4 class="text-center">Admission for @ViewBag.PatientName</h4>
+
+            <div class="form-card">
+                <div class="card-header">
+                    <h4 class="text-center">Admission details for @ViewBag.PatientName</h4>
                 </div>
                 <form enctype="multipart/form-data" asp-action="Admission" method="post" style="width: 100%;">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -64,7 +93,7 @@
                         if (notifications != null && notifications.Any())
                         {
                             <div class="notification">
-                                <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                                <div class="modal fade show" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="display: block;">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -88,7 +117,7 @@
                     else if (ViewBag.AlertMessage != null)
                     {
                         <div class="alert">
-                            <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                            <div class="modal fade show" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="display: block;">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header1">
@@ -107,6 +136,7 @@
                             </div>
                         </div>
                     }
+
                     else
                     {
                         <div class="row">
@@ -170,9 +200,10 @@
                                                 <input type="hidden" name="PatientVitals[@i].VitalId" value="@vitals[i].VitalId" />
                                             </td>
                                             <td>
-                                                <input type="text" name="PatientVitals[@i].Reading" class="form-control equal-input" aria-required="true" required oninput="validateReading(this)" />
+                                                <input type="text" name="PatientVitals[@i].Reading" class="form-control equal-input" aria-required="true" required pattern="^\d+(\.\d{1,2})?$|^\d{2,3}\/\d{2,3}$" title="Please enter a valid reading (e.g., 98.6 or 150/60)" />
                                                 <div class="invalid-feedback" style="display:none;">Please enter a valid reading.</div>
                                             </td>
+
                                             <td>
                                                 @vitals[i].LowLimit - @vitals[i].HighLimit @vitals[i].Units
                                             </td>
@@ -212,9 +243,15 @@
             var hasAlertMessage = @Html.Raw(Json.Serialize(hasAlertMessage));
 
             if (hasNotifications) {
-                $('#notificationModal').modal('show');
+                $('#notificationModal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                }).modal('show');
             } else if (hasAlertMessage) {
-                $('#alertModal').modal('show');
+                $('#alertModal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                }).modal('show');
             }
         });
 

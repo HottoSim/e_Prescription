@@ -118,7 +118,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="PatientVitals[@i].Reading" class="form-control" aria-required="true" required oninput="validateReading(this)" />
+                                        <input type="text" name="PatientVitals[@i].Reading" class="form-control equal-input" aria-required="true" required pattern="^\d+(\.\d{1,2})?$|^\d{2,3}\/\d{2,3}$" title="Please enter a valid reading (e.g., 98.6 or 150/60)" />
                                         <div class="invalid-feedback" style="display:none;">Please enter a valid reading.</div>
                                     </td>
                                     <td>

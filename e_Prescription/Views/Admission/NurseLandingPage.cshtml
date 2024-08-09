@@ -68,7 +68,7 @@
                                 <i class="fas fa-hospital-user fa-3x"></i>
                                 Admit Patients
                             </h5>
-                            <p class="card-text">Number of patients booked and ready for admission: @Model.BookedPatientsCount</p>
+                            <p class="card-text">Number of patients booked and ready for admission: @Model.BookedPatients</p>
                             <a class="btn btn-primary" href="@Url.Action("Index", "Admission")">View booked patients</a>
                         </div>
                     </div>
@@ -139,7 +139,7 @@
                         labels: ['Active Bookings', 'Admitted', 'Discharged'],
                         datasets: [{
                             label: 'Patient Statistics',
-                            data: [@Model.BookedPatientsCount, @Model.AdmittedCount, @Model.DischargedCount],
+                            data: [@Model.BookedPatients, @Model.AdmittedCount, @Model.DischargedCount],
                             backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)'],
                             borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)'],
                             borderWidth: 1

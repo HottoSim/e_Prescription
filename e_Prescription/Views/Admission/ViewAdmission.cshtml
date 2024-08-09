@@ -83,7 +83,16 @@
                                     {
                                         @foreach (var vital in item.PatientVitals)
                                         {
-                                            @if (vital.Reading > vital.Vital?.HighLimit || vital.Reading < vital.Vital?.LowLimit)
+                                            var reading = vital.Reading;
+                                            bool isReadingValid = double.TryParse(reading, out double readingValue);
+
+                                            bool isOutOfRange = isReadingValid &&
+                                            (readingValue < vital.Vital?.LowLimit || readingValue > vital.Vital?.HighLimit);
+
+                                            // Check if the reading is in the "blood pressure" format
+                                            bool isBloodPressureFormat = reading.Contains("/");
+
+                                            if (isOutOfRange || isBloodPressureFormat)
                                             {
                                                 <tr style="background-color: orangered">
                                                     <td>@vital.Vital?.VitalName</td>
@@ -92,7 +101,6 @@
                                                     <td>@vital.Note</td>
                                                     <td>@vital.Vital?.LowLimit - @vital.Vital?.HighLimit @vital.Vital?.Units</td>
                                                 </tr>
-
                                             }
                                             else
                                             {
@@ -103,19 +111,17 @@
                                                     <td>@vital.Note</td>
                                                     <td>@vital.Vital?.LowLimit - @vital.Vital?.HighLimit @vital.Vital?.Units</td>
                                                 </tr>
-
                                             }
-                                                
                                         }
-
                                     }
                                     else
                                     {
                                         <tr>
-                                            <td colspan="2">None</td>
+                                            <td colspan="5">None</td>
                                         </tr>
                                     }
                                 </tbody>
+
                             </table>
                             <div class="container mt-4">
                                 <div class="row">
