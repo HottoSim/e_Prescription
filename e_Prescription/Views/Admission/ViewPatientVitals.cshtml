@@ -35,9 +35,9 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.Vital.VitalName</td>
-                        <td>@item.Reading @item.Vital.Units</td>
-                        <td>@item.Vital.LowLimit - @item.Vital.HighLimit @item.Vital.Units</td>
+                        <td>@item.Vitals.VitalName</td>
+                        <td>@item.Reading @item.Vitals.Units</td>
+                        <td>@item.Vitals.LowLimit - @item.Vitals.HighLimit @item.Vitals.Units</td>
                         <td>@item.Time.ToShortTimeString()</td>
                         <td>@item.Note</td>
                     </tr>

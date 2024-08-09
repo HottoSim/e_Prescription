@@ -24,8 +24,8 @@ namespace e_Prescription.Migrations
                     VitalId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     VitalName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LowLimit = table.Column<double>(type: "float", nullable: false),
-                    HighLimit = table.Column<double>(type: "float", nullable: false),
+                    LowLimit = table.Column<double>(type: "float", nullable: true),
+                    HighLimit = table.Column<double>(type: "float", nullable: true),
                     Units = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LowLimitDiastolic = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     HighLimitDiastolic = table.Column<string>(type: "nvarchar(max)", nullable: true)

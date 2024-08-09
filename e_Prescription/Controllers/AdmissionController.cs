@@ -227,12 +227,17 @@ namespace e_Prescription.Controllers
                         double readingDouble;
                         bool isNormalReading = double.TryParse(vital.Reading, out readingDouble);
 
+                        // Convert LowLimit and HighLimit from string to double
+                        bool isLowLimitValid = double.TryParse(vitalInfo.LowLimit, out double lowLimit);
+                        bool isHighLimitValid = double.TryParse(vitalInfo.HighLimit, out double highLimit);
+
                         if (isNormalReading)
                         {
                             // Normal double reading
-                            if (readingDouble < vitalInfo.LowLimit || readingDouble > vitalInfo.HighLimit)
+                            if (isLowLimitValid && isHighLimitValid &&
+                                (readingDouble < lowLimit || readingDouble > highLimit))
                             {
-                                notifications.Add($"The reading for {vitalInfo.VitalName} is out of range: {readingDouble} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit} - {vitalInfo.HighLimit} {vitalInfo.Units})");
+                                notifications.Add($"The reading for {vitalInfo.VitalName} is out of range: {readingDouble} {vitalInfo.Units} (Normal range: {lowLimit} - {highLimit} {vitalInfo.Units})");
                                 vital.Note = "Out of range";
                             }
                             else
@@ -244,13 +249,16 @@ namespace e_Prescription.Controllers
                         {
                             // Blood pressure reading
                             var bloodPressureParts = vital.Reading.Split('/');
-                            if (double.TryParse(bloodPressureParts[0], out double systolic) && double.TryParse(bloodPressureParts[1], out double diastolic))
+                            if (bloodPressureParts.Length == 2 &&
+                                double.TryParse(bloodPressureParts[0], out double systolic) &&
+                                double.TryParse(bloodPressureParts[1], out double diastolic))
                             {
                                 // Assuming the limits are set for blood pressure
-                                if (systolic < vitalInfo.LowLimit || systolic > vitalInfo.HighLimit ||
-                                    diastolic < vitalInfo.LowLimit || diastolic > vitalInfo.HighLimit)
+                                if (isLowLimitValid && isHighLimitValid &&
+                                    (systolic < lowLimit || systolic > highLimit ||
+                                     diastolic < lowLimit || diastolic > highLimit))
                                 {
-                                    notifications.Add($"The blood pressure reading for {vitalInfo.VitalName} is out of range: {systolic}/{diastolic} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit}/{vitalInfo.HighLimit} {vitalInfo.Units})");
+                                    notifications.Add($"The blood pressure reading for {vitalInfo.VitalName} is out of range: {systolic}/{diastolic} {vitalInfo.Units} (Normal range: {lowLimit}/{highLimit} {vitalInfo.Units})");
                                     vital.Note = "Out of range";
                                 }
                                 else
@@ -294,8 +302,6 @@ namespace e_Prescription.Controllers
         }
 
 
-
-
         [HttpGet]
         public ActionResult Admission(int patientId)
         {
@@ -311,9 +317,9 @@ namespace e_Prescription.Controllers
             var wards = context.Wards.ToList();
             var beds = new List<Bed>
             {
-                new Bed() 
-                { 
-                    BedId = 0, BedName = "--Select Bed--" 
+                new Bed()
+                {
+                    BedId = 0, BedName = "--Select Bed--"
                 }
             };
 
@@ -327,7 +333,6 @@ namespace e_Prescription.Controllers
 
             return View(admission);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Admission(int patientId, Admission admission)
@@ -359,43 +364,52 @@ namespace e_Prescription.Controllers
                     // Check if the reading is a double or in the "150/60" format
                     if (double.TryParse(patientVital.Reading, out double normalReading))
                     {
-                        // It's a normal reading, compare it with LowLimit and HighLimit
-                        if (normalReading < vital.LowLimit || normalReading > vital.HighLimit)
+                        if (double.TryParse(vital.LowLimit, out double lowLimit) &&
+                            double.TryParse(vital.HighLimit, out double highLimit))
                         {
-                            notifications.Add($"The reading for {vital.VitalName} is out of range: {normalReading} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
-                            patientVital.Note = "Out of range";
-                        }
-                        else
-                        {
-                            patientVital.Note = "Normal";
-                        }
-                    }
-                    else if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d{2,3}\/\d{2,3}$"))
-                    {
-                        // It's a blood pressure reading in the format "150/60"
-                        var bloodPressureParts = patientVital.Reading.Split('/');
-                        if (bloodPressureParts.Length == 2 &&
-                            double.TryParse(bloodPressureParts[0], out double systolic) &&
-                            double.TryParse(bloodPressureParts[1], out double diastolic))
-                        {
-                            // Validate systolic and diastolic readings
-                            bool systolicInRange = systolic >= vital.LowLimit && systolic <= vital.HighLimit;
-                            bool diastolicInRange = true;
-
-                            if (double.TryParse(vital.LowLimitDiastolic, out double lowLimitDiastolic) &&
-                                double.TryParse(vital.HighLimitDiastolic, out double highLimitDiastolic))
+                            // It's a normal reading, compare it with LowLimit and HighLimit
+                            if (normalReading < lowLimit || normalReading > highLimit)
                             {
-                                diastolicInRange = diastolic >= lowLimitDiastolic && diastolic <= highLimitDiastolic;
-                            }
-
-                            if (!systolicInRange || !diastolicInRange)
-                            {
-                                notifications.Add($"The blood pressure reading for {vital.VitalName} is out of range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} / {vital.LowLimitDiastolic} - {vital.HighLimit} / {vital.HighLimitDiastolic} {vital.Units})");
+                                notifications.Add($"The reading for {vital.VitalName} is out of range: {normalReading} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
                                 patientVital.Note = "Out of range";
                             }
                             else
                             {
                                 patientVital.Note = "Normal";
+                            }
+                        }
+                        else
+                        {
+                            notifications.Add($"Invalid limit format for {vital.VitalName}. Please check the input.");
+                            patientVital.Note = "Invalid format";
+                        }
+                    }
+                    else if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d{2,3}\/\d{2,3}$"))
+                    {
+                        var bloodPressureParts = patientVital.Reading.Split('/');
+                        if (bloodPressureParts.Length == 2 &&
+                            double.TryParse(bloodPressureParts[0], out double systolic) &&
+                            double.TryParse(bloodPressureParts[1], out double diastolic))
+                        {
+                            if (double.TryParse(vital.LowLimit, out double lowLimit) &&
+                                double.TryParse(vital.HighLimit, out double highLimit))
+                            {
+                                bool systolicInRange = systolic >= lowLimit && systolic <= highLimit;
+
+                                if (!systolicInRange)
+                                {
+                                    notifications.Add($"The blood pressure reading for {vital.VitalName} is out of range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
+                                    patientVital.Note = "Out of range";
+                                }
+                                else
+                                {
+                                    patientVital.Note = "Normal";
+                                }
+                            }
+                            else
+                            {
+                                notifications.Add($"Invalid limit format for {vital.VitalName}. Please check the input.");
+                                patientVital.Note = "Invalid format";
                             }
                         }
                         else
@@ -569,7 +583,7 @@ namespace e_Prescription.Controllers
             IQueryable<Admission> admissionsQuery = context.Admissions
                 .Where(a => a.IsDischarged == false)
                 .Include(p => p.PatientVitals)
-                .ThenInclude(pv => pv.Vital)
+                .ThenInclude(pv => pv.Vitals)
                 .Include(a => a.Patient)
                 .ThenInclude(p => p.PatientAllergies)
                 .ThenInclude(pa => pa.ActiveIngredient)
@@ -619,7 +633,7 @@ namespace e_Prescription.Controllers
 
             var patientVitals = await context.PatientVitals
                 .Include(pv => pv.Admission.Patient)
-                .Include(pv => pv.Vital)
+                .Include(pv => pv.Vitals)
                 .Where(pv => pv.AdmissionId == admissionId)
                 .ToListAsync();
 

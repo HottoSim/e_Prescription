@@ -2,7 +2,7 @@
 
 namespace e_Prescription.Models
 {
-    public class Vital
+    public class Vitals
     {
         [Key]
         public int VitalId { get; set; }
@@ -11,15 +11,13 @@ namespace e_Prescription.Models
         public string VitalName { get; set; }
 
         [Required(ErrorMessage = "*Required")]
-        public double? LowLimit { get; set; } = 0.0;
+        public string LowLimit { get; set; }
 
         [Required(ErrorMessage = "*Required")]
-        public double? HighLimit { get; set; } = 0.0;
+        public string HighLimit { get; set; }
 
         [Required(ErrorMessage = "*Required")]
         public string Units { get; set; }
 
-        public string? LowLimitDiastolic { get; set; }  // Optional for blood pressure
-        public string? HighLimitDiastolic { get; set; } // Optional for blood pressure
     }
 }

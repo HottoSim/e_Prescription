@@ -20,7 +20,7 @@ namespace e_Prescription.Data
 
         public DbSet<PatientVital> PatientVitals { get; set; }
 
-        public DbSet<Vital> Vital { get; set; }
+        public DbSet<Vitals> Vital { get; set; }
 
         public DbSet<PatientAllergies> PatientAllergies { get; set; }
 

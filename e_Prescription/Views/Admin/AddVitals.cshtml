@@ -1,4 +1,4 @@
-﻿@model e_Prescription.Models.Vital
+﻿@model e_Prescription.Models.Vitals
 
 @{
     ViewData["Title"] = "Add Vital";
@@ -10,16 +10,7 @@
         <form asp-action="AddVitals">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <!-- Dropdown for Limit Type Selection -->
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="LimitType" class="control-label">Limit Type</label>
-                    <select id="LimitType" name="LimitType" class="form-control" onchange="toggleLimitFields()">
-                        <option value="Normal" selected>Normal Limits</option>
-                        <option value="BloodPressure">Blood Pressure Limits</option>
-                    </select>
-                </div>
-            </div>
+            
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label asp-for="VitalName" class="control-label">Vital name</label>
@@ -42,32 +33,6 @@
                 </div>
             </div>
 
-            <div id="bloodPressureLimits" style="display: none;">
-                <div class="form-row">
-                    <div class="form-group col-md-4">
-                        <label asp-for="LowLimit" class="control-label">Systolic Low Limit</label>
-                        <input asp-for="LowLimit" class="form-control" />
-                        <span asp-validation-for="LowLimit" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label asp-for="HighLimit" class="control-label">Systolic High Limit</label>
-                        <input asp-for="HighLimit" class="form-control" />
-                        <span asp-validation-for="HighLimit" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-4">
-                        <label asp-for="LowLimitDiastolic" class="control-label">Diastolic Low Limit</label>
-                        <input asp-for="LowLimitDiastolic" class="form-control" />
-                        <span asp-validation-for="LowLimitDiastolic" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label asp-for="HighLimitDiastolic" class="control-label">Diastolic High Limit</label>
-                        <input asp-for="HighLimitDiastolic" class="form-control" />
-                        <span asp-validation-for="HighLimitDiastolic" class="text-danger"></span>
-                    </div>
-                </div>
-            </div>
 
             <div class="form-row">
                 <div class="form-group col-md-4">

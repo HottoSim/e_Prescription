@@ -86,8 +86,13 @@
                                             var reading = vital.Reading;
                                             bool isReadingValid = double.TryParse(reading, out double readingValue);
 
-                                            bool isOutOfRange = isReadingValid &&
-                                            (readingValue < vital.Vital?.LowLimit || readingValue > vital.Vital?.HighLimit);
+                                            bool isOutOfRange = false;
+
+                                            // Convert LowLimit and HighLimit from string to double for comparison
+                                            if (double.TryParse(vital.Vitals?.LowLimit, out double lowLimit) && double.TryParse(vital.Vitals?.HighLimit, out double highLimit))
+                                            {
+                                                isOutOfRange = isReadingValid && (readingValue < lowLimit || readingValue > highLimit);
+                                            }
 
                                             // Check if the reading is in the "blood pressure" format
                                             bool isBloodPressureFormat = reading.Contains("/");
@@ -95,21 +100,21 @@
                                             if (isOutOfRange || isBloodPressureFormat)
                                             {
                                                 <tr style="background-color: orangered">
-                                                    <td>@vital.Vital?.VitalName</td>
-                                                    <td>@vital.Reading @vital.Vital?.Units</td>
+                                                    <td>@vital.Vitals?.VitalName</td>
+                                                    <td>@vital.Reading @vital.Vitals?.Units</td>
                                                     <td>@vital.Time.ToShortTimeString()</td>
                                                     <td>@vital.Note</td>
-                                                    <td>@vital.Vital?.LowLimit - @vital.Vital?.HighLimit @vital.Vital?.Units</td>
+                                                    <td>@vital.Vitals?.LowLimit - @vital.Vitals?.HighLimit @vital.Vitals?.Units</td>
                                                 </tr>
                                             }
                                             else
                                             {
                                                 <tr>
-                                                    <td>@vital.Vital?.VitalName</td>
-                                                    <td>@vital.Reading @vital.Vital?.Units</td>
+                                                    <td>@vital.Vitals?.VitalName</td>
+                                                    <td>@vital.Reading @vital.Vitals?.Units</td>
                                                     <td>@vital.Time.ToShortTimeString()</td>
                                                     <td>@vital.Note</td>
-                                                    <td>@vital.Vital?.LowLimit - @vital.Vital?.HighLimit @vital.Vital?.Units</td>
+                                                    <td>@vital.Vitals?.LowLimit - @vital.Vitals?.HighLimit @vital.Vitals?.Units</td>
                                                 </tr>
                                             }
                                         }
@@ -121,6 +126,7 @@
                                         </tr>
                                     }
                                 </tbody>
+
 
                             </table>
                             <div class="container mt-4">

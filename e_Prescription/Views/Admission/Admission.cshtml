@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Admission";
-    var vitals = ViewBag.Vitals as List<e_Prescription.Models.Vital>;
+    var vitals = ViewBag.Vitals as List<e_Prescription.Models.Vitals>;
     var hasNotifications = ViewBag.Notifications != null && (ViewBag.Notifications as List<string>)?.Any() == true;
     var hasAlertMessage = ViewBag.AlertMessage != null;
 }

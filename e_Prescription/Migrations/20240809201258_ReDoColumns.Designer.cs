@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using e_Prescription.Data;
 
@@ -11,9 +12,11 @@ using e_Prescription.Data;
 namespace e_Prescription.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240809201258_ReDoColumns")]
+    partial class ReDoColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -254,7 +257,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Admins", (string)null);
+                    b.ToTable("Admins");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Account.Nurse", b =>
@@ -279,7 +282,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Nurses", (string)null);
+                    b.ToTable("Nurses");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Account.Pharmacist", b =>
@@ -304,7 +307,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Pharmacists", (string)null);
+                    b.ToTable("Pharmacists");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Account.Surgeon", b =>
@@ -333,7 +336,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Surgeons", (string)null);
+                    b.ToTable("Surgeons");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.ActiveIngredient", b =>
@@ -350,7 +353,7 @@ namespace e_Prescription.Migrations
 
                     b.HasKey("ActiveIngredientId");
 
-                    b.ToTable("ActiveIngredients", (string)null);
+                    b.ToTable("ActiveIngredients");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Admission", b =>
@@ -398,7 +401,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("WardId");
 
-                    b.ToTable("Admissions", (string)null);
+                    b.ToTable("Admissions");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Bed", b =>
@@ -423,7 +426,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("WardId");
 
-                    b.ToTable("Beds", (string)null);
+                    b.ToTable("Beds");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.BookingTreatment", b =>
@@ -446,7 +449,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("TreatmentCodeId");
 
-                    b.ToTable("BookingTreatments", (string)null);
+                    b.ToTable("BookingTreatments");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.ChronicCondition", b =>
@@ -467,7 +470,7 @@ namespace e_Prescription.Migrations
 
                     b.HasKey("ChronicCondotionId");
 
-                    b.ToTable("ChronicConditions", (string)null);
+                    b.ToTable("ChronicConditions");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.City", b =>
@@ -489,7 +492,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("ProvinceId");
 
-                    b.ToTable("Cities", (string)null);
+                    b.ToTable("Cities");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.ContactDetail", b =>
@@ -532,7 +535,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("SuburbId");
 
-                    b.ToTable("ContactDetails", (string)null);
+                    b.ToTable("ContactDetails");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Discharge", b =>
@@ -563,7 +566,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("NurseId");
 
-                    b.ToTable("Discharges", (string)null);
+                    b.ToTable("Discharges");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.DosageForm", b =>
@@ -580,7 +583,7 @@ namespace e_Prescription.Migrations
 
                     b.HasKey("DosageFormId");
 
-                    b.ToTable("DosageForms", (string)null);
+                    b.ToTable("DosageForms");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Medication", b =>
@@ -606,7 +609,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("DosageFormId");
 
-                    b.ToTable("Medications", (string)null);
+                    b.ToTable("Medications");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.MedicationGiven", b =>
@@ -630,7 +633,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("PrescriptionItemId");
 
-                    b.ToTable("MedicationsGiven", (string)null);
+                    b.ToTable("MedicationsGiven");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.MedicationIngredient", b =>
@@ -657,7 +660,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("MedicationId");
 
-                    b.ToTable("MedicationIngredients", (string)null);
+                    b.ToTable("MedicationIngredients");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Patient", b =>
@@ -689,7 +692,7 @@ namespace e_Prescription.Migrations
 
                     b.HasKey("PatientId");
 
-                    b.ToTable("Patients", (string)null);
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.PatientAllergies", b =>
@@ -712,7 +715,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("PatientAllergies", (string)null);
+                    b.ToTable("PatientAllergies");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.PatientBooking", b =>
@@ -749,7 +752,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("TheatreId");
 
-                    b.ToTable("PatientBookings", (string)null);
+                    b.ToTable("PatientBookings");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.PatientCondition", b =>
@@ -772,7 +775,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("PatientConditions", (string)null);
+                    b.ToTable("PatientConditions");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.PatientMedication", b =>
@@ -795,7 +798,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("PatientMedications", (string)null);
+                    b.ToTable("PatientMedications");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.PatientVital", b =>
@@ -831,7 +834,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("VitalsVitalId");
 
-                    b.ToTable("PatientVitals", (string)null);
+                    b.ToTable("PatientVitals");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.PharmacyMedication", b =>
@@ -863,7 +866,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("DosageFormId");
 
-                    b.ToTable("PharmacyMedications", (string)null);
+                    b.ToTable("PharmacyMedications");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Prescription", b =>
@@ -897,7 +900,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("SurgeonId");
 
-                    b.ToTable("Prescriptions", (string)null);
+                    b.ToTable("Prescriptions");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.PrescriptionItem", b =>
@@ -927,7 +930,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("PrescriptionId");
 
-                    b.ToTable("PrescriptionItems", (string)null);
+                    b.ToTable("PrescriptionItems");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Province", b =>
@@ -944,7 +947,7 @@ namespace e_Prescription.Migrations
 
                     b.HasKey("ProvinceId");
 
-                    b.ToTable("Provinces", (string)null);
+                    b.ToTable("Provinces");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Suburb", b =>
@@ -975,7 +978,7 @@ namespace e_Prescription.Migrations
 
                     b.HasIndex("ProvinceId");
 
-                    b.ToTable("Suburbs", (string)null);
+                    b.ToTable("Suburbs");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Theatre", b =>
@@ -996,7 +999,7 @@ namespace e_Prescription.Migrations
 
                     b.HasKey("TheatreId");
 
-                    b.ToTable("Theatre", (string)null);
+                    b.ToTable("Theatre");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.TreatmentCode", b =>
@@ -1017,7 +1020,7 @@ namespace e_Prescription.Migrations
 
                     b.HasKey("TreatmentCodeId");
 
-                    b.ToTable("TreatmentCodes", (string)null);
+                    b.ToTable("TreatmentCodes");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Vitals", b =>
@@ -1028,12 +1031,18 @@ namespace e_Prescription.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VitalId"));
 
-                    b.Property<string>("HighLimit")
+                    b.Property<double?>("HighLimit")
                         .IsRequired()
+                        .HasColumnType("float");
+
+                    b.Property<string>("HighLimitDiastolic")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LowLimit")
+                    b.Property<double?>("LowLimit")
                         .IsRequired()
+                        .HasColumnType("float");
+
+                    b.Property<string>("LowLimitDiastolic")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Units")
@@ -1046,7 +1055,7 @@ namespace e_Prescription.Migrations
 
                     b.HasKey("VitalId");
 
-                    b.ToTable("Vital", (string)null);
+                    b.ToTable("Vital");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Ward", b =>
@@ -1063,7 +1072,7 @@ namespace e_Prescription.Migrations
 
                     b.HasKey("WardId");
 
-                    b.ToTable("Wards", (string)null);
+                    b.ToTable("Wards");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

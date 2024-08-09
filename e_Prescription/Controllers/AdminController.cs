@@ -93,6 +93,7 @@ namespace e_Prescription.Controllers
         //Returning vitals
         public IActionResult ManageVitals()
         {
+            
             var vitalsList = _context.Vital.ToList();
             return View(vitalsList);
         }
@@ -104,7 +105,7 @@ namespace e_Prescription.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult AddVitals(Vital vital)
+        public IActionResult AddVitals(Vitals vital)
         {
             _context.Vital.Add(vital);
             _context.SaveChanges();

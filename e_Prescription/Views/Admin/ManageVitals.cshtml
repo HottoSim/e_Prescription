@@ -1,4 +1,4 @@
-﻿@model IEnumerable<e_Prescription.Models.Vital>
+﻿@model IEnumerable<e_Prescription.Models.Vitals>
 
 @{
     ViewData["Title"] = "Manage Vitals";
@@ -47,8 +47,6 @@
                     <th>Vital Name</th>
                     <th>Low Limit</th>
                     <th>High Limit</th>
-                    <th>Low Limit (Diastolic)</th>
-                    <th>High Limit (Diastolic)</th>
                     <th>Units</th>
                     <th>Action</th>
                 </tr>
@@ -58,10 +56,8 @@
                 {
                     <tr>
                         <td>@Html.DisplayFor(modelItem => item.VitalName)</td>
-                        <td>@Html.DisplayFor(modelItem => item.LowLimit)</td>
-                        <td>@Html.DisplayFor(modelItem => item.HighLimit)</td>
-                        <td>@Html.DisplayFor(modelItem => item.LowLimitDiastolic)</td>
-                        <td>@Html.DisplayFor(modelItem => item.HighLimitDiastolic)</td>
+                        <td>@item.LowLimit</td>
+                        <td>@item.HighLimit</td>
                         <td>@Html.DisplayFor(modelItem => item.Units)</td>
                         <td>
                             <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.VitalId">Update</a>

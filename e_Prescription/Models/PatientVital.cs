@@ -27,7 +27,7 @@ namespace e_Prescription.Models
         [ForeignKey("VitalId")]
         public int VitalId { get; set; }
 
-        public virtual Vital Vital { get; set; }
+        public virtual Vitals Vitals { get; set; }
 
         public string? Note { get; set; } = "Normal";
     }
