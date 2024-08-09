@@ -93,7 +93,7 @@ namespace e_Prescription.Controllers
         //Returning vitals
         public IActionResult ManageVitals()
         {
-            var vitalsList = _context.Vitals.ToList();
+            var vitalsList = _context.Vital.ToList();
             return View(vitalsList);
         }
 
@@ -106,7 +106,7 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public IActionResult AddVitals(Vital vital)
         {
-            _context.Vitals.Add(vital);
+            _context.Vital.Add(vital);
             _context.SaveChanges();
             TempData["SuccessMessage"] = "Successfully added...";
             return RedirectToAction("ManageVitals");

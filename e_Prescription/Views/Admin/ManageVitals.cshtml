@@ -16,22 +16,21 @@
         align-items: flex-end;
         text-align: left;
     }
-    .btn1{
-        margin-top: 20px;
-        margin-bottom:5px;
-    }
 
+    .btn1 {
+        margin-top: 20px;
+        margin-bottom: 5px;
+    }
 </style>
 
 <div class="col-md-12 mx-auto pt-0 p-0">
     <div class="card">
         <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
             <h4 class="text-center">Manage Vitals</h4>
-       </div>
+        </div>
         <div class="d-flex justify-content-end btn1">
             <button class="btn btn-primary" onclick="openVitalModal('@Url.Action("AddVitals", "Admin")')">Create New</button>
         </div>
-
 
         @if (TempData["SuccessMessage"] != null)
         {
@@ -45,39 +44,25 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>
-                       Vital Name
-                    </th>
-                    <th>
-                        Low Limit
-                    </th>
-                    <th>
-                        High Limit
-                    </th>
-                    <th>
-                        Units
-                    </th>
-                    <th>
-                        Action
-                    </th>
+                    <th>Vital Name</th>
+                    <th>Low Limit</th>
+                    <th>High Limit</th>
+                    <th>Low Limit (Diastolic)</th>
+                    <th>High Limit (Diastolic)</th>
+                    <th>Units</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.VitalName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.LowLimit)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.HighLimit)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Units)
-                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.VitalName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.LowLimit)</td>
+                        <td>@Html.DisplayFor(modelItem => item.HighLimit)</td>
+                        <td>@Html.DisplayFor(modelItem => item.LowLimitDiastolic)</td>
+                        <td>@Html.DisplayFor(modelItem => item.HighLimitDiastolic)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Units)</td>
                         <td>
                             <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.VitalId">Update</a>
                         </td>
@@ -85,6 +70,7 @@
                 }
             </tbody>
         </table>
+
         <div class="modal fade" id="VitalModal" tabindex="-1" role="dialog" aria-labelledby="VitalModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
@@ -103,6 +89,7 @@
         </div>
     </div>
 </div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -116,4 +103,3 @@
         }
     </script>
 }
-

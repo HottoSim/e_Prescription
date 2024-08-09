@@ -194,7 +194,7 @@ namespace e_Prescription.Controllers
 
 
             // Populate ViewBag.VitalNames with the available vital names
-            ViewBag.VitalNames = context.Vitals
+            ViewBag.VitalNames = context.Vital
                                          .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
                                          .ToList();
 
@@ -221,7 +221,7 @@ namespace e_Prescription.Controllers
 
                 foreach (var vital in model.PatientVitals)
                 {
-                    var vitalInfo = context.Vitals.Find(vital.VitalId);
+                    var vitalInfo = context.Vital.Find(vital.VitalId);
                     if (vitalInfo != null)
                     {
                         double readingDouble;
@@ -286,7 +286,7 @@ namespace e_Prescription.Controllers
                 ViewBag.AlertMessage = $"Error: {ex.Message}";
             }
 
-            ViewBag.VitalNames = context.Vitals
+            ViewBag.VitalNames = context.Vital
                 .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
                 .ToList();
 
@@ -321,7 +321,7 @@ namespace e_Prescription.Controllers
             ViewBag.Beds = new SelectList(beds, "BedId", "BedName");
             ViewBag.PatientName = $"{patient.Firstname} {patient.Lastname}";
             ViewBag.PatientId = patientId;
-            ViewBag.Vitals = context.Vitals.ToList();
+            ViewBag.Vitals = context.Vital.ToList();
             ViewBag.Notifications = null;  // Initialize to avoid null reference
             ViewBag.AlertMessage = null;  // Initialize to avoid null reference
 
@@ -353,7 +353,7 @@ namespace e_Prescription.Controllers
             var notifications = new List<string>();
             foreach (var patientVital in admission.PatientVitals)
             {
-                var vital = context.Vitals.Find(patientVital.VitalId);
+                var vital = context.Vital.Find(patientVital.VitalId);
                 if (vital != null)
                 {
                     // Check if the reading is a double or in the "150/60" format
@@ -374,19 +374,34 @@ namespace e_Prescription.Controllers
                     {
                         // It's a blood pressure reading in the format "150/60"
                         var bloodPressureParts = patientVital.Reading.Split('/');
-                        if (double.TryParse(bloodPressureParts[0], out double systolic) && double.TryParse(bloodPressureParts[1], out double diastolic))
+                        if (bloodPressureParts.Length == 2 &&
+                            double.TryParse(bloodPressureParts[0], out double systolic) &&
+                            double.TryParse(bloodPressureParts[1], out double diastolic))
                         {
-                            // Assuming you have specific limits for systolic and diastolic in your Vital model
-                            // For example:
-                            if (systolic < vital.LowLimit || systolic > vital.HighLimit || diastolic < vital.LowLimit || diastolic > vital.HighLimit)
+                            // Validate systolic and diastolic readings
+                            bool systolicInRange = systolic >= vital.LowLimit && systolic <= vital.HighLimit;
+                            bool diastolicInRange = true;
+
+                            if (double.TryParse(vital.LowLimitDiastolic, out double lowLimitDiastolic) &&
+                                double.TryParse(vital.HighLimitDiastolic, out double highLimitDiastolic))
                             {
-                                notifications.Add($"The blood pressure reading for {vital.VitalName} is out of range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit}/{vital.HighLimit} {vital.Units})");
+                                diastolicInRange = diastolic >= lowLimitDiastolic && diastolic <= highLimitDiastolic;
+                            }
+
+                            if (!systolicInRange || !diastolicInRange)
+                            {
+                                notifications.Add($"The blood pressure reading for {vital.VitalName} is out of range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} / {vital.LowLimitDiastolic} - {vital.HighLimit} / {vital.HighLimitDiastolic} {vital.Units})");
                                 patientVital.Note = "Out of range";
                             }
                             else
                             {
                                 patientVital.Note = "Normal";
                             }
+                        }
+                        else
+                        {
+                            notifications.Add($"Invalid format for the blood pressure reading of {vital.VitalName}. Please check the input.");
+                            patientVital.Note = "Invalid format";
                         }
                     }
                     else
@@ -399,8 +414,8 @@ namespace e_Prescription.Controllers
                 }
             }
 
-                context.Admissions.Add(admission);
-            context.SaveChanges();
+            context.Admissions.Add(admission);
+            await context.SaveChangesAsync();
 
             if (notifications.Count > 0)
             {
@@ -415,6 +430,7 @@ namespace e_Prescription.Controllers
         }
 
 
+
         // Get Bed By Ward
         public JsonResult GetBedByWardId(int wardId)
         {
@@ -424,7 +440,7 @@ namespace e_Prescription.Controllers
 
         public List<SelectListItem> GetVitalNames()
         {
-            var vitals = context.Vitals.ToList();
+            var vitals = context.Vital.ToList();
 
             // Create a list of SelectListItem objects
             var vitalNames = vitals.Select(v => new SelectListItem
@@ -584,7 +600,7 @@ namespace e_Prescription.Controllers
                 return NotFound($"No admissions found for PatientId: {patientId}");
             }
 
-            ViewBag.VitalNames = context.Vitals
+            ViewBag.VitalNames = context.Vital
                 .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
                 .ToList();
 

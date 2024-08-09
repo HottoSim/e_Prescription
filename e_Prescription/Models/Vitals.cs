@@ -2,7 +2,7 @@
 
 namespace e_Prescription.Models
 {
-    public class Vitals
+    public class Vital
     {
         [Key]
         public int VitalId { get; set; }
