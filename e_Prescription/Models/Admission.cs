@@ -33,7 +33,7 @@ namespace e_Prescription.Models
         [Range(45.0, Double.MaxValue, ErrorMessage = "Invalid Height entered.")]
         public double? Height { get; set; }
 
-        public virtual List<PatientVital> PatientVitals { get; set; } = new List<PatientVital>();
+        public virtual List<PatientsVitals> PatientsVitals { get; set; } = new List<PatientsVitals>();
 
         [Required]
         public bool IsDischarged { get; set; } = false;

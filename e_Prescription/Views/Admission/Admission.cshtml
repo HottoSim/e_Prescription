@@ -106,7 +106,8 @@
                                                 }
                                             </div>
                                             <div class="modal-footer">
-                                                <a asp-controller="Admission" class="btn btn-success" asp-action="History" asp-route-patientId="@Model.PatientId">Continue</a>
+                                                <a asp-controller="Admission" asp-action="History" asp-route-patientId="@Model.PatientId" class="btn btn-success">Continue</a>
+                                                <a asp-controller="Admission" asp-action="Admission" asp-route-patientId="@Model.PatientId" class="btn btn-warning">Back to Admission</a>
                                             </div>
                                         </div>
                                     </div>
@@ -114,6 +115,7 @@
                             </div>
                         }
                     }
+
                     else if (ViewBag.AlertMessage != null)
                     {
                         <div class="alert">
@@ -197,10 +199,10 @@
                                         <tr>
                                             <td>
                                                 @vitals[i].VitalName
-                                                <input type="hidden" name="PatientVitals[@i].VitalId" value="@vitals[i].VitalId" />
+                                                <input type="hidden" name="PatientsVitals[@i].VitalId" value="@vitals[i].VitalId" />
                                             </td>
                                             <td>
-                                                <input type="text" name="PatientVitals[@i].Reading" class="form-control equal-input" aria-required="true" required pattern="^\d+(\.\d{1,2})?$|^\d{2,3}\/\d{2,3}$" title="Please enter a valid reading (e.g., 98.6 or 150/60)" />
+                                                <input type="text" name="PatientsVitals[@i].Reading" class="form-control equal-input" aria-required="true" required pattern="^\d+(\.\d{1,2})?$|^\d{2,3}\/\d{2,3}$" title="Please enter a valid reading (e.g., 98.6 or 150/60)" />
                                                 <div class="invalid-feedback" style="display:none;">Please enter a valid reading.</div>
                                             </td>
 
@@ -208,7 +210,7 @@
                                                 @vitals[i].LowLimit - @vitals[i].HighLimit @vitals[i].Units
                                             </td>
                                             <td>
-                                                <input type="time" name="PatientVitals[@i].Time" class="form-control equal-input" aria-required="true" required />
+                                                <input type="time" name="PatientsVitals[@i].Time" class="form-control equal-input" aria-required="true" required />
                                             </td>
                                         </tr>
                                     }

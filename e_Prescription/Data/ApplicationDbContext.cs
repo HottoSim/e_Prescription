@@ -74,5 +74,7 @@ namespace e_Prescription.Data
 
         public DbSet<BookingTreatment> BookingTreatments { get; set; }
 
+        public DbSet<PatientsVitals> PatientsVitals { get;set; }
+
     }
 }

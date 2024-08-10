@@ -79,9 +79,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if (item.PatientVitals != null && item.PatientVitals.Any())
+                                    @if (item.PatientsVitals != null && item.PatientsVitals.Any())
                                     {
-                                        @foreach (var vital in item.PatientVitals)
+                                        @foreach (var vital in item.PatientsVitals)
                                         {
                                             var reading = vital.Reading;
                                             bool isReadingValid = double.TryParse(reading, out double readingValue);

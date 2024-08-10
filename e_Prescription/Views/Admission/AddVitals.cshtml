@@ -105,7 +105,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @for (int i = 0; i < Model.PatientVitals.Count; i++)
+                            @for (int i = 0; i < Model.PatientsVitals.Count; i++)
                             {
                                 <tr>
                                     <td>
@@ -118,11 +118,11 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="PatientVitals[@i].Reading" class="form-control equal-input" aria-required="true" required pattern="^\d+(\.\d{1,2})?$|^\d{2,3}\/\d{2,3}$" title="Please enter a valid reading (e.g., 98.6 or 150/60)" />
+                                        <input type="text" name="PatientsVitals[@i].Reading" class="form-control equal-input" aria-required="true" required pattern="^\d+(\.\d{1,2})?$|^\d{2,3}\/\d{2,3}$" title="Please enter a valid reading (e.g., 98.6 or 150/60)" />
                                         <div class="invalid-feedback" style="display:none;">Please enter a valid reading.</div>
                                     </td>
                                     <td>
-                                        <input type="time" name="PatientVitals[@i].Time" class="form-control" aria-required="true" required />
+                                        <input type="time" name="PatientsVitals[@i].Time" class="form-control" aria-required="true" required />
                                     </td>
                                     <td>
                                         @if (i == 0)
@@ -164,7 +164,7 @@
     }
 
     <script type="text/javascript">
-        let vitalIndex = @Model.PatientVitals.Count;
+        let vitalIndex = @Model.PatientsVitals.Count;
 
         function DeleteItem(btn) {
             $(btn).closest('tr').remove();
@@ -179,7 +179,7 @@
             let cell3 = newRow.insertCell(2);
             let cell4 = newRow.insertCell(3);
 
-            cell1.innerHTML = `<select name="PatientVitals[${vitalIndex}].VitalId" class="form-control">
+            cell1.innerHTML = `<select name="PatientsVitals[${vitalIndex}].VitalId" class="form-control">
                                                 <option value="">Select Vital</option>
         @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.VitalNames)
         {
@@ -187,8 +187,8 @@
         }
                                             </select>`;
 
-            cell2.innerHTML = `<input type="text" name="PatientVitals[${vitalIndex}].Reading" class="form-control" oninput="validateReading(this)" />`;
-            cell3.innerHTML = `<input type="time" name="PatientVitals[${vitalIndex}].Time" class="form-control" />`;
+            cell2.innerHTML = `<input type="text" name="PatientsVitals[${vitalIndex}].Reading" class="form-control" oninput="validateReading(this)" />`;
+            cell3.innerHTML = `<input type="time" name="PatientsVitals[${vitalIndex}].Time" class="form-control" />`;
             cell4.innerHTML = `<button type="button" class="btn btn-sm btn-danger delete-button" onclick="DeleteItem(this)">Delete</button>`;
 
             vitalIndex++;
