@@ -22,20 +22,41 @@
         border: 0px;
     }
 
-    .container {
-        border: 5px solid #f5f5f5; /* Whitish color */
-        /* padding: 10px; */
-        overflow: hidden; /* Ensures content doesn't overflow the rounded corners */
-        background-color: #f5f5f5;
-    }
+    
 
     .align-right {
         text-align: right;
     }
+
+    .form-card {
+        border: 5px solid #f5f5f5;
+        padding: 20px;
+        overflow: hidden;
+        background: linear-gradient(to bottom right, #ffffff, #f0f0f0), radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 60%, rgba(230,230,230,1) 100%);
+        background-blend-mode: overlay;
+        border-radius: 20px;
+        box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .card {
+        background-color: lightgray;
+        color: #000;
+        border-radius: 15px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #28a745;
+        color: #ffffff;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        text-align: center;
+        padding: 10px 0;
+    }
 </style>
 
-<div class="col-12 mx-auto pt-0 p-0 container">
-    <div class="card justify-content-center">
+<div class="col-12 mx-auto pt-0 p-0">
+    <div class="form-card">
 
         @if (Model != null && Model.Any())
         {
@@ -68,6 +89,9 @@
 
 
                             <p class="card-text"><strong>Vitals:</strong></p>
+                            <div>
+                                <p class="card-text"><strong>Weight:</strong> @item.Weight Kg &nbsp; &nbsp; <strong>Height:</strong> @item.Height cm</p>
+                            </div>
                             <table class="table table-sm table-striped">
                                 <thead class="card-header bg-success">
                                     <tr>
@@ -97,26 +121,16 @@
                                             // Check if the reading is in the "blood pressure" format
                                             bool isBloodPressureFormat = reading.Contains("/");
 
-                                            if (isOutOfRange || isBloodPressureFormat)
-                                            {
-                                                <tr style="background-color: orangered">
-                                                    <td>@vital.Vitals?.VitalName</td>
-                                                    <td>@vital.Reading @vital.Vitals?.Units</td>
-                                                    <td>@vital.Time.ToShortTimeString()</td>
-                                                    <td>@vital.Note</td>
-                                                    <td>@vital.Vitals?.LowLimit - @vital.Vitals?.HighLimit @vital.Vitals?.Units</td>
-                                                </tr>
-                                            }
-                                            else
-                                            {
-                                                <tr>
-                                                    <td>@vital.Vitals?.VitalName</td>
-                                                    <td>@vital.Reading @vital.Vitals?.Units</td>
-                                                    <td>@vital.Time.ToShortTimeString()</td>
-                                                    <td>@vital.Note</td>
-                                                    <td>@vital.Vitals?.LowLimit - @vital.Vitals?.HighLimit @vital.Vitals?.Units</td>
-                                                </tr>
-                                            }
+                                            // Determine row style based on note content
+                                            string rowStyle = vital.Note?.Contains("Out of range") == true ? "background-color: orangered" : "";
+
+                                            <tr style="@rowStyle">
+                                                <td>@vital.Vitals?.VitalName</td>
+                                                <td>@vital.Reading @vital.Vitals?.Units</td>
+                                                <td>@vital.Time.ToShortTimeString()</td>
+                                                <td>@vital.Note</td>
+                                                <td>@vital.Vitals?.LowLimit - @vital.Vitals?.HighLimit @vital.Vitals?.Units</td>
+                                            </tr>
                                         }
                                     }
                                     else
@@ -126,6 +140,7 @@
                                         </tr>
                                     }
                                 </tbody>
+
 
 
                             </table>

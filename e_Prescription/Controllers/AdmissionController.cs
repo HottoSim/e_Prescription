@@ -152,8 +152,8 @@ namespace e_Prescription.Controllers
                 return NotFound();
             }
 
-            patient.IsActive = false;
-            context.SaveChanges(); // Save changes to update the patient's availability
+            //patient.IsActive = false;
+           // context.SaveChanges(); // Save changes to update the patient's availability
 
             ViewBag.PatientName = $"{patient.Firstname} {patient.Lastname}";
 
@@ -257,8 +257,8 @@ namespace e_Prescription.Controllers
                             }
                             else
                             {
-                                notifications.Add($"Invalid format for the blood pressure reading of {vitalInfo.VitalName}. Please check the input.");
-                                vital.Note = "Invalid format";
+                                ModelState.AddModelError(string.Empty, $"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input.");
+                                return View(model);
                             }
                         }
                         // Handle normal readings with a range like "34-37"
@@ -280,14 +280,14 @@ namespace e_Prescription.Controllers
                             }
                             else
                             {
-                                notifications.Add($"Invalid limit format for {vitalInfo.VitalName}. Please check the input.");
-                                vital.Note = "Invalid format";
+                                ModelState.AddModelError(string.Empty, $"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input.");
+                                return View(model);
                             }
                         }
                         else
                         {
-                            notifications.Add($"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input.");
-                            vital.Note = "Invalid format";
+                            ModelState.AddModelError(string.Empty, $"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input.");
+                            return View(model);
                         }
 
                         vital.AdmissionId = admission.Id; // Ensure AdmissionId is set
@@ -308,7 +308,7 @@ namespace e_Prescription.Controllers
             }
             catch (Exception ex)
             {
-                ViewBag.AlertMessage = $"Error: {ex.Message}";
+                ViewBag.ErrorMessage = $"Error: Invalid format entered...";
             }
 
             ViewBag.VitalNames = context.Vital
@@ -348,6 +348,7 @@ namespace e_Prescription.Controllers
             ViewBag.Vitals = context.Vital.ToList();
             ViewBag.Notifications = null;  // Initialize to avoid null reference
             ViewBag.AlertMessage = null;  // Initialize to avoid null reference
+            ViewBag.ErrorMessage = null;
 
             return View(admission);
         }
@@ -357,112 +358,133 @@ namespace e_Prescription.Controllers
         {
             admission.PatientId = patientId;
 
-            var bed = context.Beds.Find(admission.BedId);
-            if (bed == null)
+            try
             {
-                return NotFound();
-            }
-            bed.IsAvailable = false;
-            context.SaveChanges();
+                
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var nurse = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (nurse == null)
-            {
-                return NotFound();
-            }
-            admission.NurseId = nurse.Id;
 
-            var notifications = new List<string>();
-            foreach (var patientVital in admission.PatientsVitals)
-            {
-                var vital = context.Vital.Find(patientVital.VitalId);
-                if (vital != null)
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var nurse = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                if (nurse == null)
                 {
-                    // Check if the reading is in the "150/60" blood pressure format
-                    if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d{2,3}\/\d{2,3}$"))
-                    {
-                        var bloodPressureParts = patientVital.Reading.Split('/');
-                        if (bloodPressureParts.Length == 2 &&
-                            double.TryParse(bloodPressureParts[0], out double systolic) &&
-                            double.TryParse(bloodPressureParts[1], out double diastolic))
-                        {
-                            // Split the blood pressure limit ranges
-                            var limitParts = vital.LowLimit.Split('/');
-                            double lowSystolic = double.Parse(limitParts[0]);
-                            double lowDiastolic = double.Parse(limitParts[1]);
-
-                            limitParts = vital.HighLimit.Split('/');
-                            double highSystolic = double.Parse(limitParts[0]);
-                            double highDiastolic = double.Parse(limitParts[1]);
-
-                            // Compare both systolic and diastolic values
-                            bool systolicInRange = systolic >= lowSystolic && systolic <= highSystolic;
-                            bool diastolicInRange = diastolic >= lowDiastolic && diastolic <= highDiastolic;
-
-                            if (!systolicInRange || !diastolicInRange)
-                            {
-                                notifications.Add($"The blood pressure reading for {vital.VitalName} is out of range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
-                                patientVital.Note = "Out of range";
-                            }
-                            else
-                            {
-                                patientVital.Note = "Normal";
-                            }
-                        }
-                        else
-                        {
-                            notifications.Add($"Invalid format for the blood pressure reading of {vital.VitalName}. Please check the input.");
-                            patientVital.Note = "Invalid format";
-                        }
-                    }
-                    // Handle normal readings with a range like "34-37"
-                    else if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d+(\.\d+)?$"))
-                    {
-                        if (double.TryParse(vital.LowLimit, out double lowLimit) &&
-                            double.TryParse(vital.HighLimit, out double highLimit) &&
-                            double.TryParse(patientVital.Reading, out double normalReading))
-                        {
-                            if (normalReading < lowLimit || normalReading > highLimit)
-                            {
-                                notifications.Add($"The reading for {vital.VitalName} is out of range: {normalReading} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
-                                patientVital.Note = "Out of range";
-                            }
-                            else
-                            {
-                                patientVital.Note = "Normal";
-                            }
-                        }
-                        else
-                        {
-                            notifications.Add($"Invalid limit format for {vital.VitalName}. Please check the input.");
-                            patientVital.Note = "Invalid format";
-                        }
-                    }
-                    else
-                    {
-                        notifications.Add($"Invalid format for the reading of {vital.VitalName}. Please check the input.");
-                        patientVital.Note = "Invalid format";
-                    }
-
-                    context.PatientsVitals.Add(patientVital);
+                    return NotFound();
                 }
+                admission.NurseId = nurse.Id;
+
+                var notifications = new List<string>();
+                foreach (var patientVital in admission.PatientsVitals)
+                {
+                    var vital = context.Vital.Find(patientVital.VitalId);
+                    if (vital != null)
+                    {
+                        // Check if the reading is in the "150/60" blood pressure format
+                        if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d{2,3}\/\d{2,3}$"))
+                        {
+                            var bloodPressureParts = patientVital.Reading.Split('/');
+                            if (bloodPressureParts.Length == 2 &&
+                                double.TryParse(bloodPressureParts[0], out double systolic) &&
+                                double.TryParse(bloodPressureParts[1], out double diastolic))
+                            {
+                                // Split the blood pressure limit ranges
+                                var limitParts = vital.LowLimit.Split('/');
+                                double lowSystolic = double.Parse(limitParts[0]);
+                                double lowDiastolic = double.Parse(limitParts[1]);
+
+                                limitParts = vital.HighLimit.Split('/');
+                                double highSystolic = double.Parse(limitParts[0]);
+                                double highDiastolic = double.Parse(limitParts[1]);
+
+                                // Compare both systolic and diastolic values
+                                bool systolicInRange = systolic >= lowSystolic && systolic <= highSystolic;
+                                bool diastolicInRange = diastolic >= lowDiastolic && diastolic <= highDiastolic;
+
+                                if (!systolicInRange || !diastolicInRange)
+                                {
+                                    notifications.Add($"The blood pressure reading for {vital.VitalName} is out of range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
+                                    patientVital.Note = "Out of range";
+                                }
+                                else
+                                {
+                                    patientVital.Note = "Normal";
+                                }
+                            }
+                            else
+                            {
+                                ModelState.AddModelError(string.Empty, $"Invalid format for the blood pressure reading of {vital.VitalName}. Please check the input.");
+                                return View(admission);
+                            }
+                        }
+                        // Handle normal readings with a range like "34-37"
+                        else if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d+(\.\d+)?$"))
+                        {
+                            if (double.TryParse(vital.LowLimit, out double lowLimit) &&
+                                double.TryParse(vital.HighLimit, out double highLimit) &&
+                                double.TryParse(patientVital.Reading, out double normalReading))
+                            {
+                                if (normalReading < lowLimit || normalReading > highLimit)
+                                {
+                                    notifications.Add($"The reading for {vital.VitalName} is out of range: {normalReading} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
+                                    patientVital.Note = "Out of range";
+                                }
+                                else
+                                {
+                                    patientVital.Note = "Normal";
+                                }
+                            }
+                            else
+                            {
+                                ModelState.AddModelError(string.Empty, $"Invalid limit format for {vital.VitalName}. Please check the input.");
+                                return View(admission);
+                            }
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, $"Invalid format for the reading of {vital.VitalName}. Please check the input.");
+                            return View(admission);
+                        }
+
+                        context.PatientsVitals.Add(patientVital);
+                    }
+                }
+
+                context.Admissions.Add(admission);
+                await context.SaveChangesAsync();
+
+                var patient = context.Patients.Find(patientId);
+                if (patient == null)
+                {
+                    return NotFound();
+                }
+
+                patient.IsActive = false;
+                context.SaveChanges(); // Save changes to update the patient's availability
+
+                var bed = context.Beds.Find(admission.BedId);
+                if (bed == null)
+                {
+                    return NotFound();
+                }
+                bed.IsAvailable = false;
+                context.SaveChanges();
+
+                if (notifications.Count > 0)
+                {
+                    ViewBag.Notifications = notifications;
+                }
+                else
+                {
+                    ViewBag.AlertMessage = "Vitals seem to be normal!";
+                }
+
+                return View(admission);
             }
-
-            context.Admissions.Add(admission);
-            await context.SaveChangesAsync();
-
-            if (notifications.Count > 0)
+            catch (Exception ex)
             {
-                ViewBag.Notifications = notifications;
+                ViewBag.ErrorMessage = $"Error: Invalid format entered...";
+                return View(admission);
             }
-            else
-            {
-                ViewBag.AlertMessage = "Vitals seem to be normal!";
-            }
-
-            return View(admission);
         }
+
 
 
         // Get Bed By Ward

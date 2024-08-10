@@ -6,6 +6,7 @@
     var notifications = ViewBag.Notifications as List<string>;
     var hasNotifications = notifications != null && notifications.Any();
     var hasAlertMessage = ViewBag.AlertMessage != null;
+    var hasErrorMessage = ViewBag.ErrorMessage != null;
 }
 
 <style>
@@ -34,6 +35,11 @@
         border: 5px solid #f5f5f5; /* Whitish color */
         overflow: hidden; /* Ensures content doesn't overflow the rounded corners */
         background-color: #f5f5f5;
+    }
+
+    .modal-error {
+        background-color: #dc3545; /* Red for notifications */
+        color: #fff; /* White text */
     }
 </style>
 
@@ -94,6 +100,28 @@
                         </div>
                     </div>
                 }
+                else if (ViewBag.ErrorMessage != null)
+                {
+                    <div class="error">
+                        <div class="modal fade show" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="display: block;">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-error">
+                                        <h5 class="modal-title" id="errorModal">Error message</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="alert alert-danger d-flex justify-content-center">
+                                            @ViewBag.ErrorMessage
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a asp-controller="Admission" class="btn btn-info" asp-action="ViewAdmission" asp-route-patientId="@Model.Patient.IdNumber">Go back</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
                 else
                 {
                     <table id="ExpTable" class="table table-sm">
@@ -109,7 +137,7 @@
                             {
                                 <tr>
                                     <td>
-                                        <select name="PatientVitals[@i].VitalId" class="form-control" aria-required="true" required>
+                                        <select name="PatientsVitals[@i].VitalId" class="form-control" aria-required="true" required>
                                             <option value="">Select Vital</option>
                                             @foreach (var item in (IEnumerable<SelectListItem>)ViewBag.VitalNames)
                                             {
@@ -215,6 +243,11 @@
                 }).modal('show');
             } else if (hasAlertMessage) {
                 $('#alertModal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                }).modal('show');
+            } else if (hasErrorMessage) {
+                $('#errorModal').modal({
                     backdrop: 'static',
                     keyboard: false
                 }).modal('show');

@@ -3,7 +3,7 @@
     public class AdmissionViewModel
     {
         public int AdmissionId { get; set; }
-        public List<PatientVital> PatientVitals { get; set; } = new List<PatientVital>();
+        public List<PatientsVitals> PatientsVitals { get; set; } = new List<PatientsVitals>();
 
         public string NurseId { get; set; }
     }

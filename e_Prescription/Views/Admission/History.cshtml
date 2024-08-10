@@ -27,6 +27,7 @@
             background-blend-mode: overlay;
             border-radius: 20px;
             box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+            height: 100%;
         }
 
         .card {
@@ -71,11 +72,13 @@
             border-radius: 10px;
             box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
         }
+
+
     </style>
 </head>
 
 <body>
-    <div class="col-10 mx-auto pt-0 p-0 container">
+    <div class="col-10 mx-auto pt-0 p-0">
         <div class="form-card">
             <div class="card-header">
                 <h4 class="text-center">Add Patient History for @ViewBag.PatientName</h4>
@@ -103,7 +106,7 @@
                             <div class="form-group row">
                                 <div class="col-md-4">
                                     <label asp-for="SelectedAllergies">Select Allergies:</label>
-                                    <select asp-for="SelectedAllergies" class="form-control selectpicker" name="SelectedAllergies" multiple="multiple" data-live-search="true" data-actions-box="true">
+                                    <select asp-for="SelectedAllergies" class="form-control selectpicker" name="SelectedAllergies" multiple="multiple" data-actions-box="true">
                                         @foreach (var allergy in (SelectList)ViewBag.Allergies)
                                         {
                                             <option value="@allergy.Value">@allergy.Text</option>

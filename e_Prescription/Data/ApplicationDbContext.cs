@@ -18,7 +18,7 @@ namespace e_Prescription.Data
 
         public DbSet<Bed> Beds { get; set; }
 
-        public DbSet<PatientVital> PatientVitals { get; set; }
+       // public DbSet<PatientVital> PatientVitals { get; set; }
 
         public DbSet<Vitals> Vital { get; set; }
 

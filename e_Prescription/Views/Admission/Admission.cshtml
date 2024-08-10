@@ -5,6 +5,7 @@
     var vitals = ViewBag.Vitals as List<e_Prescription.Models.Vitals>;
     var hasNotifications = ViewBag.Notifications != null && (ViewBag.Notifications as List<string>)?.Any() == true;
     var hasAlertMessage = ViewBag.AlertMessage != null;
+    var hasErrorMessage = ViewBag.ErrorMessage != null;
 }
 
 @* Include the step indicator *@
@@ -73,11 +74,16 @@
         .btn-success {
             border-radius: 10px;
         }
+
+        .modal-error {
+            background-color: #dc3545; /* Red for notifications */
+            color: #fff; /* White text */
+        }
     </style>
 </head>
 
 <body>
-    <div class="stepper-content py-3 container">
+    <div class="stepper-content py-3">
         <div class="col-10 mx-auto pt-0 p-0">
 
             <div class="form-card">
@@ -107,7 +113,6 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <a asp-controller="Admission" asp-action="History" asp-route-patientId="@Model.PatientId" class="btn btn-success">Continue</a>
-                                                <a asp-controller="Admission" asp-action="Admission" asp-route-patientId="@Model.PatientId" class="btn btn-warning">Back to Admission</a>
                                             </div>
                                         </div>
                                     </div>
@@ -123,7 +128,7 @@
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header1">
-                                            <h5 class="modal-title" id="alertModalLabel">Alert</h5>
+                                            <h5 class="modal-title" id="alertModalLabel">Alert message</h5>
                                         </div>
                                         <div class="modal-body">
                                             <div class="alert alert-success d-flex justify-content-center">
@@ -131,7 +136,7 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <a asp-controller="Admission" class="btn btn-success" asp-action="History" asp-route-patientId="@Model.PatientId">Continue</a>
+                                            <a asp-controller="Admission" class="btn btn-info" asp-action="History" asp-route-patientId="@Model.PatientId">Continue</a>
                                         </div>
                                     </div>
                                 </div>
@@ -141,6 +146,28 @@
 
                     else
                     {
+                        @if (ViewBag.ErrorMessage != null)
+                        {
+                            <div class="error">
+                                <div class="modal fade show" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="display: block;">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-error">
+                                                <h5 class="modal-title" id="errorModal">Error message</h5>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="alert alert-danger d-flex justify-content-center">
+                                                    @ViewBag.ErrorMessage
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a asp-controller="Admission" asp-action="Admission" asp-route-patientId="@Model.PatientId" class="btn btn-info">Back to Admission</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                         <div class="row">
                             <div class="col-md-12">
                                 <input asp-for="PatientId" class="form-control" hidden />
@@ -243,6 +270,7 @@
             // Trigger modals if there are notifications or alerts
             var hasNotifications = @Html.Raw(Json.Serialize(hasNotifications));
             var hasAlertMessage = @Html.Raw(Json.Serialize(hasAlertMessage));
+            var hasErrorMessage = @Html.Raw(Json.Serialize(hasErrorMessage));
 
             if (hasNotifications) {
                 $('#notificationModal').modal({
@@ -251,6 +279,13 @@
                 }).modal('show');
             } else if (hasAlertMessage) {
                 $('#alertModal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                }).modal('show');
+            }
+
+            if (hasErrorMessage) {
+                $ ('#errorModal').modal({
                     backdrop: 'static',
                     keyboard: false
                 }).modal('show');
