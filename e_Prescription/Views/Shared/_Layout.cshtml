@@ -108,13 +108,10 @@
                                 <a class="nav-link text-white">@user.LastName (@role) </a>
                             </li>
                             <li class="nav-item">
-                                <form asp-action="Logout" asp-controller="Account" method="post" class="form-inline">
-                                    <button type="submit" class="btn btn-link nav-link text-danger">
-                                        <i class="fas fa-sign-out-alt"></i> Logout
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-link nav-link text-danger" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
                             </li>
-
                         }
                         else
                         {
@@ -211,7 +208,30 @@
             </div>
         </nav>
     }
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
 
+                    <!-- Add a form around the logout button -->
+                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="btn btn-danger" id="confirmLogout">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="container" style="padding-top: 90px;">
         <!-- Adjust padding to prevent content overlap -->
@@ -245,6 +265,12 @@
             //     $(".navbar-item:first").addClass("active");
             // }
         });
+
+        // $(document).ready(function () {
+        //     $('#confirmLogout').click(function () {
+        //         $('form[asp-action="Logout"]').submit();
+        //     });
+        // });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
