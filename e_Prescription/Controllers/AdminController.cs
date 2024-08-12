@@ -281,7 +281,7 @@ namespace e_Prescription.Controllers
             _context.ActiveIngredients.Add(activeIngredient);
             _context.SaveChanges();
             TempData["SuccessMessage"] = "Ingredient has been added...";
-            return View();
+            return RedirectToAction("ManageActiveIngredient");
         }
 
 
