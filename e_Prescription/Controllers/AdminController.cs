@@ -162,10 +162,32 @@ namespace e_Prescription.Controllers
         public IActionResult ManageMedication()
         {
             var medication = _context.MedicationIngredients
-                                                         .Include(m => m.Medication)
-                                                         .Include( a => a.ActiveIngredient)
-                                                         .ToList();
+                         .Include(mi => mi.Medication)
+                         .Include(mi => mi.ActiveIngredient)
+                         .Include(mi => mi.Medication.DosageForm)
+                         .OrderBy(mi => mi.Medication.MedicationName)
+                         .ThenBy(mi => mi.ActiveIngredient.IngredientName)
+                         .ThenBy(mi => mi.IngredientStrength)
+                         .ToList();
+
             return View(medication);
+        }
+
+        //Dosage forms
+        [HttpGet]
+        public IActionResult AddDosageForm()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddDosageForm(DosageForm dosage)
+        {
+            _context.DosageForms.Add(dosage);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Dosage form has been successfuly added...";
+
+            return RedirectToAction("ManageMedication");
         }
 
         //Add Medication
