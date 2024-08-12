@@ -18,5 +18,7 @@ namespace e_Prescription.Models
 
         [Required(ErrorMessage = "*Required")]
         public string Schedule { get; set; }
+
+        public virtual MedicationIngredient MedicationIngredient { get; set; }
     }
 }

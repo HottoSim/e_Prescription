@@ -636,6 +636,8 @@ namespace e_Prescription.Controllers
                 .Include(a => a.Patient)
                 .ThenInclude(p => p.PatientMedications)
                 .ThenInclude(pm => pm.Medication)
+                .ThenInclude(am => am.MedicationIngredient)
+                .ThenInclude(lc => lc.ActiveIngredient)
                 .Include(a => a.ApplicationUser)
                 .Include(a => a.Bed)
                 .Include(a => a.Ward);

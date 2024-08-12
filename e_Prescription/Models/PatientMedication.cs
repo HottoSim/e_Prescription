@@ -15,5 +15,7 @@ namespace e_Prescription.Models
         public int? MedicationId { get; set; } = null;
 
         public virtual Medication Medication { get; set; }
+
+        //public virtual MedicationIngredient MedicationIngredient { get; set; }
     }
 }
