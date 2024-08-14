@@ -48,9 +48,11 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-center">
-                <button type="button" class="btn btn-danger" id="dischargeButton">Discharge</button>
+            <div class="d-flex justify-content-center gap-3">
+                <button type="button" class="btn btn-info" style="width: 140px;" onclick="window.location.href='@Url.Action("ViewAdmission", "Admission", new { admissionId = Model.AdmissionId })'">Cancel</button>
+                <button type="button" class="btn btn-danger" id="dischargeButton" style="width: 140px;">Discharge</button>
             </div>
+
         </form>
     </div>
 </div>

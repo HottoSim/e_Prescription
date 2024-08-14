@@ -170,8 +170,9 @@
                             }
                         </tbody>
                     </table>
-                    <div class="centered-container">
-                        <button type="submit" class="btn btn-success">Submit</button>
+                    <div class="centered-container gap-3">
+                        <button type="button" class="btn btn-info" style="width: 140px;" onclick="window.location.href='@Url.Action("ViewAdmission", "Admission", new { admissionId = Model.Id })'">Cancel</button>
+                        <button type="submit" class="btn btn-success" style="width: 140px;">Submit</button>
                     </div>
                 }
 
