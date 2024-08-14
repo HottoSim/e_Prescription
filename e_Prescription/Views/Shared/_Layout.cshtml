@@ -24,7 +24,8 @@
     <style>
         .navbar-container {
             display: flex;
-            height: 100vh; /* Full height */
+            height: 100vh; /* Full viewport height */
+            overflow: hidden; /* Hide overflow to handle scrolling inside navbar */
         }
 
         .navbar-vertical {
@@ -33,11 +34,11 @@
             flex-direction: column;
             padding-top: 20px;
             gap: 10px;
-            overflow-y: auto;
-            position: fixed; /* Fix navbar position */
-            top: 70px; /* Adjust if the horizontal navbar height changes */
-            height: calc(100vh - 70px); /* Full height minus the horizontal navbar height */
-            background-color: dimgrey; /* Set background color of the navbar */
+            overflow-y: auto; /* Enable vertical scrolling */
+            position: fixed; /* Fixed position */
+            top: 70px; /* Adjust based on the header height */
+            bottom: 0; /* Make sure it stretches to the bottom */
+            background-color: dimgrey; /* Background color of the navbar */
         }
 
         .navbar-item {
@@ -47,24 +48,25 @@
             cursor: pointer;
             transition: background-color 0.3s;
             border-radius: 10px;
-            color: #fff; /* Text color (white) */
+            color: #fff; /* Text color */
             text-decoration: none; /* Remove underline from links */
         }
 
             .navbar-item:hover {
-                background-color: #f0f0f0; /* Light gray background on hover */
+                background-color: #f0f0f0; /* Background color on hover */
+                color: #000; /* Text color on hover */
             }
 
             .navbar-item.active {
-                background-color: #28a745; /* Green background for active tab */
-                color: #fff; /* White text color for active tab */
+                background-color: #28a745; /* Background color for active tab */
+                color: #fff; /* Text color for active tab */
             }
 
         .content1 {
-            margin-left: 225px; /* Leave space for the navbar */
-            padding-top: 50px;
+            margin-left: 225px; /* Space for the navbar */
+            padding-top: 70px; /* Adjust padding to prevent overlap */
             flex-grow: 1;
-            border-left: 1px solid #ccc; /* Add a border to separate the content from the navbar */
+            border-left: 1px solid #ccc; /* Border to separate content from navbar */
         }
 
         .nav-v {
@@ -163,7 +165,15 @@
                 <a class="nav-link navbar-item text-white" href="@Url.Action("LocationManagement", "Admin")">
                     <i class="fas fa-map-marker-alt"></i>
                     Manage Locations
-                </a> <!-- New item for managing locations -->
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageContraIndications", "Admin")">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Contra Indications
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("ManageMedicalInteractions", "Admin")">
+                    <i class="fas fa-exchange-alt"></i>
+                    Medical Interactions
+                </a>
             </div>
             <div class="content1">
                 <main role="main" class="pb-3">

@@ -27,6 +27,7 @@
             margin-right: 10px; /* Adjust the value as needed */
         }
 </style>
+
 <div class="col-md-12 mx-auto pt-0 p-0">
     <div class="card">
         <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
@@ -49,44 +50,55 @@
             <button class="btn btn-primary" onclick="openIngredientModal('@Url.Action("AddMedicationIngredient", "Admin")')">Add ingredients</button>
         </div>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Medication name</th>
-                    <th>Schedule</th>
-                    <th>Dosage form</th>
-                    <th>Active ingredients</th>
-                    <th>Strength</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var medicationGroup in Model.GroupBy(m => m.Medication))
-                {
+        @if (Model == null || !Model.Any())
+        {
+            <p>No medications available.</p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>@medicationGroup.Key.MedicationName</td>
-                        <td>@medicationGroup.Key.Schedule</td>
-                        <td>@medicationGroup.Key.DosageForm.Description</td>
-                        <td colspan="2">
-                            <table class="table table-sm">
-                                <tbody>
-                                    @foreach (var ingredient in medicationGroup)
-                                    {
-                                        <tr>
-                                            <td>@ingredient.ActiveIngredient.IngredientName</td>
-                                            <td>@ingredient.IngredientStrength</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </td>
-                        <td>
-                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@medicationGroup.First().MedicationIngredientId">Update</a>
-                        </td>
+                        <th>Medication name</th>
+                        <th>Schedule</th>
+                        <th>Dosage form</th>
+                        <th>Active ingredients</th>
+                        <th>Strength</th>
+                        <th></th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var medicationGroup in Model.GroupBy(mi => mi.Medication))
+                    {
+                        var medication = medicationGroup.Key;
+                        if (medication != null)
+                        {
+                            <tr>
+                                <td>@medication?.MedicationName</td>
+                                <td>@medication?.Schedule</td>
+                                <td>@medication?.DosageForm?.Description</td>
+                                <td colspan="2">
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            @foreach (var ingredient in medicationGroup)
+                                            {
+                                                <tr>
+                                                    <td>@ingredient.ActiveIngredient.IngredientName</td>
+                                                    <td>@ingredient.IngredientStrength</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" class="btn btn-info" asp-route-id="@medicationGroup.FirstOrDefault()?.MedicationIngredientId">Update</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
 
         <div class="modal fade" id="MedicationModal" tabindex="-1" role="dialog" aria-labelledby="MedicationModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">

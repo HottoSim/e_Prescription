@@ -161,17 +161,18 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult ManageMedication()
         {
-            var medication = _context.MedicationIngredients
-                         .Include(mi => mi.Medication)
-                         .Include(mi => mi.ActiveIngredient)
-                         .Include(mi => mi.Medication.DosageForm)
-                         .OrderBy(mi => mi.Medication.MedicationName)
-                         .ThenBy(mi => mi.ActiveIngredient.IngredientName)
-                         .ThenBy(mi => mi.IngredientStrength)
-                         .ToList();
+            var medicationIngredients = _context.MedicationIngredients
+                .Include(mi => mi.Medication)
+                .Include(mi => mi.ActiveIngredient)
+                .Include(mi => mi.Medication.DosageForm)
+                .OrderBy(mi => mi.Medication.MedicationName)
+                .ThenBy(mi => mi.ActiveIngredient.IngredientName)
+                .ThenBy(mi => mi.IngredientStrength)
+                .ToList();
 
-            return View(medication);
+            return View(medicationIngredients);
         }
+
 
         //Dosage forms
         [HttpGet]
