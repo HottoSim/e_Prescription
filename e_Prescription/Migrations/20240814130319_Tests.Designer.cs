@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using e_Prescription.Data;
 
@@ -11,9 +12,11 @@ using e_Prescription.Data;
 namespace e_Prescription.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240814130319_Tests")]
+    partial class Tests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -535,33 +538,6 @@ namespace e_Prescription.Migrations
                     b.ToTable("ContactDetails");
                 });
 
-            modelBuilder.Entity("e_Prescription.Models.ContraIndication", b =>
-                {
-                    b.Property<int>("IndicationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IndicationId"));
-
-                    b.Property<int>("ActiveIngredientId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ChronicConditionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("IndicationId");
-
-                    b.HasIndex("ActiveIngredientId");
-
-                    b.HasIndex("ChronicConditionId");
-
-                    b.ToTable("ContraIndications");
-                });
-
             modelBuilder.Entity("e_Prescription.Models.Discharge", b =>
                 {
                     b.Property<int>("DischargeId")
@@ -686,24 +662,6 @@ namespace e_Prescription.Migrations
                         .IsUnique();
 
                     b.ToTable("MedicationIngredients");
-                });
-
-            modelBuilder.Entity("e_Prescription.Models.MedicationInteraction", b =>
-                {
-                    b.Property<int>("InterationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InterationId"));
-
-                    b.Property<int>("ActiveIngredientId")
-                        .HasColumnType("int");
-
-                    b.HasKey("InterationId");
-
-                    b.HasIndex("ActiveIngredientId");
-
-                    b.ToTable("MedicationInteractions");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Patient", b =>
@@ -1307,25 +1265,6 @@ namespace e_Prescription.Migrations
                     b.Navigation("Suburb");
                 });
 
-            modelBuilder.Entity("e_Prescription.Models.ContraIndication", b =>
-                {
-                    b.HasOne("e_Prescription.Models.ActiveIngredient", "ActiveIngredient")
-                        .WithMany()
-                        .HasForeignKey("ActiveIngredientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("e_Prescription.Models.ChronicCondition", "ChronicCondition")
-                        .WithMany()
-                        .HasForeignKey("ChronicConditionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ActiveIngredient");
-
-                    b.Navigation("ChronicCondition");
-                });
-
             modelBuilder.Entity("e_Prescription.Models.Discharge", b =>
                 {
                     b.HasOne("e_Prescription.Models.Admission", "Admission")
@@ -1384,17 +1323,6 @@ namespace e_Prescription.Migrations
                     b.Navigation("ActiveIngredient");
 
                     b.Navigation("Medication");
-                });
-
-            modelBuilder.Entity("e_Prescription.Models.MedicationInteraction", b =>
-                {
-                    b.HasOne("e_Prescription.Models.ActiveIngredient", "ActiveIngredient")
-                        .WithMany()
-                        .HasForeignKey("ActiveIngredientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ActiveIngredient");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.PatientAllergies", b =>

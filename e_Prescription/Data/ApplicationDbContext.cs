@@ -76,5 +76,9 @@ namespace e_Prescription.Data
 
         public DbSet<PatientsVitals> PatientsVitals { get;set; }
 
+        public DbSet<ContraIndication> ContraIndications { get; set; }
+
+        public DbSet<MedicationInteraction> MedicationInteractions { get; set; }
+
     }
 }

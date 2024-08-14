@@ -427,6 +427,36 @@ namespace e_Prescription.Controllers
 
             return View(provinces);
         }
+
+        //Manage Contra indications
+        public IActionResult ManageContraIndications()
+        {
+            var indications = _context.ContraIndications.ToList();
+            return View(indications);
+        }
+
+        //Add Contra indications
+        //
+        [HttpGet]
+        public IActionResult AddContraIndication()
+        {
+            ViewBag.getCondtions = new SelectList(_context.ChronicConditions, "ChronicCondotionId", "Diagnosis");
+            ViewBag.getIngredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddContraIndication(ContraIndication contraIndication)
+        {
+            _context.ContraIndications.Add(contraIndication);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Indication has been successfully added...";
+
+            ViewBag.getCondtions = new SelectList(_context.ChronicConditions, "ChronicCondotionId", "Diagnosis");
+            ViewBag.getIngredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+            return RedirectToAction("ManageContraIndications");
+        }
     }
 }
 
