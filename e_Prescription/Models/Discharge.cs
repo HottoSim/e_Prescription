@@ -13,8 +13,8 @@ namespace e_Prescription.Models
         [Required(ErrorMessage ="*required")]
         public string DischargeNote { get; set; }
 
-        [Required]
-        public DateTime DischargeTime { get; set; } = DateTime.UtcNow;
+        [Required(ErrorMessage = "*required")]
+        public DateTime DischargeTime { get; set; }
 
         [ForeignKey("Id")]
         public int AdmissionId { get; set; }

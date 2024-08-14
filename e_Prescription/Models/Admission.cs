@@ -13,7 +13,8 @@ namespace e_Prescription.Models
         public int PatientId { get; set; } // Foreign key to link with Patient
         public virtual Patient Patient { get; set; }
 
-        public DateTime AdmissionDate { get; set; }= DateTime.Now;
+        [Required(ErrorMessage = "*Required")]
+        public DateTime AdmissionDate { get; set; }
 
         [Required(ErrorMessage = "*Required")]
         [ForeignKey("Ward")]

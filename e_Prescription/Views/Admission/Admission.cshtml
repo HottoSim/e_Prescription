@@ -172,7 +172,15 @@
                             <div class="col-md-12">
                                 <input asp-for="PatientId" class="form-control" hidden />
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="AdmissionDate" class="control-label">Date and time</label>
+                                            <input asp-for="AdmissionDate" class="form-control" type="datetime-local" value="" aria-required="true" style="width: 100%;" required />
+                                            <span asp-validation-for="AdmissionDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label asp-for="WardId" class="control-label">Ward</label>
                                             <select asp-for="WardId" class="form-control" id="wardId" asp-items="@ViewBag.Wards" aria-required="true" required>
@@ -181,7 +189,7 @@
                                             <span asp-validation-for="WardId" class="text-danger"></span>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label asp-for="BedId" class="control-label">Bed</label>
                                             <select asp-for="BedId" class="form-control" id="bedId" aria-required="true" required>
@@ -194,14 +202,14 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label asp-for="Weight" class="control-label"></label>
+                                            <label asp-for="Weight" class="control-label">Weight (Kg)</label>
                                             <input asp-for="Weight" class="form-control" aria-required="true" style="width: 100%;" required />
                                             <span asp-validation-for="Weight" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label asp-for="Height" class="control-label"></label>
+                                            <label asp-for="Height" class="control-label">Height (cm)</label>
                                             <input asp-for="Height" class="form-control" aria-required="true" style="width: 100%;" required />
                                             <span asp-validation-for="Height" class="text-danger"></span>
                                         </div>
