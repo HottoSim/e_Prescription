@@ -8,18 +8,19 @@ namespace e_Prescription.Models
         [Key]
         public int MedicationId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string MedicationName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string Schedule { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public int QuantityOnHand { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public int ReorderLevel { get; set; }
 
+        [Required(ErrorMessage = "*Required")]
         [ForeignKey("DasageForm")]
         public int DosageFormId { get; set; }
         public virtual DosageForm DosageForm { get; set; }

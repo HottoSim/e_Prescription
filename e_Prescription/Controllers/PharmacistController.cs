@@ -26,7 +26,7 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult GetPrescriptions()
         {
-            var prescriptions = _context.Prescriptions.ToList();
+            var prescriptions = _context.Prescriptions.Where(a => a.Status == "Prescribed").ToList();
             return View(prescriptions);
         }
 
@@ -34,7 +34,7 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult Medication()
         {
-            var medication = _context.Medications.ToList();
+            var medication = _context.PharmacyMedications.ToList();
             return View(medication);
         }
 
@@ -42,14 +42,18 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult AddMedication()
         {
+            ViewBag.getDosageForm = _context.DosageForms.ToList();
             return View();
         }
         [HttpPost]
-        public IActionResult AddMedication(Medication medication)
+        public IActionResult AddMedication(PharmacyMedication medication)
         {
-            _context.Medications.Add(medication);
+            _context.PharmacyMedications.Add(medication);
             _context.SaveChanges();
             TempData["SuccessMessage"] = "Successfully added...";
+
+            ViewBag.getDosageForm = _context.DosageForms.ToList();
+
             return RedirectToAction("Medication");
         }
 
