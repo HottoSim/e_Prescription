@@ -6,7 +6,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using e_Prescription.Models.Account;
-using AspNetCore;
+
 
 
 namespace e_Prescription.Controllers
