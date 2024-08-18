@@ -82,7 +82,21 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label asp-for="Specialization">Specialization</label>
-                                <input asp-for="Specialization" class="form-control"/>
+                                <select asp-for="Specialization" class="form-control">
+                                    <option selected disabled>--Select specialization--</option>
+                                    <option>Cardiologist</option>
+                                    <option>Dermatologist </option>
+                                    <option>Endocrinologist</option>
+                                    <option>Gastroenterologist </option>
+                                    <option>Neurologist</option>
+                                    <option>Oncologist </option>
+                                    <option>Orthopedic Surgeon</option>
+                                    <option>Pediatrician</option>
+                                    <option>Psychiatrist </option>
+                                    <option>Radiologist</option>
+                                    <option>Rheumatologist </option>
+                                    <option>Urologist</option>
+                                </select>
                                 <span asp-validation-for="Specialization" class="text-danger"></span>
                             </div>
                         </div>

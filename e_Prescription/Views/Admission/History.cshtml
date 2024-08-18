@@ -104,24 +104,11 @@
                             <input type="hidden" asp-for="PatientId" />
 
                             <div class="form-group row">
-                                <div class="col-md-4">
-                                    <label asp-for="SelectedAllergies">Select Allergies:</label>
-                                    <select asp-for="SelectedAllergies" class="form-control selectpicker" name="SelectedAllergies" multiple="multiple" data-actions-box="true">
-                                        @foreach (var allergy in (SelectList)ViewBag.Allergies)
-                                        {
-                                            <option value="@allergy.Value">@allergy.Text</option>
-                                        }
-                                    </select>
-                                    <span asp-validation-for="SelectedAllergies" class="text-danger"></span>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="noAllergies" name="NoAllergies" />
-                                        <label class="form-check-label" for="noAllergies">None</label>
-                                    </div>
-                                </div>
+                               
 
-                                <div class="col-md-4">
+                                <div class="col-md-10 mt-3">
                                     <label asp-for="SelectedConditions">Select Conditions:</label>
-                                    <select asp-for="SelectedConditions" class="form-control selectpicker" name="SelectedConditions" multiple="multiple" data-live-search="true" data-actions-box="true">
+                                    <select asp-for="SelectedConditions" class="form-control selectpicker" name="SelectedConditions" multiple="multiple" data-live-search="true" data-actions-box="true" style="width: 100%; max-height: 150px; overflow-y: auto;">
                                         @foreach (var condition in (SelectList)ViewBag.Conditions)
                                         {
                                             <option value="@condition.Value">@condition.Text</option>
@@ -134,9 +121,9 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="col-md-10 mt-3">
                                     <label asp-for="SelectedMedications">Select Medications:</label>
-                                    <select asp-for="SelectedMedications" class="form-control selectpicker" name="SelectedMedications" multiple="multiple" data-live-search="true" data-actions-box="true">
+                                    <select asp-for="SelectedMedications" class="form-control selectpicker" name="SelectedMedications" multiple="multiple" data-live-search="true" data-actions-box="true" style="width: 100%; max-height: 150px; overflow-y: auto;">
                                         @foreach (var medication in (SelectList)ViewBag.Medications)
                                         {
                                             <option value="@medication.Value">@medication.Text</option>
@@ -148,14 +135,29 @@
                                         <label class="form-check-label" for="noMedications">None</label>
                                     </div>
                                 </div>
+                                <div class="col-md-10">
+                                    <label asp-for="SelectedAllergies">Select Allergies:</label>
+                                    <select asp-for="SelectedAllergies" class="form-control selectpicker" name="SelectedAllergies" multiple="multiple" data-actions-box="true" style="width: 100%; max-height: 150px; overflow-y: auto;">
+                                        @foreach (var allergy in (SelectList)ViewBag.Allergies)
+                                        {
+                                            <option value="@allergy.Value">@allergy.Text</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="SelectedAllergies" class="text-danger"></span>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="noAllergies" name="NoAllergies" />
+                                        <label class="form-check-label" for="noAllergies">None</label>
+                                    </div>
+                                </div>
                             </div>
 
                             <br />
-                            <div class="centered-container">
+                            <div class="text-center">
                                 <input type="submit" value="Submit" class="btn btn-success" />
                             </div>
                         </div>
                     </div>
+
                 }
             </form>
             <br />
