@@ -96,9 +96,12 @@
                         @if (User.IsInRole("Nurse"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Admission" asp-action="NurseLandingPage">Dashboard</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Admission" asp-action="NurseLandingPage">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
                             </li>
                         }
+
                     </ul>
                    
                     <ul class="navbar-nav">
@@ -193,7 +196,7 @@
                 <a class="nav-link navbar-item text-white" href="@Url.Action()">
                     <i class="fas fa-exclamation"></i>
                     Urgent Prescriptions
-                </a>              
+                </a>
                 <a class="nav-link navbar-item text-white" href="@Url.Action("Medication","Pharmacist")">
                     <i class="fas fa-pills"></i>
                     Medications
@@ -218,6 +221,38 @@
             </div>
         </nav>
     }
+
+    @if (User.IsInRole("Surgeon"))
+    {
+        <nav class="navbar-container">
+            <div class="nav flex-column navbar-vertical nav-vt" role="tablist" aria-orientation="vertical">
+                <a class="nav-link navbar-item text-white active" href="@Url.Action("Index","Surgeon")">
+                    <i class="fas fa-search"></i>
+                    Search Patient
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("AddPatient","Surgeon")">
+                    <i class="fas fa-user-plus"></i>
+                    Add Patient
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("SurgeonAppointments","Surgeon")">
+                    <i class="fas fa-calendar-plus"></i>
+                    Surgery Bookings
+                </a>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("Admissions","Surgeon")">
+                    <i class="fas fa-hospital-user"></i>
+                    Admissions
+                </a>
+                
+            </div>
+            <div class="content1">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </nav>
+    }
+
+
     <!-- Logout Confirmation Modal -->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">

@@ -1,0 +1,51 @@
+﻿@model IEnumerable<e_Prescription.Models.BookingTreatment>
+
+@{
+    ViewData["Title"] = "Surgeon Appointments";
+}
+
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+        <h4 class="text-center">Upcoming Appointments</h4>
+    </div>
+    @if (Model.Any())
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID Number</th>
+                    <th>Patient Name</th>
+                    <th>Gender</th>
+                    <th>Appointment Date</th>
+                    <th>Time slot</th>
+                    <th>Treatment</th>
+                    <th>Theatre</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var appointment in Model)
+                {
+                    <tr>
+                        <td>@appointment.PatientBooking.Patient.IdNumber</td>
+                        <td>@appointment.PatientBooking.Patient.Firstname @appointment.PatientBooking.Patient.Lastname</td>
+                        <td>@appointment.PatientBooking.Patient.Gender</td>
+                        <td>@appointment.PatientBooking.Date.ToString("yyyy-MM-dd")</td>
+                        <td>@appointment.PatientBooking.TimeSlot</td>
+                        <td>@appointment.TreatmentCode.ICD_10_CODE - @appointment.TreatmentCode.TreatmentCodeDescription</td>
+                        <td>@appointment.PatientBooking.Theatre.TheatreName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            No appointments found.
+        </div>
+    }
+</div>
+
+
+

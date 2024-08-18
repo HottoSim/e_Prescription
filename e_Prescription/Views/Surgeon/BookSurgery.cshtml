@@ -1,0 +1,78 @@
+﻿@model BookingTreatmentViewModel
+
+@{
+    ViewData["Title"] = "Book Surgery";
+    var theatres = ViewBag.getTheatre as List<Theatre>;
+    var treatmentCodes = ViewBag.TreatmentCodes as List<TreatmentCode>;
+}
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Book Surgery for Patient</h4>
+        </div>
+        <div class="card-body">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <form asp-action="BookSurgery" asp-controller="Surgeon" method="post">
+                            <input type="hidden" name="PatientId" value="@Model.PatientId" />
+
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label asp-for="BookingDate" class="control-label">Booking Date</label>
+                                    <input asp-for="BookingDate" class="form-control" type="date" />
+                                    <span asp-validation-for="BookingDate" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label asp-for="timeSlot" class="control-label">Time Slot</label>
+                                    <select asp-for="timeSlot" class="form-control">
+                                        <option selected disabled>--Select time slot--</option>
+                                        <option>AM</option>
+                                        <option>PM</option>
+                                    </select>
+                                    <span asp-validation-for="timeSlot" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label asp-for="theatreId" class="control-label">Theatre</label>
+                                    <select asp-for="theatreId" class="form-control">
+                                        <option value="">-- Select Theatre --</option>
+                                        @foreach (var theatre in theatres)
+                                        {
+                                            <option value="@theatre.TheatreId">@theatre.TheatreName</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="theatreId" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label asp-for="treatmentCodeId" class="control-label">Treatment Code</label>
+                                    <select asp-for="treatmentCodeId" class="form-control">
+                                        <option value="">-- Select Treatment Code --</option>
+                                        @foreach (var code in treatmentCodes)
+                                        {
+                                            <option value="@code.TreatmentCodeId">@code.ICD_10_CODE - @code.TreatmentCodeDescription</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="treatmentCodeId" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group d-flex justify-content-center">
+                                <button type="submit" class="btn btn-success">Book Surgery</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

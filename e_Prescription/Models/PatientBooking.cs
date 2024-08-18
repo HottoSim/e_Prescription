@@ -18,12 +18,13 @@ namespace e_Prescription.Models
         public string SurgeonId { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public DateTime Date { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         public string TimeSlot { get; set; }
 
+        [Required(ErrorMessage = "*Required")]
         [ForeignKey("Theatre")]
         public int TheatreId { get; set; }
         public virtual Theatre Theatre { get; set; }
