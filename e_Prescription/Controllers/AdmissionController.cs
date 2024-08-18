@@ -26,7 +26,14 @@ namespace e_Prescription.Controllers
         public async Task< IActionResult> NurseLandingPage()
         {
             var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             var nurseName = $"{user.FirstName} {user.LastName}"; // Fetch full name
+
+            
 
             // Fetch the number of patients admitted by the current nurse
             var admittedPatientsCount = context.Admissions
@@ -35,7 +42,7 @@ namespace e_Prescription.Controllers
 
             // Fetch the number of patients booked for admission
             var bookedPatientsCount = context.BookingTreatments
-                .Count(b => b.PatientBooking.Patient.IsActive);
+                .Count(b => b.PatientBooking.Patient.Status == "Not Admitted");
 
             var model = new NurseLandingPageViewModel
             {
@@ -45,17 +52,18 @@ namespace e_Prescription.Controllers
 
                 AdmittedCount = context.Admissions.Where(a => !a.IsDischarged).Count(),
                 DischargedCount = context.Admissions.Where(a => a.IsDischarged).Count(),
-                BookedPatients = context.BookingTreatments.Where(p => p.PatientBooking.Patient.IsActive).Count()
+                BookedPatients = context.BookingTreatments.Where(p => p.PatientBooking.Patient.Status == "Not Admitted").Count()
 
             };
 
             return View(model);
         }
 
+        //View bookings
         public IActionResult Index(string searchIdNumber, DateTime? searchDate, string sortOrder)
         {
             var bookings = context.BookingTreatments
-                                .Where(p => p.PatientBooking.Patient.IsActive)
+                                .Where(p => p.PatientBooking.Patient.Status == "Not Admitted")
                                 .Include(pb => pb.PatientBooking.Patient)
                                 .Include(t => t.PatientBooking.Theatre)
                                 .Include(t => t.TreatmentCode)
@@ -456,7 +464,7 @@ namespace e_Prescription.Controllers
                     return NotFound();
                 }
 
-                patient.IsActive = false;
+                patient.Status = "Admitted";
                 context.SaveChanges(); // Save changes to update the patient's availability
 
                 var bed = context.Beds.Find(admission.BedId);
@@ -731,16 +739,19 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public async Task<IActionResult> Discharge(DischargeViewModel viewModel)
         {
-            var admission = context.Admissions
-                           .Include(a => a.Bed)
-                           .FirstOrDefault(a => a.Id == viewModel.AdmissionId);
+            // Find the admission record
+            var admission = await context.Admissions
+                .Include(a => a.Bed)
+                .Include(a => a.Patient) // Include the patient for status update
+                .FirstOrDefaultAsync(a => a.Id == viewModel.AdmissionId);
 
             if (admission == null || admission.IsDischarged)
             {
                 return NotFound();
             }
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the logged-in user's ID
+            // Get the logged-in nurse
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var nurse = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             if (nurse == null)
@@ -748,9 +759,11 @@ namespace e_Prescription.Controllers
                 return NotFound();
             }
 
+            // Update the admission status
             admission.IsDischarged = true;
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
+            // Create and save the discharge record
             var discharge = new Discharge
             {
                 AdmissionId = viewModel.AdmissionId,
@@ -760,20 +773,33 @@ namespace e_Prescription.Controllers
             };
 
             context.Discharges.Add(discharge);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
-            var bed = context.Beds.Find(admission.BedId);
+            // Update the patient's status
+            var patient = await context.Patients.FindAsync(admission.PatientId);
+            if (patient == null)
+            {
+                return NotFound();
+            }
+
+            patient.Status = "Discharged";
+            await context.SaveChangesAsync(); // Save changes to update the patient's status
+
+            // Update the bed availability
+            var bed = await context.Beds.FindAsync(admission.BedId);
             if (bed == null)
             {
                 return NotFound();
             }
 
             bed.IsAvailable = true;
-            context.SaveChanges(); // Save changes to update the bed's availability
-            TempData["SuccessMessage"] = "Patient has been discharged successfully...";
+            await context.SaveChangesAsync(); // Save changes to update the bed's availability
+
+            TempData["SuccessMessage"] = "Patient has been discharged successfully.";
 
             return RedirectToAction("NursePatients");
         }
+
 
 
     }

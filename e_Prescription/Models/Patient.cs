@@ -29,7 +29,9 @@ namespace e_Prescription.Models
 
         // public string Surgeon { get; set; }
 
-        public bool IsActive { get; set; } = false;
+       // public bool IsActive { get; set; } = false;
+
+        public string Status { get; set; } = "Not Admitted";
 
         public virtual List<PatientAllergies> PatientAllergies { get; set; } = new List<PatientAllergies>();
 

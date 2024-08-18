@@ -55,7 +55,7 @@ namespace e_Prescription.Controllers
                 .Include(a => a.PatientBooking)
                     .ThenInclude(pb => pb.Theatre)  // Include the Theatre model
                 .Include(a => a.TreatmentCode)
-                .Where(a => a.PatientBooking.SurgeonId == user.Id && a.PatientBooking.Patient.IsActive)
+                .Where(a => a.PatientBooking.SurgeonId == user.Id && a.PatientBooking.Patient.Status != "Discharged")
                 .ToListAsync();
 
             return View(appointments);
@@ -139,11 +139,13 @@ namespace e_Prescription.Controllers
             _context.BookingTreatments.Add(bookingTreatment);
             await _context.SaveChangesAsync();
 
-            patient.IsActive = true;
+            //patient.IsActive = true;
+
+            patient.Status = "Not Admitted";
             _context.Patients.Update(patient);
             await _context.SaveChangesAsync(); // Save changes to update the patient's availability
 
-            TempData["SuccessMessage"] = "Surgery has been successfully booked.";
+            TempData["SuccessSurgery"] = "Surgery has been successfully booked.";
             return RedirectToAction("SurgeonAppointments");
         }
 
