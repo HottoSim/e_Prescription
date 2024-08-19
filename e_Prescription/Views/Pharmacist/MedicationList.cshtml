@@ -1,0 +1,109 @@
+﻿@model IEnumerable<e_Prescription.Models.PharmacyMedication>
+
+@{
+    ViewData["Title"] = "Manage medication";
+}
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Pharmacy Medication</h4>
+        </div>
+
+        <div class="d-flex justify-content-end btn1">
+            <button class="btn btn-primary" onclick="window.location.href='@Url.Action("AddMedication", "Pharmacist")'">Create New</button>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Medication Name</th>
+                    <th>Schedule</th>
+                    <th>Dosage Form</th>
+                    <th>Quantity On Hand</th>
+                    <th>Reorder Level</th>
+                    <th>Ingredients</th>
+                    <th>Order</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var medication in Model)
+                {
+                    <tr>
+                        <td>@medication.MedicationName</td>
+                        <td>@medication.Schedule</td>
+                        <td>@medication.DosageForm.Description</td>
+                        <td>@medication.QuantityOnHand</td>
+                        <td>@medication.ReorderLevel</td>
+                        <td>
+                            <ul>
+                                @foreach (var ingredient in medication.PharmacyMedicationIngredients)
+                                {
+                                    <li>@ingredient.ActiveIngredient.IngredientName - @ingredient.Strength</li>
+                                }
+                            </ul>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#orderModal"
+                                    data-medicationid="@medication.MedicationId"
+                                    data-medicationname="@medication.MedicationName"
+                                    data-quantityonhand="@medication.QuantityOnHand">
+                                Order
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Modal -->
+        <div class="modal fade" id="orderModal" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="orderModalLabel">Order Medication</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form asp-action="ManageStock" method="post" id="orderForm">
+                            <input type="hidden" name="medicationId" id="modalMedicationId" />
+                            <div>
+                                <label>Medication: <span id="modalMedicationName"></span></label>
+                            </div>
+                            <div>
+                                <label>Current Quantity: <span id="modalQuantityOnHand"></span></label>
+                            </div>
+                            <div>
+                                <label>Order Quantity</label>
+                                <input type="number" name="quantity" required />
+                            </div>
+                            <button type="submit" class="btn btn-primary">Order</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $('#orderModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var medicationId = button.data('medicationid');
+            var medicationName = button.data('medicationname');
+            var quantityOnHand = button.data('quantityonhand');
+
+            var modal = $(this);
+            modal.find('#modalMedicationId').val(medicationId);
+            modal.find('#modalMedicationName').text(medicationName);
+            modal.find('#modalQuantityOnHand').text(quantityOnHand);
+        });
+    </script>
+}

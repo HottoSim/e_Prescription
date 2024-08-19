@@ -80,5 +80,7 @@ namespace e_Prescription.Data
 
         public DbSet<MedicationInteraction> MedicationInteractions { get; set; }
 
+        public DbSet<PharmacyMedicationIngredient> PharmacyMedicationIngredients { get; set; }
+
     }
 }

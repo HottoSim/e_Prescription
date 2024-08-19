@@ -1,0 +1,74 @@
+﻿@model e_Prescription.Models.PharmacyMedicationIngredient
+@{
+    ViewData["Title"] = "Add ingredients";
+}
+<style>
+    .centered-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 30px; /* Adjust the gap size as needed */
+    }
+</style>
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Add ingredients</h4>
+        </div>
+        <div class="card-body">
+            <div class="container">
+                <div class="row justify-content-center">
+                    @if (ViewBag.Message != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @ViewBag.Message
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    }
+                    <div class="col-md-8">
+                        <form asp-action="AddIngredient" method="post">
+                            <input type="hidden" asp-for="MedicationId" value="@ViewBag.MedicationId" />
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label>Ingredient</label>
+                                    <select asp-for="ActiveIngredientId" class="form-control" asp-items="@ViewBag.Ingredients">
+                                        <option selected disabled>--Select ingredient--</option>
+                                    </select>
+                                    <span asp-validation-for="ActiveIngredientId" class="text-danger"></span>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label asp-for="Strength" ></label>
+                                    <input asp-for="Strength" class="form-control" />
+                                    <span asp-validation-for="Strength" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="centered-container">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-info" onclick="history.back()">Back</button>
+                                    <input type="submit" value="Add ingredient" class="btn btn-success" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

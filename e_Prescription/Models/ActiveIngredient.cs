@@ -9,5 +9,7 @@ namespace e_Prescription.Models
 
         [Required(ErrorMessage ="*Required")]
         public string IngredientName { get; set; }
+
+        public virtual ICollection<PharmacyMedicationIngredient> PharmacyMedicationIngredients { get; set; }
     }
 }

@@ -1,0 +1,42 @@
+﻿@model e_Prescription.Models.PharmacyMedication
+
+@{
+    ViewData["Title"] = "Order medication";
+    Layout = "_Layout2";
+}
+
+<style>
+    .centered-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 30px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-10">
+        <form asp-action="ManageStock" method="post">
+            <input type="hidden" asp-for="MedicationId" />
+            <div>
+                <label>Medication: @Model.MedicationName</label>
+            </div>
+            <div>
+                <label>Current Quantity: @Model.QuantityOnHand</label>
+            </div>
+            <div>
+                <label>Order Quantity</label>
+                <input type="number" name="orderQuantity" min="1" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Order</button>
+        </form>
+    </div>
+</div>

@@ -53,10 +53,72 @@ namespace e_Prescription.Controllers
             _context.SaveChanges();
             TempData["SuccessMessage"] = "Successfully added...";
             ViewBag.getDosage = new SelectList(_context.DosageForms, "DosageFormId", "Description");
-            //ViewBag.getDosageForm = _context.DosageForms.ToList();
 
-            return RedirectToAction("Medication");
+            return RedirectToAction("AddIngredient", new { medicationId = medication.MedicationId });
         }
+
+        //Add Medication ingredients
+        [HttpGet]
+        public IActionResult AddIngredient(int medicationId)
+        {
+            ViewBag.MedicationId = medicationId;
+            ViewBag.Ingredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddIngredient(PharmacyMedicationIngredient model)
+        {
+            _context.PharmacyMedicationIngredients.Add(model);
+            _context.SaveChanges();
+
+            ViewBag.Message = "Ingredient has been added...";
+
+            ViewBag.MedicationId = model.MedicationId;
+            ViewBag.Ingredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+
+            return RedirectToAction("AddIngredient", new { medicationId = model.MedicationId });
+
+        }
+
+        //Stock management
+        [HttpGet]
+        public IActionResult ManageStock(int medicationId)
+        {
+            var medication = _context.PharmacyMedications.Find(medicationId);
+            if (medication == null)
+            {
+                return NotFound();
+            }
+            return View(medication);
+        }
+
+        [HttpPost]
+        public IActionResult ManageStock(int medicationId, int orderQuantity)
+        {
+            var medication = _context.PharmacyMedications.Find(medicationId);
+            if (medication != null)
+            {
+                medication.QuantityOnHand += orderQuantity;
+                _context.SaveChanges();
+            }
+            return RedirectToAction("MedicationList");
+        }
+
+        //Medication list
+        [HttpGet]
+        public IActionResult MedicationList()
+        {
+            var medications = _context.PharmacyMedications
+                .Include(m => m.PharmacyMedicationIngredients)
+                .ThenInclude(mi => mi.ActiveIngredient)
+                .Include(m => m.DosageForm)
+                .ToList();
+
+            return View(medications);
+        }
+
+
 
         //Return Stock Records
         [HttpGet]
