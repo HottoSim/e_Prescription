@@ -457,6 +457,36 @@ namespace e_Prescription.Controllers
             ViewBag.getIngredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
             return RedirectToAction("ManageContraIndications");
         }
+
+        //Manage Medical interactions 
+        [HttpPost]
+        public IActionResult ManageMedicalInteractions()
+        {
+            var medication = _context.MedicationInteractions.ToList();
+            return View(medication);
+        }
+
+        //Add medication interaction
+        [HttpGet]
+        public IActionResult AddMedicalInteraction()
+        {
+            ViewBag.getMedication = new SelectList(_context.Medications, "MedicationId", "MedicationName");
+            ViewBag.getMedPharmacy = new SelectList(_context.PharmacyMedications, "MedicationId", "MedicationName");
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddMedicalInteraction(MedicationInteraction interaction)
+        {
+            _context.MedicationInteractions.Add(interaction);
+            await _context.SaveChangesAsync();
+
+            TempData["SucessInteraction"] = "Interation has been successfully added...";
+
+            ViewBag.getMedication = new SelectList(_context.Medications, "MedicationId", "MedicationName");
+            ViewBag.getMedPharmacy = new SelectList(_context.PharmacyMedications, "MedicationId", "MedicationName");
+
+            return RedirectToAction("ManageMedicalInteractions");
+        }
     }
 }
 
