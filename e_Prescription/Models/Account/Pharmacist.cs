@@ -9,11 +9,11 @@ namespace e_Prescription.Models.Account
         [Key]
         public int UserId { get; set; }
 
-        [Required]
-        [RegularExpression(@"^P\d{5}$", ErrorMessage = "Invalid Pharmacy License Number")]
+        [Required(ErrorMessage = "*Required")]
+        [RegularExpression(@"^\d{6}$", ErrorMessage = "Invalid HPCSA Number Number")]
         public string PharmacyLicenseNumber { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "*Required")]
         [FutureDate(ErrorMessage = "The License Expiry Date must be a date in the future.")]
         public DateTime LicenseExpiryDate { get; set; }
 

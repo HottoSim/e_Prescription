@@ -30,7 +30,7 @@ namespace e_Prescription.Controllers
 
             if (patient == null)
             {
-                // If no patient is found, you might want to add a message to the view
+                // If no patient is found
                 ViewBag.Message = "Patient not found";
                 return View();
             }

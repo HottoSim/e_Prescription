@@ -31,15 +31,15 @@ namespace e_Prescription.Models.Account
         public string ContactNumber { get; set; }
 
         [Required(ErrorMessage = "*Required")]
-        [RegularExpression(@"^MP\d{7}$", ErrorMessage = "Invalid Medical License Number")]
+        [RegularExpression(@"^\d{6}$", ErrorMessage = "Invalid HPCSA Number Number")]
         public string HPCSANumber { get; set; } // For healthcare professionals
 
         [Required(ErrorMessage = "*Required")]
-        [RegularExpression(@"^P\d{5}$", ErrorMessage = "Invalid Pharmacy License Number")]
+        [RegularExpression(@"^\d{6}$", ErrorMessage = "Invalid HPCSA Number Number")]
         public string PharmacyLicenseNumber { get; set; }
 
         [Required(ErrorMessage = "*Required")]
-        [RegularExpression(@"^\d{7}$", ErrorMessage = "Invalid Nursing License Number")]
+        [RegularExpression(@"^\d{6}$", ErrorMessage = "Invalid HPCSA Number Number")]
         public string NursingLicenseNumber { get; set; }
 
         [Required(ErrorMessage = "*Required")]

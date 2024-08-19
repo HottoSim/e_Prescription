@@ -8,10 +8,12 @@ namespace e_Prescription.Models
         [Key]
         public int IndicationId { get; set; }
 
+        [Required(ErrorMessage = "*Required")]
         [ForeignKey("ChronicCondition")]
         public int ChronicConditionId { get; set; }
         public virtual ChronicCondition ChronicCondition { get; set; }
 
+        [Required(ErrorMessage = "*Required")]
         [ForeignKey("Ingredient")]
         public int ActiveIngredientId { get; set; }
         public virtual ActiveIngredient ActiveIngredient { get; set; }

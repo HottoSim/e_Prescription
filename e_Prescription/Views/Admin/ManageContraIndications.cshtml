@@ -1,0 +1,97 @@
+﻿@model IEnumerable<e_Prescription.Models.ContraIndication>
+
+@{
+    ViewData["Title"] = "ManageContraIndications";
+}
+
+<h1>ManageContraIndications</h1>
+
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Manage Contra-indications</h4>
+        </div>
+
+        <div class="d-flex justify-content-end btn1">
+            <button class="btn btn-primary" onclick="openVitalModal('@Url.Action("AddContraIndication", "Admin")')">Create New</button>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Chronic Condition
+                    </th>
+                    <th>
+                        Active Ingredient
+                    </th>
+                    <th>
+                        Description
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ChronicCondition.Diagnosis) @Html.DisplayFor(modelItem => item.ChronicCondition.ICD_10_CODE)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ActiveIngredient.IngredientName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.IndicationId">Update</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="modal fade" id="VitalModal" tabindex="-1" role="dialog" aria-labelledby="VitalModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title text-center" id="VitalModalLabel">Add New contra indication</h5>
+                        <button type="button" class="close" onclick="window.location.href='@Url.Action("ManageContraIndications", "Admin")'" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="VitalModalBody">
+                        <!-- Content loaded dynamically -->
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function openVitalModal(url) {
+            $('#VitalModalBody').load(url, function () {
+                $('#VitalModal').modal('show');
+            });
+        }
+    </script>
+}
+
+
