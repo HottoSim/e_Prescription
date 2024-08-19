@@ -62,7 +62,7 @@ namespace e_Prescription.Controllers
         //View bookings
         public IActionResult Index(string searchIdNumber, DateTime? searchDate, string sortOrder)
         {
-            var bookings = context.BookingTreatments
+            var bookings = context.BookingTreatments.OrderBy(b => b.PatientBooking.Patient.Firstname)
                                 .Where(p => p.PatientBooking.Patient.Status == "Not Admitted")
                                 .Include(pb => pb.PatientBooking.Patient)
                                 .Include(t => t.PatientBooking.Theatre)
@@ -349,11 +349,11 @@ namespace e_Prescription.Controllers
                 }
             };
 
-            ViewBag.Wards = new SelectList(wards, "WardId", "WardName");
-            ViewBag.Beds = new SelectList(beds, "BedId", "BedName");
+            ViewBag.Wards = new SelectList(wards.OrderBy(w => w.WardName), "WardId", "WardName");
+            ViewBag.Beds = new SelectList(beds.OrderBy(b => b.BedName), "BedId", "BedName");
             ViewBag.PatientName = $"{patient.Firstname} {patient.Lastname}";
             ViewBag.PatientId = patientId;
-            ViewBag.Vitals = context.Vital.ToList();
+            ViewBag.Vitals = context.Vital.OrderBy(v => v.VitalName).ToList();
             ViewBag.Notifications = null;  // Initialize to avoid null reference
             ViewBag.AlertMessage = null;  // Initialize to avoid null reference
             ViewBag.ErrorMessage = null;
@@ -534,9 +534,9 @@ namespace e_Prescription.Controllers
 
             ViewBag.PatientName = $"{patient.Firstname} {patient.Lastname}";
             ViewBag.PatientId = patientId; // Set PatientId in ViewBag
-            ViewBag.Allergies = new SelectList(context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
-            ViewBag.Conditions = new SelectList(context.ChronicConditions, "ChronicCondotionId", "ConditionName");
-            ViewBag.Medications = new SelectList(context.Medications, "MedicationId", "MedicationName");
+            ViewBag.Allergies = new SelectList(context.ActiveIngredients.OrderBy(c => c.IngredientName), "ActiveIngredientId", "IngredientName");
+            ViewBag.Conditions = new SelectList(context.ChronicConditions.OrderBy(c => c.Diagnosis), "ChronicCondotionId", "ConditionName");
+            ViewBag.Medications = new SelectList(context.Medications.OrderBy(c => c.MedicationName), "MedicationId", "MedicationName");
 
             return View(viewModel);
         }
@@ -574,9 +574,9 @@ namespace e_Prescription.Controllers
 
             ViewBag.PatientName = $"{patient.Firstname} {patient.Lastname}";
             ViewBag.PatientId = viewModel.PatientId; // Set PatientId in ViewBag
-            ViewBag.Allergies = new SelectList(context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
-            ViewBag.Conditions = new SelectList(context.ChronicConditions, "ChronicCondotionId", "ConditionName");
-            ViewBag.Medications = new SelectList(context.Medications, "MedicationId", "MedicationName");
+            ViewBag.Allergies = new SelectList(context.ActiveIngredients.OrderBy(c => c.IngredientName), "ActiveIngredientId", "IngredientName");
+            ViewBag.Conditions = new SelectList(context.ChronicConditions.OrderBy(c => c.Diagnosis), "ChronicCondotionId", "Diagnosis");
+            ViewBag.Medications = new SelectList(context.Medications.OrderBy(c => c.MedicationName), "MedicationId", "MedicationName");
             TempData["AlertMessage"] = $"{patient.Firstname} {patient.Lastname} has been admitted successfully!";
             return View(viewModel); // Or any appropriate action
         }
@@ -586,8 +586,13 @@ namespace e_Prescription.Controllers
         {
             var user = await userManager.GetUserAsync(User);
 
+            if(user == null) 
+            {
+                return NotFound();
+            }
+
             // Query for admitted patients
-            var admittedPatientsQuery = context.Admissions
+            var admittedPatientsQuery = context.Admissions.OrderBy(a => a.AdmissionDate)
                 .Where(a => a.NurseId == user.Id && !a.IsDischarged)
                 .Include(a => a.Patient)
                 .Include(a => a.ApplicationUser)
