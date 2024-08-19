@@ -12,30 +12,38 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label asp-for="MedicationName" class="control-label">Medication Name</label>
+                    <label asp-for="MedicationName" class="control-label">Medication Name:</label>
                     <input asp-for="MedicationName" class="form-control" />
                     <span asp-validation-for="MedicationName" class="text-danger"></span>
                 </div>
             </div>
-            @* <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label asp-for="Dosage" class="control-label">Dosage</label>
-                    <input asp-for="Dosage" class="form-control" />
-                    <span asp-validation-for="Dosage" class="text-danger"></span>
-                </div>  *@
-                @* <select class="form-select" aria-label="Dosage">                 
+            <div class="form-row">     
+                <label asp-for="Schedule" class="control-label">Schedule:</label>
+                <select class="form-select">                   
                     <option selected>Select</option>
-                    <option value="1">Tablet</option>
-                    <option value="2">Syrup</option>                   
-                </select>
-            </div> *@
-            @* <div class="form-row">
+                    <option value="1">After every 3hrs</option>
+                    <option value="2">After every 6hrs</option>
+                    <option value="3">After every 9hrs</option>
+                    <option value="2">After every 12hrs</option>
+                    <span asp-validation-for="Schedule" class="text-danger"></span>
+                </select>              
+            </div> 
+            <div class="form-row">                
                 <div class="form-group col-md-4">
-                    <label asp-for="ReOrderLevel" class="control-label">ReOrder Level</label>
-                    <input asp-for="ReOrderLevel" class="form-control" />
-                    <span asp-validation-for="ReOrderLevel" class="text-danger"></span>
+                    <label asp-for="DosageFormId" class="control-label">Dosage form</label>
+                    <select asp-for="DosageFormId" class="form-control" asp-items="@ViewBag.getDosage">
+                        <option selected disabled>--Select dosage form--</option>
+                    </select>
+                    <span asp-validation-for="DosageFormId" class="text-danger"></span>
                 </div>
-            </div> *@
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label asp-for="ReorderLevel" class="control-label">ReOrder Level:</label>
+                    <input asp-for="ReorderLevel" class="form-control" />
+                    <span asp-validation-for="ReorderLevel" class="text-danger"></span>
+                </div>
+            </div>
 
             <div class="d-flex justify-content-center">
                 <input type="submit" value="Done" class="btn btn-success" />

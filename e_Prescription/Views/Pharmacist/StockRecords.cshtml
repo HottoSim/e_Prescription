@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<e_Prescription.Models.PharmacyMedication>
 
 @{
-    ViewData["Title"] = "Medications";
+    ViewData["Title"] = "Stock Records";
 }
 
 <style>
@@ -27,11 +27,11 @@
 <div class="col-md-12 mx-auto pt-0 p-0">
     <div class="card">
         <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
-            <h4 class="text-center">Medications</h4>
+            <h4 class="text-center">Stock Records</h4>
         </div>
-        <div class="d-flex justify-content-end btn1">
-            <button class="btn btn-primary" onclick="openMedicationModal('@Url.Action("AddMedication", "Pharmacist")')">ADD MED</button>
-        </div>
+       @*  <div class="d-flex justify-content-end btn1">
+            <button class="btn btn-primary" onclick="openStockRecordsModal('@Url.Action("AddMedication", "Pharmacist")')">ADD MED</button>
+        </div> *@
 
 
         @if (TempData["SuccessMessage"] != null)
@@ -46,27 +46,14 @@
         <table class="table">
             <thead>
                 <tr>
+
                     <th>
                         Medication Name
                     </th>
                     <th>
-                        Dosage
-                    </th>
-                    <th>
-                        Schedule
-                    </th>
-                    <th>
-                        ReOrder Level
-                    </th>
-                    @* <th>
-                        Active Ingredients
-                    </th>
-                    <th>
-                        Strength
-                    </th> *@
-                    <th>
-                        Action
-                    </th>
+                        Qty On Hand
+                    </th>                    
+                    
                 </tr>
             </thead>
             <tbody>
@@ -74,33 +61,25 @@
                 {
                     <tr>
                         <td>
-                           @Html.DisplayFor(modelItem => item.MedicationName)
+                            @Html.DisplayFor(modelItem => item.MedicationName)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.DosageForm)
+                            @Html.DisplayFor(modelItem => item.QuantityOnHand)
                         </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Schedule)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ReorderLevel)
-                        </td>
-                        <td>
-                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.MedicationId">Update</a>
-                        </td>
+                        
                     </tr>
                 }
-            </tbody> 
+            </tbody>
         </table>
-        <div class="modal fade" id="MedicationModal" tabindex="-1" role="dialog" aria-labelledby="MedicationModalLabel" aria-hidden="true">
+        <div class="modal fade" id="StockRecordsModal" tabindex="-1" role="dialog" aria-labelledby="StockRecordsModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
-                    <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title text-center" id="MedicationModalLabel">Add New Med</h5>
-                        <button type="button" class="close" onclick="window.location.href='@Url.Action("Medication", "Pharmacist")'" data-dismiss="modal" aria-label="Close">
+                    @* <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title text-center" id="StockRecordsModalLabel">Add New Med</h5>
+                        <button type="button" class="close" onclick="window.location.href='@Url.Action("StockRecords", "Pharmacist")'" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                    </div>
+                    </div> *@
                     <div class="modal-body" id="MedicationModalBody">
                         <!-- Content loaded dynamically -->
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -116,10 +95,11 @@
     }
 
     <script>
-        function openMedicationModal(url) {
-            $('#MedicationModalBody').load(url, function () {
-                $('#MedicationModal').modal('show');
+        function openStockRecordsModal(url) {
+            $('#StockRecordsModalBody').load(url, function () {
+                $('#StockRecordsModal').modal('show');
             });
         }
     </script>
 }
+

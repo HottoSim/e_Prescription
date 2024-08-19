@@ -21,7 +21,7 @@ namespace e_Prescription.Models
         public int ReorderLevel { get; set; }
 
         [Required(ErrorMessage = "*Required")]
-        [ForeignKey("DasageForm")]
+        [ForeignKey("DosageForm")]
         public int DosageFormId { get; set; }
         public virtual DosageForm DosageForm { get; set; }
 

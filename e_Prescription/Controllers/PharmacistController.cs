@@ -42,7 +42,8 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult AddMedication()
         {
-            ViewBag.getDosageForm = _context.DosageForms.ToList();
+            //ViewBag.getDosageForm = _context.DosageForms.ToList();
+            ViewBag.getDosage = new SelectList(_context.DosageForms, "DosageFormId", "Description");
             return View();
         }
         [HttpPost]
@@ -51,13 +52,18 @@ namespace e_Prescription.Controllers
             _context.PharmacyMedications.Add(medication);
             _context.SaveChanges();
             TempData["SuccessMessage"] = "Successfully added...";
-
-            ViewBag.getDosageForm = _context.DosageForms.ToList();
+            ViewBag.getDosage = new SelectList(_context.DosageForms, "DosageFormId", "Description");
+            //ViewBag.getDosageForm = _context.DosageForms.ToList();
 
             return RedirectToAction("Medication");
         }
 
         //Return Stock Records
-
+        [HttpGet]
+        public IActionResult StockRecords()
+        {
+            var stockRecords = _context.PharmacyMedications.ToList();
+            return View(stockRecords);
+        }
     }
 }
