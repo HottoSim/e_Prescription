@@ -42,21 +42,45 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult AddMedication()
         {
-            //ViewBag.getDosageForm = _context.DosageForms.ToList();
-            ViewBag.getDosage = new SelectList(_context.DosageForms, "DosageFormId", "Description");
+            ViewBag.ActiveIngredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+
+            ViewBag.DosageForms = new SelectList(_context.DosageForms, "DosageFormId", "Description");
+
             return View();
         }
-        [HttpPost]
-        public IActionResult AddMedication(PharmacyMedication medication)
-        { 
-            _context.PharmacyMedications.Add(medication);
-            _context.SaveChanges();
-            ViewBag.SuccessMessage = "Successfully added...";
-            ModelState.Clear();
-            ViewBag.getDosage = new SelectList(_context.DosageForms, "DosageFormId", "Description");
 
-            return View(medication);
+        // POST: Add Medication
+        [HttpPost]
+        public async Task<IActionResult> AddMedication(PharmacyMedication medication, List<int> selectedIngredients, List<string> ingredientStrengths)
+        {
+           
+                // Add the medication first
+                _context.PharmacyMedications.Add(medication);
+                await _context.SaveChangesAsync();
+
+                // Now add the ingredients with the saved MedicationId
+                if (selectedIngredients != null && ingredientStrengths != null)
+                {
+                    for (int i = 0; i < selectedIngredients.Count; i++)
+                    {
+                        var ingredient = new PharmacyMedicationIngredient
+                        {
+                            MedicationId = medication.MedicationId, 
+                            ActiveIngredientId = selectedIngredients[i],
+                            Strength = ingredientStrengths[i]
+                        };
+                        _context.PharmacyMedicationIngredients.Add(ingredient);
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
+            ViewBag.DosageForms = new SelectList(_context.DosageForms, "DosageFormId", "Description", medication.DosageFormId);
+            ViewBag.ActiveIngredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+
+            return RedirectToAction("MedicationList");
+            
         }
+
 
         //Add Medication ingredients
         [HttpGet]
