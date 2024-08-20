@@ -48,20 +48,32 @@ namespace e_Prescription.Controllers
         }
         [HttpPost]
         public IActionResult AddMedication(PharmacyMedication medication)
-        {
+        { 
             _context.PharmacyMedications.Add(medication);
             _context.SaveChanges();
-            TempData["SuccessMessage"] = "Successfully added...";
+            ViewBag.SuccessMessage = "Successfully added...";
+            ModelState.Clear();
             ViewBag.getDosage = new SelectList(_context.DosageForms, "DosageFormId", "Description");
 
-            return RedirectToAction("AddIngredient", new { medicationId = medication.MedicationId });
+            return View(medication);
         }
 
         //Add Medication ingredients
         [HttpGet]
         public IActionResult AddIngredient(int medicationId)
         {
-            ViewBag.MedicationId = medicationId;
+            var medication = _context.PharmacyMedications.Find(medicationId);
+
+            if (medication == null)
+            {
+                return NotFound();
+            }
+            var model = new PharmacyMedicationIngredient
+            {
+                MedicationId = medicationId,
+            };
+
+            ViewBag.MedicationId = medicationId; // Pass the MedicationId to the view
             ViewBag.Ingredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
             return View();
         }
@@ -69,17 +81,30 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public IActionResult AddIngredient(PharmacyMedicationIngredient model)
         {
+            var medication = _context.PharmacyMedications.Find(model.MedicationId);
+
+            if (medication == null)
+            {
+                return NotFound();
+            }
+
+            var medic = new PharmacyMedicationIngredient
+            {
+                MedicationId = model.MedicationId,
+                ActiveIngredientId = model.ActiveIngredientId,
+                Strength = model.Strength
+            };
+
             _context.PharmacyMedicationIngredients.Add(model);
             _context.SaveChanges();
 
             ViewBag.Message = "Ingredient has been added...";
-
-            ViewBag.MedicationId = model.MedicationId;
             ViewBag.Ingredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
 
+            // Redirect back to the same AddIngredient action with the medicationId
             return RedirectToAction("AddIngredient", new { medicationId = model.MedicationId });
-
         }
+
 
         //Stock management
         [HttpGet]

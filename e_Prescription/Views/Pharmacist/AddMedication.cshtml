@@ -29,49 +29,63 @@
         <div class="card-body">
             <div class="container">
                 <div class="row justify-content-center">
-                    <div class="col-md-8">
-                        <form asp-action="AddMedication" method="post">
-                            <div class="row">
-                                <div class="form-group col-md-6">
-                                    <label asp-for="MedicationName" class="control-label">Medication name</label>
-                                    <input asp-for="MedicationName" class="form-control" />
-                                    <span asp-validation-for="MedicationName" class="text-danger"></span>
+                    @if (ViewBag.SuccessMessage != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @ViewBag.SuccessMessage
+                            <form asp-action="AddIngredient" method="get" class="d-inline">
+                                <input type="hidden" name="medicationId" value="@Model.MedicationId" />
+                                <button type="submit" class="btn btn-primary btn-sm ml-2">Add ingredients</button>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-8">
+                            <form asp-action="AddMedication" method="post">
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        <label asp-for="MedicationName" class="control-label">Medication name</label>
+                                        <input asp-for="MedicationName" class="form-control" />
+                                        <span asp-validation-for="MedicationName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label asp-for="Schedule" class="control-label"></label>
+                                        <input asp-for="Schedule" class="form-control" />
+                                        <span asp-validation-for="Schedule" class="text-danger"></span>
+                                    </div>
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label asp-for="Schedule" class="control-label"></label>
-                                    <input asp-for="Schedule" class="form-control" />
-                                    <span asp-validation-for="Schedule" class="text-danger"></span>
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        <label asp-for="QuantityOnHand" class="control-label">Quantity on hand</label>
+                                        <input asp-for="QuantityOnHand" class="form-control" />
+                                        <span asp-validation-for="QuantityOnHand" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label asp-for="ReorderLevel" class="control-label">Re-order level</label>
+                                        <input asp-for="ReorderLevel" class="form-control" />
+                                        <span asp-validation-for="ReorderLevel" class="text-danger"></span>
+                                    </div>
                                 </div>
-                            </div>
-                           <div class="row">
-                                <div class="form-group col-md-6">
-                                    <label asp-for="QuantityOnHand" class="control-label">Quantity on hand</label>
-                                    <input asp-for="QuantityOnHand" class="form-control" />
-                                    <span asp-validation-for="QuantityOnHand" class="text-danger"></span>
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        <label asp-for="DosageFormId" class="control-label">Dosage form</label>
+                                        <select asp-for="DosageFormId" asp-items="@ViewBag.getDosage" class="form-control">
+                                            <option selected disabled>--Select dosage--</option>
+                                        </select>
+                                        <span asp-validation-for="DosageFormId" class="text-danger"></span>
+                                    </div>
                                 </div>
-                                <div class="form-group col-md-6">
-                                    <label asp-for="ReorderLevel" class="control-label">Re-order level</label>
-                                    <input asp-for="ReorderLevel" class="form-control" />
-                                    <span asp-validation-for="ReorderLevel" class="text-danger"></span>
+                                <div class="centered-container">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-info" onclick="history.back()">Back</button>
+                                        <input type="submit" value="Add medication" class="btn btn-success" />
+                                    </div>
                                 </div>
-                           </div>
-                            <div class="row">
-                                <div class="form-group col-md-6">
-                                    <label asp-for="DosageFormId" class="control-label">Dosage form</label>
-                                    <select asp-for="DosageFormId" asp-items="@ViewBag.getDosage" class="form-control">
-                                        <option selected disabled>--Select dosage--</option>
-                                    </select>
-                                    <span asp-validation-for="DosageFormId" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="centered-container">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-info" onclick="history.back()">Back</button>
-                                    <input type="submit" value="Add medication" class="btn btn-success" />
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                            </form>
+                        </div>
+
+                    }
                 </div>
             </div>
         </div>
