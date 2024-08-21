@@ -17,7 +17,7 @@ namespace e_Prescription.Migrations
             //migrationBuilder.CreateIndex(
             //    name: "IX_MedicationIngredients_MedicationId",
             //    table: "MedicationIngredients",
-            //    column: "MedicationId",
+            //    column: "PharmacyMedicationId",
             //    unique: true);
         }
 
@@ -31,7 +31,7 @@ namespace e_Prescription.Migrations
             //migrationBuilder.CreateIndex(
             //    name: "IX_MedicationIngredients_MedicationId",
             //    table: "MedicationIngredients",
-            //    column: "MedicationId");
+            //    column: "PharmacyMedicationId");
         }
     }
 }

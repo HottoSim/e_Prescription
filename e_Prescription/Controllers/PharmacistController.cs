@@ -58,14 +58,14 @@ namespace e_Prescription.Controllers
                 _context.PharmacyMedications.Add(medication);
                 await _context.SaveChangesAsync();
 
-                // Now add the ingredients with the saved MedicationId
+                // Now add the ingredients with the saved PharmacyMedicationId
                 if (selectedIngredients != null && ingredientStrengths != null)
                 {
                     for (int i = 0; i < selectedIngredients.Count; i++)
                     {
                         var ingredient = new PharmacyMedicationIngredient
                         {
-                            MedicationId = medication.MedicationId, 
+                            PhamacyMedicationId = medication.PharmacyMedicationId, 
                             ActiveIngredientId = selectedIngredients[i],
                             Strength = ingredientStrengths[i]
                         };
@@ -94,10 +94,10 @@ namespace e_Prescription.Controllers
             }
             var model = new PharmacyMedicationIngredient
             {
-                MedicationId = medicationId,
+                PhamacyMedicationId = medicationId,
             };
 
-            ViewBag.MedicationId = medicationId; // Pass the MedicationId to the view
+            ViewBag.MedicationId = medicationId; // Pass the PharmacyMedicationId to the view
             ViewBag.Ingredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
             return View();
         }
@@ -105,7 +105,7 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public IActionResult AddIngredient(PharmacyMedicationIngredient model)
         {
-            var medication = _context.PharmacyMedications.Find(model.MedicationId);
+            var medication = _context.PharmacyMedications.Find(model.PhamacyMedicationId);
 
             if (medication == null)
             {
@@ -114,7 +114,7 @@ namespace e_Prescription.Controllers
 
             var medic = new PharmacyMedicationIngredient
             {
-                MedicationId = model.MedicationId,
+                PhamacyMedicationId = model.PhamacyMedicationId,
                 ActiveIngredientId = model.ActiveIngredientId,
                 Strength = model.Strength
             };
@@ -126,7 +126,7 @@ namespace e_Prescription.Controllers
             ViewBag.Ingredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
 
             // Redirect back to the same AddIngredient action with the medicationId
-            return RedirectToAction("AddIngredient", new { medicationId = model.MedicationId });
+            return RedirectToAction("AddIngredient", new { medicationId = model.PhamacyMedicationId });
         }
 
 

@@ -6,7 +6,7 @@ namespace e_Prescription.Models
     public class PharmacyMedication
     {
         [Key]
-        public int MedicationId { get; set; }
+        public int PharmacyMedicationId { get; set; }
 
         [Required(ErrorMessage = "*Required")]
         public string MedicationName { get; set; }
