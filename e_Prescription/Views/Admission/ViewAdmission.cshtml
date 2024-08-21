@@ -145,6 +145,13 @@
 
                             </table>
 
+                            <!-- Button to Email Vitals -->
+                            <div class="d-flex justify-content-end mt-3">
+                                <button onclick="sendVitalsEmail(@item.Id)" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-envelope"></i> Email Vitals to Surgeon
+                                </button>
+                            </div>
+
                             <div class="container mt-4">
                                 <div class="row">
                                     <div class="col-md-4 mb-1">
@@ -241,6 +248,7 @@
                         </div>
                     </form>
                 </div>
+
                 <div class="mt-3 discharge-form ml-auto">
                     <form asp-action="Discharge" asp-controller="Admission" method="get" class="form-inline">
                         <div class="form-group">
@@ -382,6 +390,12 @@
                 html2canvas: { scale: 2 },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             });
+        }
+
+        //Email sender
+        function sendVitalsEmail(admissionId) {
+            var url = '@Url.Action("EmailVitals", "EmailSender")' + '?admissionId=' + admissionId;
+            window.location.href = url;
         }
     </script>
 }
