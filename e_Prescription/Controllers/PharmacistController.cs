@@ -65,7 +65,7 @@ namespace e_Prescription.Controllers
                     {
                         var ingredient = new PharmacyMedicationIngredient
                         {
-                            PhamacyMedicationId = medication.PharmacyMedicationId, 
+                            PharmacyMedicationId = medication.PharmacyMedicationId, 
                             ActiveIngredientId = selectedIngredients[i],
                             Strength = ingredientStrengths[i]
                         };
@@ -94,7 +94,7 @@ namespace e_Prescription.Controllers
             }
             var model = new PharmacyMedicationIngredient
             {
-                PhamacyMedicationId = medicationId,
+                PharmacyMedicationId = medicationId,
             };
 
             ViewBag.MedicationId = medicationId; // Pass the PharmacyMedicationId to the view
@@ -105,7 +105,7 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public IActionResult AddIngredient(PharmacyMedicationIngredient model)
         {
-            var medication = _context.PharmacyMedications.Find(model.PhamacyMedicationId);
+            var medication = _context.PharmacyMedications.Find(model.PharmacyMedicationId);
 
             if (medication == null)
             {
@@ -114,7 +114,7 @@ namespace e_Prescription.Controllers
 
             var medic = new PharmacyMedicationIngredient
             {
-                PhamacyMedicationId = model.PhamacyMedicationId,
+                PharmacyMedicationId = model.PharmacyMedicationId,
                 ActiveIngredientId = model.ActiveIngredientId,
                 Strength = model.Strength
             };
@@ -126,7 +126,7 @@ namespace e_Prescription.Controllers
             ViewBag.Ingredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
 
             // Redirect back to the same AddIngredient action with the medicationId
-            return RedirectToAction("AddIngredient", new { medicationId = model.PhamacyMedicationId });
+            return RedirectToAction("AddIngredient", new { medicationId = model.PharmacyMedicationId });
         }
 
 

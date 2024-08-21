@@ -10,7 +10,7 @@ namespace e_Prescription.Models
 
         [Required(ErrorMessage = "*Required")]
         [ForeignKey("PharmacyMedicationId")]
-        public int PhamacyMedicationId { get; set; }
+        public int PharmacyMedicationId { get; set; } // Corrected
         public virtual PharmacyMedication PharmacyMedication { get; set; }
 
         [Required(ErrorMessage = "*Required")]
