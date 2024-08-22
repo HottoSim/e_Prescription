@@ -211,8 +211,16 @@
                                                     {
                                                         <li class="list-group-item">
                                                             <strong>@medication.Medication?.MedicationName:</strong>
-                                                            @medication.Medication?.MedicationIngredient.ActiveIngredient.IngredientName
-                                                            (@medication.Medication?.MedicationIngredient.IngredientStrength) * [@medication.Medication?.Schedule]
+                                                            @if (medication.Medication?.MedicationIngredient != null)
+                                                            {
+                                                                <div>
+                                                                    @medication.Medication.MedicationIngredient.ActiveIngredient?.IngredientName (@medication.Medication.MedicationIngredient.IngredientStrength) * [@medication.Medication?.Schedule]
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div>No active ingredients listed</div>
+                                                            }
                                                         </li>
                                                     }
                                                 }
@@ -221,6 +229,7 @@
                                                     <li class="list-group-item">None</li>
                                                 }
                                             </ul>
+
                                         </div>
                                     </div>
 

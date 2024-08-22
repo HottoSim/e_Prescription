@@ -223,9 +223,9 @@
                                 <thead>
                                     <tr>
                                         <th>Vital Name</th>
+                                        <th>Time</th>
                                         <th>Readings</th>
                                         <th>Normal Range</th>
-                                        <th>Time</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -237,15 +237,15 @@
                                                 <input type="hidden" name="PatientsVitals[@i].VitalId" value="@vitals[i].VitalId" />
                                             </td>
                                             <td>
+                                                <input type="time" name="PatientsVitals[@i].Time" class="form-control equal-input" aria-required="true" required value="@DateTime.Now.ToString("HH:mm")" />
+                                            </td>
+                                            <td>
                                                 <input type="text" name="PatientsVitals[@i].Reading" class="form-control equal-input" aria-required="true" required pattern="^\d+(\.\d{1,2})?$|^\d{2,3}\/\d{2,3}$" title="Please enter a valid reading (e.g., 98.6 or 150/60)" />
                                                 <div class="invalid-feedback" style="display:none;">Please enter a valid reading.</div>
                                             </td>
 
                                             <td>
                                                 @vitals[i].LowLimit - @vitals[i].HighLimit @vitals[i].Units
-                                            </td>
-                                            <td>
-                                                <input type="time" name="PatientsVitals[@i].Time" class="form-control equal-input" aria-required="true" required />
                                             </td>
                                         </tr>
                                     }

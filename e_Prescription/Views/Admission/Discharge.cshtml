@@ -43,7 +43,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label asp-for="DischargeTime" class="control-label">Discharge time</label>
-                            <input asp-for="DischargeTime" class="form-control" type="time" value="" id="DischargeTime" />
+                            <input asp-for="DischargeTime" class="form-control" type="time" id="DischargeTime" value="@DateTime.Now.ToString("HH:mm")" />
                             <span asp-validation-for="DischargeTime" class="text-danger"></span>
                         </div>
                     </div>

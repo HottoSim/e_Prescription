@@ -255,7 +255,7 @@ namespace e_Prescription.Controllers
 
                                 if (!systolicInRange || !diastolicInRange)
                                 {
-                                    notifications.Add($"The blood pressure reading for {vitalInfo.VitalName} is out of range: {systolic}/{diastolic} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit} - {vitalInfo.HighLimit} {vitalInfo.Units})");
+                                    notifications.Add($"The reading for {vitalInfo.VitalName} is out of range: {systolic}/{diastolic} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit} - {vitalInfo.HighLimit} {vitalInfo.Units})");
                                     vital.Note = "Out of range";
                                 }
                                 else
@@ -288,13 +288,13 @@ namespace e_Prescription.Controllers
                             }
                             else
                             {
-                                ModelState.AddModelError(string.Empty, $"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input.");
+                                ViewBag.ErrorMessage = $"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input.";
                                 return View(model);
                             }
                         }
                         else
                         {
-                            ModelState.AddModelError(string.Empty, $"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input.");
+                            ViewBag.ErrorMessage = $"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input.";
                             return View(model);
                         }
 
@@ -342,12 +342,12 @@ namespace e_Prescription.Controllers
 
             var wards = context.Wards.ToList();
             var beds = new List<Bed>
-            {
-                new Bed()
-                {
-                    BedId = 0, BedName = "--Select Bed--"
-                }
-            };
+    {
+        new Bed()
+        {
+            BedId = 0, BedName = "--Select Bed--"
+        }
+    };
 
             ViewBag.Wards = new SelectList(wards.OrderBy(w => w.WardName), "WardId", "WardName");
             ViewBag.Beds = new SelectList(beds.OrderBy(b => b.BedName), "BedId", "BedName");
@@ -368,9 +368,6 @@ namespace e_Prescription.Controllers
 
             try
             {
-                
-
-
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var nurse = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
                 if (nurse == null)
@@ -385,7 +382,6 @@ namespace e_Prescription.Controllers
                     var vital = context.Vital.Find(patientVital.VitalId);
                     if (vital != null)
                     {
-                        // Check if the reading is in the "150/60" blood pressure format
                         if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d{2,3}\/\d{2,3}$"))
                         {
                             var bloodPressureParts = patientVital.Reading.Split('/');
@@ -393,7 +389,6 @@ namespace e_Prescription.Controllers
                                 double.TryParse(bloodPressureParts[0], out double systolic) &&
                                 double.TryParse(bloodPressureParts[1], out double diastolic))
                             {
-                                // Split the blood pressure limit ranges
                                 var limitParts = vital.LowLimit.Split('/');
                                 double lowSystolic = double.Parse(limitParts[0]);
                                 double lowDiastolic = double.Parse(limitParts[1]);
@@ -402,13 +397,12 @@ namespace e_Prescription.Controllers
                                 double highSystolic = double.Parse(limitParts[0]);
                                 double highDiastolic = double.Parse(limitParts[1]);
 
-                                // Compare both systolic and diastolic values
                                 bool systolicInRange = systolic >= lowSystolic && systolic <= highSystolic;
                                 bool diastolicInRange = diastolic >= lowDiastolic && diastolic <= highDiastolic;
 
                                 if (!systolicInRange || !diastolicInRange)
                                 {
-                                    notifications.Add($"The blood pressure reading for {vital.VitalName} is out of range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
+                                    notifications.Add($"The reading for {vital.VitalName} is out of range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
                                     patientVital.Note = "Out of range";
                                 }
                                 else
@@ -419,10 +413,10 @@ namespace e_Prescription.Controllers
                             else
                             {
                                 ModelState.AddModelError(string.Empty, $"Invalid format for the blood pressure reading of {vital.VitalName}. Please check the input.");
+                                ViewBag.Vitals = context.Vital.OrderBy(v => v.VitalName).ToList();
                                 return View(admission);
                             }
                         }
-                        // Handle normal readings with a range like "34-37"
                         else if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d+(\.\d+)?$"))
                         {
                             if (double.TryParse(vital.LowLimit, out double lowLimit) &&
@@ -441,13 +435,27 @@ namespace e_Prescription.Controllers
                             }
                             else
                             {
-                                ModelState.AddModelError(string.Empty, $"Invalid limit format for {vital.VitalName}. Please check the input.");
+                                ViewBag.ErrorMessage = $"Invalid format for {vital.VitalName}. Please check the input.";
+                                ViewBag.Vitals = context.Vital.OrderBy(v => v.VitalName).ToList();
                                 return View(admission);
                             }
                         }
                         else
                         {
-                            ModelState.AddModelError(string.Empty, $"Invalid format for the reading of {vital.VitalName}. Please check the input.");
+                            ViewBag.ErrorMessage = $"Invalid format for the reading of {vital.VitalName}. Please check the input.";
+                            ViewBag.Vitals = context.Vital.OrderBy(v => v.VitalName).ToList();
+
+                            var wards = context.Wards.ToList();
+                            var beds = new List<Bed>
+                            {
+                               new Bed()
+                                {
+                                BedId = 0, BedName = "--Select Bed--"
+                               }
+                            };
+
+                            ViewBag.Wards = new SelectList(wards.OrderBy(w => w.WardName), "WardId", "WardName");
+                            ViewBag.Beds = new SelectList(beds.OrderBy(b => b.BedName), "BedId", "BedName");
                             return View(admission);
                         }
 
@@ -465,7 +473,7 @@ namespace e_Prescription.Controllers
                 }
 
                 patient.Status = "Admitted";
-                context.SaveChanges(); // Save changes to update the patient's availability
+                context.SaveChanges();
 
                 var bed = context.Beds.Find(admission.BedId);
                 if (bed == null)
@@ -484,16 +492,26 @@ namespace e_Prescription.Controllers
                     ViewBag.AlertMessage = "Vitals seem to be normal!";
                 }
 
+                ViewBag.Vitals = context.Vital.OrderBy(v => v.VitalName).ToList();  // Reinitialize Vitals
                 return View(admission);
             }
             catch (Exception ex)
             {
                 ViewBag.ErrorMessage = $"Error: Invalid format entered...";
+
+                // Reinitialize Wards and Beds dropdowns
+                var wards = context.Wards.ToList();
+                var beds = context.Beds.Where(b => b.WardId == admission.WardId).ToList();
+                beds.Insert(0, new Bed() { BedId = 0, BedName = "--Select Bed--" });
+
+                ViewBag.Wards = new SelectList(wards.OrderBy(w => w.WardName), "WardId", "WardName");
+                ViewBag.Beds = new SelectList(beds.OrderBy(b => b.BedName), "BedId", "BedName");
+                ViewBag.Vitals = context.Vital.OrderBy(v => v.VitalName).ToList();  // Reinitialize Vitals
+                ViewBag.PatientName = $"{context.Patients.Find(patientId).Firstname} {context.Patients.Find(patientId).Lastname}";
+                ViewBag.PatientId = patientId;
                 return View(admission);
             }
         }
-
-
 
         // Get Bed By Ward
         public JsonResult GetBedByWardId(int wardId)
