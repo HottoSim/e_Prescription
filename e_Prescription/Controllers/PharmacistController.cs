@@ -34,7 +34,7 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult Medication()
         {
-            var medication = _context.PharmacyMedications.ToList();
+            var medication = _context.PharmacyMedications.OrderBy(m => m.MedicationName).ToList();
             return View(medication);
         }
 
@@ -42,9 +42,9 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult AddMedication()
         {
-            ViewBag.ActiveIngredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+            ViewBag.ActiveIngredients = new SelectList(_context.ActiveIngredients.OrderBy(a => a.IngredientName), "ActiveIngredientId", "IngredientName");
 
-            ViewBag.DosageForms = new SelectList(_context.DosageForms, "DosageFormId", "Description");
+            ViewBag.DosageForms = new SelectList(_context.DosageForms.OrderBy(d => d.Description), "DosageFormId", "Description");
 
             return View();
         }
@@ -98,7 +98,7 @@ namespace e_Prescription.Controllers
             };
 
             ViewBag.MedicationId = medicationId; // Pass the PharmacyMedicationId to the view
-            ViewBag.Ingredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+            ViewBag.Ingredients = new SelectList(_context.ActiveIngredients.OrderBy(i => i.IngredientName), "ActiveIngredientId", "IngredientName");
             return View();
         }
 
@@ -176,5 +176,14 @@ namespace e_Prescription.Controllers
             var stockRecords = _context.PharmacyMedications.ToList();
             return View(stockRecords);
         }
+
+        //Return Stock Ordered
+        [HttpGet]
+        public IActionResult StockOrdered()
+        {
+            var stockOrdered = _context.StockOrders.ToList();
+            return View(stockOrdered);
+        }
+
     }
 }

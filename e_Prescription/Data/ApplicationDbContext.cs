@@ -82,5 +82,7 @@ namespace e_Prescription.Data
 
         public DbSet<PharmacyMedicationIngredient> PharmacyMedicationIngredients { get; set; }
 
+        public DbSet<StockOrder> StockOrders { get; set; }
+
     }
 }

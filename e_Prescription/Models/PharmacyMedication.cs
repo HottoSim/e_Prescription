@@ -25,6 +25,7 @@ namespace e_Prescription.Models
         public int DosageFormId { get; set; }
         public virtual DosageForm DosageForm { get; set; }
 
+
         public virtual ICollection<PharmacyMedicationIngredient> PharmacyMedicationIngredients { get; set; }
     }
 }

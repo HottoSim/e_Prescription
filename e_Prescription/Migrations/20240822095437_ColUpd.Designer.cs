@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using e_Prescription.Data;
 
@@ -11,9 +12,11 @@ using e_Prescription.Data;
 namespace e_Prescription.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240822095437_ColUpd")]
+    partial class ColUpd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1021,34 +1024,6 @@ namespace e_Prescription.Migrations
                     b.ToTable("Provinces");
                 });
 
-            modelBuilder.Entity("e_Prescription.Models.StockOrder", b =>
-                {
-                    b.Property<int>("StockOrderId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StockOrderId"));
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("OrderQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PharmacyMedicationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("StockOrderId");
-
-                    b.HasIndex("PharmacyMedicationId");
-
-                    b.ToTable("StockOrders");
-                });
-
             modelBuilder.Entity("e_Prescription.Models.Suburb", b =>
                 {
                     b.Property<int>("SuburbId")
@@ -1613,17 +1588,6 @@ namespace e_Prescription.Migrations
                     b.Navigation("PharmacyMedication");
 
                     b.Navigation("Prescription");
-                });
-
-            modelBuilder.Entity("e_Prescription.Models.StockOrder", b =>
-                {
-                    b.HasOne("e_Prescription.Models.PharmacyMedication", "PharmacyMedication")
-                        .WithMany()
-                        .HasForeignKey("PharmacyMedicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PharmacyMedication");
                 });
 
             modelBuilder.Entity("e_Prescription.Models.Suburb", b =>
