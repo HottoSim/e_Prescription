@@ -185,5 +185,42 @@ namespace e_Prescription.Controllers
             return View(stockOrdered);
         }
 
+        //Stock management
+        public IActionResult OrderMedications()
+        {
+            var medications = _context.PharmacyMedications
+                .Include(m => m.DosageForm)
+                .Select(m => new MedicationOrderViewModel
+                {
+                    PharmacyMedicationId = m.PharmacyMedicationId,
+                    MedicationName = m.MedicationName,
+                    QuantityOnHand = m.QuantityOnHand,
+                    ReorderLevel = m.ReorderLevel,
+                    DosageFormId = m.DosageFormId,
+                    DosageFormName = m.DosageForm.Description
+                }).ToList();
+
+            return View(medications);
+        }
+
+        [HttpPost]
+        public IActionResult OrderMedications(List<MedicationOrderViewModel> model)
+        {
+            foreach (var item in model.Where(m => m.IsSelected && m.OrderQuantity > 0))
+            {
+                var stockOrder = new StockOrder
+                {
+                    PharmacyMedicationId = item.PharmacyMedicationId,
+                    Date = DateTime.Now,
+                    OrderQuantity = item.OrderQuantity,
+                    Status = "Pending"
+                };
+
+                _context.StockOrders.Add(stockOrder);
+            }
+
+            _context.SaveChanges();
+            return RedirectToAction("OrderMedications");
+        }
     }
 }
