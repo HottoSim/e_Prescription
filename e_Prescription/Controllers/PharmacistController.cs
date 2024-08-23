@@ -184,30 +184,43 @@ namespace e_Prescription.Controllers
             var stockOrdered = _context.StockOrders.ToList();
             return View(stockOrdered);
         }
-        
+
 
         //Stock management
+        // Action to display the order form
         public IActionResult OrderMedications()
         {
-            var medications = _context.PharmacyMedications
-                .Include(m => m.DosageForm)
-                .Select(m => new MedicationOrderViewModel
-                {
-                    PharmacyMedicationId = m.PharmacyMedicationId,
-                    MedicationName = m.MedicationName,
-                    QuantityOnHand = m.QuantityOnHand,
-                    ReorderLevel = m.ReorderLevel,
-                    DosageFormId = m.DosageFormId,
-                    DosageFormName = m.DosageForm.Description
-                }).ToList();
+            var viewModel = new MedicationOrderViewModel
+            {
+                Medications = _context.PharmacyMedications
+                    .Select(m => new PharmacyMedicationViewModel
+                    {
+                        PharmacyMedicationId = m.PharmacyMedicationId,
+                        MedicationName = m.MedicationName,
+                        QuantityOnHand = m.QuantityOnHand,
+                        ReorderLevel = m.ReorderLevel
+                    }).ToList(),
 
-            return View(medications);
+                StockOrders = _context.StockOrders
+                    .Include(o => o.PharmacyMedication)
+                    .Select(o => new StockOrderViewModel
+                    {
+                        StockOrderId = o.StockOrderId,
+                        MedicationName = o.PharmacyMedication.MedicationName,
+                        OrderQuantity = o.OrderQuantity,
+                        Date = o.Date,
+                        Status = o.Status
+                    }).ToList()
+            };
+
+            return View(viewModel);
         }
 
+        // Action to process the order
         [HttpPost]
-        public IActionResult OrderMedications(List<MedicationOrderViewModel> model)
+        public IActionResult OrderMedications(MedicationOrderViewModel model)
         {
-            foreach (var item in model.Where(m => m.IsSelected && m.OrderQuantity > 0))
+            foreach (var item in model.Medications.Where(m => m.IsSelected && m.OrderQuantity > 0))
             {
                 var stockOrder = new StockOrder
                 {
@@ -221,7 +234,32 @@ namespace e_Prescription.Controllers
             }
 
             _context.SaveChanges();
+
             return RedirectToAction("OrderMedications");
         }
+
+        // Action to return selected orders
+        [HttpGet]
+        public IActionResult ReturnOrders()
+        {
+            var viewModel = new MedicationOrderViewModel
+            {
+                Medications = new List<PharmacyMedicationViewModel>(), // Not needed for this action
+
+                StockOrders = _context.StockOrders
+                    .Include(o => o.PharmacyMedication)
+                    .Select(o => new StockOrderViewModel
+                    {
+                        StockOrderId = o.StockOrderId,
+                        MedicationName = o.PharmacyMedication.MedicationName,
+                        OrderQuantity = o.OrderQuantity,
+                        Date = o.Date,
+                        Status = o.Status
+                    }).ToList()
+            };
+
+            return View(viewModel);
+        }
+
     }
 }
