@@ -184,7 +184,7 @@ namespace e_Prescription.Controllers
             var stockOrdered = _context.StockOrders.ToList();
             return View(stockOrdered);
         }
-
         
+
     }
 }
