@@ -4,7 +4,7 @@ using e_Prescription.Data;
 using e_Prescription.Models.Account;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using e_Prescription.Services;
+//using e_Prescription.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +32,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 // Register the IEmailSender service
-builder.Services.AddTransient<IEmailSender, EmailSender>();
+//builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 // Add Razor Pages support
 builder.Services.AddRazorPages();

@@ -7,106 +7,105 @@ using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
-using MailKit.Net.Smtp;
 using MimeKit;
 using e_Prescription.Models.ViewModels;
+using Org.BouncyCastle.Asn1.IsisMtt.X509;
 
 namespace e_Prescription.Controllers
 {
     public class EmailSenderController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context; // Your EF context
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmailSender _emailSender;
 
-        public EmailSenderController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IEmailSender emailSender)
+        public EmailSenderController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
-            _emailSender = emailSender;
-        }
-        public IActionResult Index()
-        {
-            return View();
-        }
-        // Assuming you have a method to get admission details by ID
-        private Admission GetAdmissionById(int id)
-        {
-            var admission = _context.Admissions.Include(a => a.Patient)
-                                       .Include(a => a.Patient.PatientBooking)
-                                       .Include(a => a.Patient.PatientBooking.ApplicationUser)
-                                       .Include(a => a.PatientsVitals)
-                                       .FirstOrDefault(a => a.Id == id);
-            if(admission == null)
-            {
-                return ViewBag.ErrorMessage = "Admission not found...";
-            }
-            // Fetch admission data from your database (this is just a placeholder)
-            // Replace with your actual data access code.
-            return admission;
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EmailVitals(VitalsNoteVM model)
+        [HttpGet]
+        public IActionResult ComposeEmail(int admissionId)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = _userManager.GetUserAsync(User).Result; // Get logged-in user
             if (user == null)
             {
-                return NotFound();
+                // Handle the case where the user is not found
+                return RedirectToAction("Error", "Home");
             }
 
-            var admission = GetAdmissionById(model.AdmissionId);
-            if (admission == null)
+            var model = new EmailViewModel
             {
-                return NotFound();
-            }
-
-            var surgeonEmail = admission.Patient.PatientBooking.ApplicationUser.Email;
-            var nurseEmail = user.Email;
-            var subject = $"Patient Vitals for {admission.Patient.Firstname} {admission.Patient.Lastname}";
-
-            var body = new StringBuilder();
-            body.AppendLine($"Patient: {admission.Patient.Firstname} {admission.Patient.Lastname} (ID: {admission.Patient.IdNumber})");
-            body.AppendLine($"Gender: {admission.Patient.Gender}");
-            body.AppendLine($"Admission Date: {admission.AdmissionDate.ToLongDateString()} {admission.AdmissionDate.ToShortTimeString()}");
-            body.AppendLine($"Ward and Bed: {admission.Ward?.WardName} - {admission.Bed?.BedName}");
-            body.AppendLine();
-            body.AppendLine("Vitals:");
-            foreach (var vital in admission.PatientsVitals)
-            {
-                body.AppendLine($"{vital.Vitals?.VitalName}: {vital.Reading} {vital.Vitals?.Units} (Time: {vital.Time.ToShortTimeString()})");
-                body.AppendLine($"Note: {vital.Note}");
-                body.AppendLine($"Normal range: {vital.Vitals?.LowLimit} - {vital.Vitals?.HighLimit} {vital.Vitals?.Units}");
-                body.AppendLine();
-            }
-            body.AppendLine($"Additional Nurse Note: {model.Note}");
-
-            // Create the email message
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Nurse", nurseEmail));
-            message.To.Add(new MailboxAddress("Surgeon", surgeonEmail));
-            message.Subject = subject;
-
-            // Use the body string as the email body
-            message.Body = new TextPart("plain")
-            {
-                Text = body.ToString()
+                FromEmail = user.Email, // Auto-fill from the logged-in user
+                AdmissionId = admissionId // Populate the model with the selected admission ID
             };
 
-            // Send the email using MailKit's SmtpClient
-            using (var client = new MailKit.Net.Smtp.SmtpClient())
+            // Fetch data from the Admission table and populate the Message
+            var admission = _context.Admissions
+                .Include(a => a.Patient) // Ensure related entities are included
+                .Include(a => a.Bed) // Ensure related entities are included
+                .FirstOrDefault(a => a.Id == admissionId);
+
+            if (admission != null)
             {
-                await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                // Check if related properties are null before accessing them
+                var patientName = admission.Patient?.Firstname ?? "Unknown";
+                var bedName = admission.Bed?.BedName ?? "Unknown";
 
-                // Use the provided password
-                await client.AuthenticateAsync(nurseEmail, model.Password);
-
-                await client.SendAsync(message);
-                await client.DisconnectAsync(true);
+                model.Message = $"Patient Name: {patientName}\nAdmission Date: {admission.AdmissionDate}\nDetails: {bedName}";
+            }
+            else
+            {
+                // Handle the case where admission is not found
+                TempData["ErrorMessage"] = "Admission not found.";
+                return RedirectToAction("Error", "Home");
             }
 
-            return RedirectToAction("Index");
+            return View(model);
         }
+
+
+        public IActionResult SendEmail(EmailViewModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.ToEmail))
+            {
+                TempData["ErrorMessage"] = "Recipient email is required.";
+                return RedirectToAction("ComposeEmail", new { admissionId = model.AdmissionId });
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Subject) || string.IsNullOrWhiteSpace(model.Message))
+            {
+                TempData["ErrorMessage"] = "Subject and Message are required.";
+                return RedirectToAction("ComposeEmail", new { admissionId = model.AdmissionId });
+            }
+
+            try
+            {
+                var mailMessage = new MailMessage
+                {
+                    From = new MailAddress(model.FromEmail),
+                    Subject = model.Subject,
+                    Body = model.Message,
+                    IsBodyHtml = false // Set to true if the body contains HTML
+                };
+
+                mailMessage.To.Add(model.ToEmail);
+
+                using (var smtpClient = new SmtpClient("smtp.gmail.com", 587)) // TLS Port
+                {
+                    smtpClient.Credentials = new NetworkCredential("your-email@gmail.com", "your-app-password");
+                    smtpClient.EnableSsl = true; // Enable SSL/TLS
+                    smtpClient.Send(mailMessage);
+                }
+
+                return RedirectToAction("SuccessView"); // Redirect to a success view
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"An error occurred while sending the email: {ex.Message}";
+                return RedirectToAction("ComposeEmail", new { admissionId = model.AdmissionId });
+            }
+        }
+
     }
 }

@@ -1,0 +1,41 @@
+﻿@model e_Prescription.Models.ViewModels.EmailViewModel
+
+@{
+    ViewData["Title"] = "Compose Email";
+}
+
+<h2>Compose Email</h2>
+
+<form asp-action="SendEmail" method="post">
+    <div class="form-group">
+        <label asp-for="FromEmail"></label>
+        <input asp-for="FromEmail" class="form-control" readonly />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ToEmail"></label>
+        <input asp-for="ToEmail" class="form-control" placeholder="Recipient's email" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Subject"></label>
+        <input asp-for="Subject" class="form-control" placeholder="Email subject" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Message"></label>
+        <textarea asp-for="Message" class="form-control" readonly></textarea>
+    </div>
+
+    <input type="hidden" asp-for="AdmissionId" />
+
+    <button type="submit" class="btn btn-primary">Send Email</button>
+</form>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
