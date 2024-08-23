@@ -227,7 +227,7 @@ namespace e_Prescription.Controllers
                     PharmacyMedicationId = item.PharmacyMedicationId,
                     Date = DateTime.Now,
                     OrderQuantity = item.OrderQuantity,
-                    Status = "Pending"
+                    Status = "Ordered"
                 };
 
                 _context.StockOrders.Add(stockOrder);
@@ -257,6 +257,96 @@ namespace e_Prescription.Controllers
                         Status = o.Status
                     }).ToList()
             };
+
+            return View(viewModel);
+        }
+
+        // GET: ReceivedMedication
+        [HttpGet]
+        public IActionResult ReceivedMedication()
+        {
+            var viewModel = new ReceivedOrderViewModel
+            {
+                Medications = _context.StockOrders
+                    .Include(o => o.PharmacyMedication)
+                    .Select(o => new SelectListItem
+                    {
+                        Value = o.PharmacyMedicationId.ToString(),
+                        Text = o.PharmacyMedication.MedicationName
+                    })
+                    .Distinct()
+                    .ToList()
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: ReceivedMedication
+        [HttpPost]
+        public async Task<IActionResult> ReceivedMedication(ReceivedOrderViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var medication = _context.PharmacyMedications
+                    .SingleOrDefault(m => m.PharmacyMedicationId == model.SelectedMedicationId);
+
+                if (medication != null)
+                {
+                    // Create a new StockOrder for the received medication
+                    var stockOrder = new StockOrder
+                    {
+                        PharmacyMedicationId = medication.PharmacyMedicationId,
+                        Date = DateTime.Now,
+                        OrderQuantity = model.QuantityReceived,
+                        Status = "Received"
+                    };
+
+                    // Add the new stock order to the database
+                    _context.StockOrders.Add(stockOrder);
+
+                    // Update the medication quantity if necessary
+                    medication.QuantityOnHand += model.QuantityReceived;
+                    _context.PharmacyMedications.Update(medication);
+
+                    await _context.SaveChangesAsync();
+
+                    // Redirect to a success page or back to the form
+                    return RedirectToAction("ReceivedMedicationRecords");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Selected medication is not found.");
+                }
+            }
+
+            // If model state is invalid or medication not found, redisplay the form
+            model.Medications = _context.StockOrders
+                .Include(o => o.PharmacyMedication)
+                .Select(o => new SelectListItem
+                {
+                    Value = o.PharmacyMedicationId.ToString(),
+                    Text = o.PharmacyMedication.MedicationName
+                })
+                .Distinct()
+                .ToList();
+
+            return View(model);
+        }
+
+        // GET: ReceivedMedication/Records
+        public async Task<IActionResult> ReceivedMedicationRecords()
+        {
+            var viewModel = await _context.StockOrders
+                .Include(o => o.PharmacyMedication)
+                .Select(o => new ReceivedOrderViewModel
+                {
+                    StockOrderId = o.StockOrderId,
+                    MedicationName = o.PharmacyMedication.MedicationName,
+                    QuantityReceived = o.OrderQuantity,
+                    DateReceived = o.Date,
+                    Status = o.Status
+                })
+                .ToListAsync();
 
             return View(viewModel);
         }

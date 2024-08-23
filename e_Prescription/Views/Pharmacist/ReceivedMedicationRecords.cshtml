@@ -1,0 +1,29 @@
+﻿@model IEnumerable<e_Prescription.Models.ReceivedOrderViewModel>
+
+<h1>Received Medication Records</h1>
+
+<a href="@Url.Action("ReceivedMedication", "Pharmacist")" class="btn btn-primary mb-3">Add New Record</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Medication Name</th>
+            <th>Quantity Received</th>
+            <th>Date Received</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var record in Model)
+        {
+            <tr>
+                <td>@record.StockOrderId</td>
+                <td>@record.MedicationName</td>
+                <td>@record.QuantityReceived</td>
+                <td>@record.DateReceived.ToString("yyyy-MM-dd")</td>
+                <td>@record.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>
