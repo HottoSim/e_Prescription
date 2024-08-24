@@ -84,5 +84,7 @@ namespace e_Prescription.Data
 
         public DbSet<StockOrder> StockOrders { get; set; }
 
+        public DbSet<StockReceived> StockReceived { get; set; }
+
     }
 }

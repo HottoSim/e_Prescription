@@ -14,6 +14,8 @@ namespace e_Prescription.Models
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0.")]
         public int QuantityReceived { get; set; }
 
+       // public int StockReceivedId { get; set; }
+
         public int StockOrderId { get; set; }
         public string MedicationName { get; set; }
         

@@ -7,6 +7,7 @@ using Microsoft.Build.ObjectModelRemoting;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 
+
 namespace e_Prescription.Controllers
 {
     public class PharmacistController : Controller
@@ -282,29 +283,37 @@ namespace e_Prescription.Controllers
         }
 
         // POST: ReceivedMedication
+        // POST: ReceivedMedication
         [HttpPost]
         public async Task<IActionResult> ReceivedMedication(ReceivedOrderViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                var medication = _context.PharmacyMedications
-                    .SingleOrDefault(m => m.PharmacyMedicationId == model.SelectedMedicationId);
+            var medication = _context.PharmacyMedications
+                .SingleOrDefault(m => m.PharmacyMedicationId == model.SelectedMedicationId);
 
-                if (medication != null)
+            if (medication != null)
+            {
+                // Find the related StockOrder
+                var stockOrder = _context.StockOrders
+                    .FirstOrDefault(o => o.PharmacyMedicationId == model.SelectedMedicationId);
+
+                if (stockOrder != null)
                 {
-                    // Create a new StockOrder for the received medication
-                    var stockOrder = new StockOrder
+                    // Create a new StockReceived for the received medication
+                    var stockReceived = new StockReceived
                     {
-                        PharmacyMedicationId = medication.PharmacyMedicationId,
+                        StockOrderId = stockOrder.StockOrderId,
                         Date = DateTime.Now,
-                        OrderQuantity = model.QuantityReceived,
-                        Status = "Received"
+                        QuantityReceived = model.QuantityReceived
                     };
 
-                    // Add the new stock order to the database
-                    _context.StockOrders.Add(stockOrder);
+                    // Set the status of the related StockOrder
+                    stockOrder.Status = "Received";
+                    _context.StockOrders.Update(stockOrder);
 
-                    // Update the medication quantity if necessary
+                    // Add the new StockReceived entry to the database
+                    _context.StockReceived.Add(stockReceived);
+
+                    // Update the medication quantity
                     medication.QuantityOnHand += model.QuantityReceived;
                     _context.PharmacyMedications.Update(medication);
 
@@ -315,11 +324,15 @@ namespace e_Prescription.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Selected medication is not found.");
+                    ModelState.AddModelError("", "Stock order not found.");
                 }
             }
+            else
+            {
+                ModelState.AddModelError("", "Selected medication is not found.");
+            }
 
-            // If model state is invalid or medication not found, redisplay the form
+            // If model state is invalid or medication/stock order not found, redisplay the form
             model.Medications = _context.StockOrders
                 .Include(o => o.PharmacyMedication)
                 .Select(o => new SelectListItem
@@ -333,18 +346,19 @@ namespace e_Prescription.Controllers
             return View(model);
         }
 
+
         // GET: ReceivedMedication/Records
         public async Task<IActionResult> ReceivedMedicationRecords()
         {
-            var viewModel = await _context.StockOrders
-                .Include(o => o.PharmacyMedication)
+            var viewModel = await _context.StockReceived
+                .Include(o => o.StockOrder)
                 .Select(o => new ReceivedOrderViewModel
                 {
                     StockOrderId = o.StockOrderId,
-                    MedicationName = o.PharmacyMedication.MedicationName,
-                    QuantityReceived = o.OrderQuantity,
+                    MedicationName = o.StockOrder.PharmacyMedication.MedicationName,
+                    QuantityReceived = o.QuantityReceived,
                     DateReceived = o.Date,
-                    Status = o.Status
+                    Status = o.StockOrder.Status
                 })
                 .ToListAsync();
 

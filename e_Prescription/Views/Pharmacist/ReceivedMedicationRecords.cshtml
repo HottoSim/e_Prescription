@@ -7,7 +7,7 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>ID</th>
+            @* <th>ID</th> *@
             <th>Medication Name</th>
             <th>Quantity Received</th>
             <th>Date Received</th>
@@ -18,7 +18,7 @@
         @foreach (var record in Model)
         {
             <tr>
-                <td>@record.StockOrderId</td>
+                @* <td>@record.StockOrderId</td> *@
                 <td>@record.MedicationName</td>
                 <td>@record.QuantityReceived</td>
                 <td>@record.DateReceived.ToString("yyyy-MM-dd")</td>

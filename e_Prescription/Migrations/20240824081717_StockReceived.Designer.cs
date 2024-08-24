@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using e_Prescription.Data;
 
@@ -11,9 +12,11 @@ using e_Prescription.Data;
 namespace e_Prescription.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240824081717_StockReceived")]
+    partial class StockReceived
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1042,14 +1045,9 @@ namespace e_Prescription.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("StockReceivedId")
-                        .HasColumnType("int");
-
                     b.HasKey("StockOrderId");
 
                     b.HasIndex("PharmacyMedicationId");
-
-                    b.HasIndex("StockReceivedId");
 
                     b.ToTable("StockOrders");
                 });
@@ -1652,10 +1650,6 @@ namespace e_Prescription.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("e_Prescription.Models.StockReceived", null)
-                        .WithMany("StockOrders")
-                        .HasForeignKey("StockReceivedId");
-
                     b.Navigation("PharmacyMedication");
                 });
 
@@ -1730,11 +1724,6 @@ namespace e_Prescription.Migrations
             modelBuilder.Entity("e_Prescription.Models.Province", b =>
                 {
                     b.Navigation("Cities");
-                });
-
-            modelBuilder.Entity("e_Prescription.Models.StockReceived", b =>
-                {
-                    b.Navigation("StockOrders");
                 });
 #pragma warning restore 612, 618
         }
