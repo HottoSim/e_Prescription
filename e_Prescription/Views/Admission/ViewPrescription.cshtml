@@ -1,52 +1,106 @@
 ﻿@model IEnumerable<e_Prescription.Models.MedicationGiven>
 
 @{
-    Layout = null; 
+    // Layout = null; 
     ViewData["Title"] = "Patient Vitals";
+
+    // Assuming the Model is not null and has at least one item, you can get the admissionId from the first item.
+    var admissionId = Model?.FirstOrDefault()?.PrescriptionItem?.Prescription?.Admission?.Id;
 }
 
 <style>
-    .table-sm-custom th, .table-sm-custom td {
-        padding: 0.8rem;
+    .form-card {
+        border: 5px solid #f5f5f5;
+        padding: 10px;
+        overflow: hidden;
+        background: linear-gradient(to bottom right, #ffffff, #f0f0f0), /* Existing linear gradient */
+        radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 60%, rgba(230,230,230,1) 100%); /* Added radial gradient */
+        background-blend-mode: overlay; /* Blend the gradients for a more dynamic effect */
+        border-radius: 20px;
+        box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .card {
+        background-color: lightgray;
+        color: #000;
+        border-radius: 15px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+    }
+
+
+
+    .card-header {
+        background-color: #28a745;
+        color: #ffffff;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        text-align: center;
+        padding: 10px 0;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .table {
+        margin-top: 20px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .btn-primary,
+    .btn-success,
+    .btn-info {
+        border-radius: 10px;
+    }
+
+    .text-danger h1 {
+        font-size: 1.5rem;
     }
 </style>
 
-<div class="table-responsive">
-    <table class="table table-striped table-sm table-sm-custom">
-        <thead>
-            <tr>
-                <th>Patient ID NO.</th>
-                <th>Ward and Bed</th>
-                <th>Medication Name</th>
-                <th>Quantity</th>
-                <th>Instructions</th>
-                <th>Time</th>
-                <th>Surgeon</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                @foreach (var item in Model)
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-striped table-sm table-sm-custom">
+            <thead>
+                <tr>
+                    <th>Patient ID NO.</th>
+                    <th>Ward and Bed</th>
+                    <th>Medication Name</th>
+                    <th>Quantity</th>
+                    <th>Instructions</th>
+                    <th>Time</th>
+                    <th>Surgeon</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.PrescriptionItem.Prescription.Admission.Patient.IdNumber</td>
+                            <td>@item.PrescriptionItem.Prescription.Admission.Ward.WardName - @item.PrescriptionItem.Prescription.Admission.Bed.BedName</td>
+                            <td>@item.PrescriptionItem.PharmacyMedication.MedicationName</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.PrescriptionItem.Instruction</td>
+                            <td>@item.Time.ToShortTimeString()</td>
+                            <td>@item.PrescriptionItem.Prescription.ApplicationUser.FirstName  @item.PrescriptionItem.Prescription.ApplicationUser.LastName</td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@item.PrescriptionItem.Prescription.Admission.Patient.IdNumber</td>
-                        <td>@item.PrescriptionItem.Prescription.Admission.Ward.WardName - @item.PrescriptionItem.Prescription.Admission.Bed.BedName</td>
-                        <td>@item.PrescriptionItem.PharmacyMedication.MedicationName</td>
-                        <td>@item.Quantity</td>
-                        <td>@item.PrescriptionItem.Instruction</td>
-                        <td>@item.Time.ToShortTimeString()</td>
-                        <td>@item.PrescriptionItem.Prescription.ApplicationUser.FirstName  @item.PrescriptionItem.Prescription.ApplicationUser.LastName</td>
+                        <td colspan="3" class="text-center">No Prescription available for this patient</td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="3" class="text-center">No Prescription available for this patient</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-info" onclick="history.back()">Go Back</button>
+        </div>
+    </div>
 </div>
+
