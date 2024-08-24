@@ -1,61 +1,79 @@
 ﻿@model e_Prescription.Models.MedicationOrderViewModel
 
-<h1>Order Medications</h1>
+@{
+    ViewData["Title"] = "Order medication";
+}
+
 
 <!-- Form to place new orders -->
-<form asp-action="OrderMedications" asp-controller="Pharmacist" method="post">
-    <table>
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Order Medication</h4>
+        </div>
+    <form asp-action="OrderMedications" asp-controller="Pharmacist" method="post">
+            <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Medication Name</th>
+                    <th>Quantity On Hand</th>
+                    <th>Reorder Level</th>
+                    <th>Order Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Medications.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="Medications[@i].IsSelected" value="true" />
+                            <input type="hidden" name="Medications[@i].IsSelected" value="false" />
+                        </td>
+                        <td>@Model.Medications[i].MedicationName</td>
+                        <td>@Model.Medications[i].QuantityOnHand</td>
+                        <td>@Model.Medications[i].ReorderLevel</td>
+                        <td>
+                            <input type="number" name="Medications[@i].OrderQuantity" value="@Model.Medications[i].OrderQuantity" />
+                        </td>
+                        <input type="hidden" name="Medications[@i].PharmacyMedicationId" value="@Model.Medications[i].PharmacyMedicationId" />
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Place Order</button>
+    </form>
+    </div>
+</div>
+
+<!-- Table to display existing orders -->
+@* <h2>ORDERED MEDICATION RECORDS</h2> *@
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Placed Orders Records</h4>
+        </div>
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>Select</th>
                 <th>Medication Name</th>
-                <th>Quantity On Hand</th>
-                <th>Reorder Level</th>
                 <th>Order Quantity</th>
+                <th>Date</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < Model.Medications.Count; i++)
+            @foreach (var order in Model.StockOrders)
             {
                 <tr>
-                    <td>
-                        <input type="checkbox" name="Medications[@i].IsSelected" value="true" />
-                        <input type="hidden" name="Medications[@i].IsSelected" value="false" />
-                    </td>
-                    <td>@Model.Medications[i].MedicationName</td>
-                    <td>@Model.Medications[i].QuantityOnHand</td>
-                    <td>@Model.Medications[i].ReorderLevel</td>
-                    <td>
-                        <input type="number" name="Medications[@i].OrderQuantity" value="@Model.Medications[i].OrderQuantity" />
-                    </td>
-                    <input type="hidden" name="Medications[@i].PharmacyMedicationId" value="@Model.Medications[i].PharmacyMedicationId" />
+                    <td>@order.MedicationName</td>
+                    <td>@order.OrderQuantity</td>
+                    <td>@order.Date.ToString("yyyy-MM-dd")</td>
+                    <td>@order.Status</td>
                 </tr>
             }
         </tbody>
     </table>
-    <button type="submit">Place Order</button>
-</form>
-
-<!-- Table to display existing orders -->
-<h2>Existing Orders</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Medication Name</th>
-            <th>Order Quantity</th>
-            <th>Date</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in Model.StockOrders)
-        {
-            <tr>
-                <td>@order.MedicationName</td>
-                <td>@order.OrderQuantity</td>
-                <td>@order.Date.ToString("yyyy-MM-dd")</td>
-                <td>@order.Status</td>
-            </tr>
-        }
-    </tbody>
-</table>
+    </div>
+</div>

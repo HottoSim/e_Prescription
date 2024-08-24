@@ -1,29 +1,41 @@
 ﻿@model IEnumerable<e_Prescription.Models.ReceivedOrderViewModel>
 
-<h1>Received Medication Records</h1>
+@{
+    ViewData["Title"] = "Received Medication";
+}
 
-<a href="@Url.Action("ReceivedMedication", "Pharmacist")" class="btn btn-primary mb-3">Add New Record</a>
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Received Medication</h4>
+        </div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            @* <th>ID</th> *@
-            <th>Medication Name</th>
-            <th>Quantity Received</th>
-            <th>Date Received</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var record in Model)
-        {
+        <div class="d-flex justify-content-end btn1">
+            <button class="btn btn-primary" onclick="window.location.href='@Url.Action("ReceivedMedication", "Pharmacist")'">Add New Record</button>
+        </div>
+
+    <table class="table table-striped">
+        <thead>
             <tr>
-                @* <td>@record.StockOrderId</td> *@
-                <td>@record.MedicationName</td>
-                <td>@record.QuantityReceived</td>
-                <td>@record.DateReceived.ToString("yyyy-MM-dd")</td>
-                <td>@record.Status</td>
+                @* <th>ID</th> *@
+                <th>Medication Name</th>
+                <th>Quantity Received</th>
+                <th>Date Received</th>
+                <th>Status</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var record in Model)
+            {
+                <tr>
+                    @* <td>@record.StockOrderId</td> *@
+                    <td>@record.MedicationName</td>
+                    <td>@record.QuantityReceived</td>
+                    <td>@record.DateReceived.ToString("yyyy-MM-dd")</td>
+                    <td>@record.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+</div>

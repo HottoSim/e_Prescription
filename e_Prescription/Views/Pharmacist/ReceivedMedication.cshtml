@@ -1,21 +1,40 @@
 ﻿@model e_Prescription.Models.ReceivedOrderViewModel // Update with your actual namespace
 
-<h1>Add Received Medication</h1>
+@{
+    ViewData["Title"] = "Add Received Medication";
+}
 
-<form asp-action="ReceivedMedication" method="post">
-    <div class="form-group">
-        <label asp-for="SelectedMedicationId">Medication</label>
-        <select asp-for="SelectedMedicationId" asp-items="Model.Medications" class="form-control">
-            <option value="">Select Medication</option>
-        </select>
-        <span asp-validation-for="SelectedMedicationId" class="text-danger"></span>
+@* <h1>Add Received Medication</h1> *@
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Add Received Medication</h4>
+        </div>
+
+        <div class="card-body">
+            <div class="container">
+                <div class="row justify-content-center">
+                     <form asp-action="ReceivedMedication" method="post">
+                        <div class="form-group">
+                            <label asp-for="SelectedMedicationId">Medication</label>
+                            <select asp-for="SelectedMedicationId" asp-items="Model.Medications" class="form-control">
+                            <option value="">Select Medication</option>
+                            </select>
+                            <span asp-validation-for="SelectedMedicationId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="QuantityReceived">Quantity Received</label>
+                            <input type="number" asp-for="QuantityReceived" class="form-control" />
+                            <span asp-validation-for="QuantityReceived" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Capture</button>
+                        <a href="@Url.Action("ReceivedMedicationRecords", "Pharmacist")" class="btn btn-secondary ml-2">Back</a>
+                    </form>
+                </div>
+            </div>
+         </div>
     </div>
-
-    <div class="form-group">
-        <label asp-for="QuantityReceived">Quantity Received</label>
-        <input type="number" asp-for="QuantityReceived" class="form-control" />
-        <span asp-validation-for="QuantityReceived" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+</div>
