@@ -1,65 +1,109 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using e_Prescription.Services;
 using e_Prescription.Models.ViewModels;
+using e_Prescription.EmailSender;
+using Microsoft.EntityFrameworkCore;
+using e_Prescription.Data;
 
 namespace e_Prescription.Controllers
 {
     public class EmailSenderController : Controller
     {
-        private readonly EmailSender _emailSender;
+        private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _context;
 
-        public EmailSenderController()
+        public EmailSenderController(IEmailSender emailSender, ApplicationDbContext context)
         {
-            _emailSender = new EmailSender(); // Instantiate the EmailSender
+           this._emailSender = emailSender;
+            _context = context;
         }
 
-        [HttpPost]
-        public IActionResult SendEmail(EmailViewModel model)
-        {
-            if (string.IsNullOrWhiteSpace(model.ToEmail))
-            {
-                TempData["ErrorMessage"] = "Recipient email is required.";
-                return RedirectToAction("ComposeEmail", new { admissionId = model.AdmissionId });
-            }
-
-            if (string.IsNullOrWhiteSpace(model.Subject) || string.IsNullOrWhiteSpace(model.Message))
-            {
-                TempData["ErrorMessage"] = "Subject and Message are required.";
-                return RedirectToAction("ComposeEmail", new { admissionId = model.AdmissionId });
-            }
-
-            try
-            {
-                // Use the EmailSender service to send the email
-                _emailSender.SendMessage(model.ToEmail, model.Subject, model.Message);
-
-                TempData["SuccessMessage"] = "Email sent successfully!";
-                return RedirectToAction("SuccessView"); // Redirect to a success view
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"An error occurred while sending the email: {ex.Message}";
-                return RedirectToAction("ComposeEmail", new { admissionId = model.AdmissionId });
-            }
-        }
-
-        // Example of a ComposeEmail action to generate a form for sending emails
         [HttpGet]
         public IActionResult ComposeEmail(int admissionId)
         {
+            // Fetch relevant data for the email form
+            var admission = _context.Admissions
+                .Include(a => a.Patient)
+                .FirstOrDefault(a => a.Id == admissionId);
+
+            if (admission == null)
+            {
+                return NotFound();
+            }
+
             var model = new EmailViewModel
             {
-                AdmissionId = admissionId
+                AdmissionId = admissionId,
+                PatientName = $"{admission.Patient.Firstname} {admission.Patient.Lastname}"
             };
 
-            // Return the view to compose an email (assuming you have a view set up)
-            return View(model);
+            return PartialView("_ComposeEmailForm", model);
         }
 
-        // Example of a SuccessView action
-        public IActionResult SuccessView()
+
+        [HttpPost]
+        public async Task<IActionResult> SendEmail(int admissionId, string subject)
         {
-            return View();
+            var admission = _context.Admissions
+                .Include(a => a.Patient)
+                .ThenInclude(p => p.PatientBooking)
+                .ThenInclude(pb => pb.ApplicationUser)
+                .Include(a => a.PatientsVitals)
+                .FirstOrDefault(a => a.Id == admissionId);
+
+            if (admission == null)
+            {
+                TempData["ErrorMessage"] = "Admission not found.";
+                return RedirectToAction("ViewAdmission", "Admission", new { admissionId = admissionId });
+            }
+
+            var patient = admission.Patient;
+            if (patient == null)
+            {
+                TempData["ErrorMessage"] = "Patient not found.";
+                return RedirectToAction("ViewAdmission", "Admission", new { admissionId = admissionId });
+            }
+
+            var patientBooking = patient.PatientBooking;
+            var applicationUser = patientBooking?.ApplicationUser;
+
+            var body = $@"
+        <h2>Patient Vitals for {patient.Firstname} {patient.Lastname}</h2>
+        <p><strong>Gender:</strong> {patient.Gender}</p>
+        <p><strong>Admission time:</strong> {admission.AdmissionDate.ToLongDateString()}, {admission.AdmissionDate.ToShortTimeString()}</p>
+        <p><strong>Ward and Bed:</strong> {admission.Ward?.WardName} - {admission.Bed?.BedName}</p>";
+
+            if (applicationUser != null)
+            {
+                body += $@"
+            <p><strong>Nurse Responsible:</strong> {admission.ApplicationUser.FirstName} {admission.ApplicationUser.LastName}</p>
+            <p><strong>Contact:</strong> {admission.ApplicationUser.ContactNumber} / {admission.ApplicationUser.Email}</p>";
+            }
+            else
+            {
+                body += $@"
+            <p><strong>Nurse Responsible:</strong> Not available</p>";
+            }
+
+            body += "<p><strong>Vitals:</strong></p>";
+
+            foreach (var vital in admission.PatientsVitals)
+            {
+                body += $@"
+            <p><strong>{vital.Vitals?.VitalName}:</strong> {vital.Reading} {vital.Vitals?.Units} at {vital.Time.ToShortTimeString()}</p>";
+            }
+
+            // Add more details as needed
+
+            var recipient = admission.Patient.PatientBooking.ApplicationUser.Email; // Modify as needed
+            if(recipient == null)
+            {
+                return NotFound();
+            }
+            await _emailSender.SendEmailAsync(recipient, subject, body);
+
+            TempData["SuccessMessage"] = "Email sent successfully.";
+            return RedirectToAction("ViewAdmission", "Admission", new { admissionId = admissionId });
         }
     }
 }

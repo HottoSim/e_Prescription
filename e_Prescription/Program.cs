@@ -4,10 +4,13 @@ using e_Prescription.Data;
 using e_Prescription.Models.Account;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using e_Prescription.EmailSender;
 //using e_Prescription.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddTransient<e_Prescription.EmailSender.IEmailSender, EmailSender>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
