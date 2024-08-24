@@ -4,33 +4,15 @@
     ViewData["Title"] = "Compose Email";
 }
 
-<h2>Compose Email</h2>
+<h2>@ViewData["Title"]</h2>
 
-<form asp-action="SendEmail" method="post">
-    <div class="form-group">
-        <label asp-for="FromEmail"></label>
-        <input asp-for="FromEmail" class="form-control" readonly />
+<!-- Display success or error messages -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
     </div>
-
-    <div class="form-group">
-        <label asp-for="ToEmail"></label>
-        <input asp-for="ToEmail" class="form-control" placeholder="Recipient's email" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Subject"></label>
-        <input asp-for="Subject" class="form-control" placeholder="Email subject" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Message"></label>
-        <textarea asp-for="Message" class="form-control" readonly></textarea>
-    </div>
-
-    <input type="hidden" asp-for="AdmissionId" />
-
-    <button type="submit" class="btn btn-primary">Send Email</button>
-</form>
+}
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -39,3 +21,33 @@
     </div>
 }
 
+<!-- Email form -->
+<form asp-action="SendEmail" method="post">
+    <div class="form-group">
+        <label asp-for="ToEmail">To</label>
+        <input asp-for="ToEmail" class="form-control" />
+        <span asp-validation-for="ToEmail" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Subject">Subject</label>
+        <input asp-for="Subject" class="form-control" />
+        <span asp-validation-for="Subject" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Message">Message</label>
+        <textarea asp-for="Message" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="Message" class="text-danger"></span>
+    </div>
+
+    <!-- Hidden input to pass the admission ID -->
+    <input type="hidden" asp-for="AdmissionId" />
+
+    <button type="submit" class="btn btn-primary">Send Email</button>
+</form>
+
+@section Scripts {
+    <!-- Validation script (if not included globally) -->
+    <partial name="_ValidationScriptsPartial" />
+}

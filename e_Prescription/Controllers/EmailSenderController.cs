@@ -1,70 +1,19 @@
-﻿using e_Prescription.Data;
-using e_Prescription.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Net;
-using System.Net.Mail;
-using System.Text;
-using MimeKit;
+﻿using Microsoft.AspNetCore.Mvc;
+using e_Prescription.Services;
 using e_Prescription.Models.ViewModels;
-using Org.BouncyCastle.Asn1.IsisMtt.X509;
 
 namespace e_Prescription.Controllers
 {
     public class EmailSenderController : Controller
     {
-        private readonly ApplicationDbContext _context; // Your EF context
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly EmailSender _emailSender;
 
-        public EmailSenderController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public EmailSenderController()
         {
-            _context = context;
-            _userManager = userManager;
+            _emailSender = new EmailSender(); // Instantiate the EmailSender
         }
 
-        [HttpGet]
-        public IActionResult ComposeEmail(int admissionId)
-        {
-            var user = _userManager.GetUserAsync(User).Result; // Get logged-in user
-            if (user == null)
-            {
-                // Handle the case where the user is not found
-                return RedirectToAction("Error", "Home");
-            }
-
-            var model = new EmailViewModel
-            {
-                FromEmail = user.Email, // Auto-fill from the logged-in user
-                AdmissionId = admissionId // Populate the model with the selected admission ID
-            };
-
-            // Fetch data from the Admission table and populate the Message
-            var admission = _context.Admissions
-                .Include(a => a.Patient) // Ensure related entities are included
-                .Include(a => a.Bed) // Ensure related entities are included
-                .FirstOrDefault(a => a.Id == admissionId);
-
-            if (admission != null)
-            {
-                // Check if related properties are null before accessing them
-                var patientName = admission.Patient?.Firstname ?? "Unknown";
-                var bedName = admission.Bed?.BedName ?? "Unknown";
-
-                model.Message = $"Patient Name: {patientName}\nAdmission Date: {admission.AdmissionDate}\nDetails: {bedName}";
-            }
-            else
-            {
-                // Handle the case where admission is not found
-                TempData["ErrorMessage"] = "Admission not found.";
-                return RedirectToAction("Error", "Home");
-            }
-
-            return View(model);
-        }
-
-
+        [HttpPost]
         public IActionResult SendEmail(EmailViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.ToEmail))
@@ -81,23 +30,10 @@ namespace e_Prescription.Controllers
 
             try
             {
-                var mailMessage = new MailMessage
-                {
-                    From = new MailAddress(model.FromEmail),
-                    Subject = model.Subject,
-                    Body = model.Message,
-                    IsBodyHtml = false // Set to true if the body contains HTML
-                };
+                // Use the EmailSender service to send the email
+                _emailSender.SendMessage(model.ToEmail, model.Subject, model.Message);
 
-                mailMessage.To.Add(model.ToEmail);
-
-                using (var smtpClient = new SmtpClient("smtp.gmail.com", 587)) // TLS Port
-                {
-                    smtpClient.Credentials = new NetworkCredential("your-email@gmail.com", "your-app-password");
-                    smtpClient.EnableSsl = true; // Enable SSL/TLS
-                    smtpClient.Send(mailMessage);
-                }
-
+                TempData["SuccessMessage"] = "Email sent successfully!";
                 return RedirectToAction("SuccessView"); // Redirect to a success view
             }
             catch (Exception ex)
@@ -107,5 +43,23 @@ namespace e_Prescription.Controllers
             }
         }
 
+        // Example of a ComposeEmail action to generate a form for sending emails
+        [HttpGet]
+        public IActionResult ComposeEmail(int admissionId)
+        {
+            var model = new EmailViewModel
+            {
+                AdmissionId = admissionId
+            };
+
+            // Return the view to compose an email (assuming you have a view set up)
+            return View(model);
+        }
+
+        // Example of a SuccessView action
+        public IActionResult SuccessView()
+        {
+            return View();
+        }
     }
 }
