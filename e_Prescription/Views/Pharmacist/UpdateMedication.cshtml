@@ -1,0 +1,119 @@
+﻿@model e_Prescription.Models.PharmacyMedication
+
+@{
+    ViewData["Title"] = "Update Medication";
+}
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Update Medication</h4>
+        </div>
+
+        <div class="card-body">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <form asp-action="UpdateMedication" method="post">
+                        <input type="hidden" asp-for="PharmacyMedicationId" />
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label asp-for="MedicationName" class="control-label"></label>
+                                <input asp-for="MedicationName" class="form-control" />
+                                <span asp-validation-for="MedicationName" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <label asp-for="Schedule" class="control-label">Schedule</label>
+                                <select asp-for="Schedule" class="form-control">
+                                    <option value="" disabled selected>--Select Schedule--</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                </select>
+                                <span asp-validation-for="Schedule" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label asp-for="QuantityOnHand" class="control-label"></label>
+                                <input asp-for="QuantityOnHand" class="form-control" />
+                                <span asp-validation-for="QuantityOnHand" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <label asp-for="ReorderLevel" class="control-label"></label>
+                                <input asp-for="ReorderLevel" class="form-control" />
+                                <span asp-validation-for="ReorderLevel" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label asp-for="DosageFormId" class="control-label">Dosage Form</label>
+                                <select asp-for="DosageFormId" class="form-control" asp-items="ViewBag.DosageForms">
+                                    <option selected disabled>--Select dosage form--</option>
+                                </select>
+                                <span asp-validation-for="DosageFormId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Active Ingredients</label>
+                            <div id="ingredients">
+                                <!-- Ingredient rows will be dynamically added here -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <select class="form-control" name="selectedIngredients">
+                                            @if (ViewBag.ActiveIngredients != null)
+                                            {
+                                                foreach (var item in ViewBag.ActiveIngredients)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <option value="">No active ingredients available</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" name="ingredientStrengths" placeholder="Enter Strength" />
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary mt-2" onclick="addIngredient()">Add Another Ingredient</button>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="submit" value="Save Changes" class="btn btn-primary" />
+                            <a href="@Url.Action("MedicationList", "Pharmacist")" class="btn btn-secondary ml-2">Back</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function addIngredient() {
+            // Clone the first ingredient row and append it
+            var firstIngredientRow = $('#ingredients .row:first').clone();
+            // Clear the input fields in the cloned row
+            firstIngredientRow.find('input').val('');
+            $('#ingredients').append(firstIngredientRow);
+        }
+    </script>
+}
+
+

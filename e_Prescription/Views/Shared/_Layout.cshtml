@@ -189,20 +189,20 @@
     {
         <nav class="navbar-container">
             <div class="nav flex-column navbar-vertical nav-vt" role="tablist" aria-orientation="vertical">
+                <a class="nav-link navbar-item text-white active" href="@Url.Action("Dashboard","Pharmacist")">                    
+                    <i class="fas fa-gauge"></i>
+                    Dashboard
+                </a>
                 <a class="nav-link navbar-item text-white active" href="@Url.Action("GetPrescriptions","Pharmacist")">
                     <i class="fas fa-prescription"></i>
                     Prescriptions
-                </a>
-                @* <a class="nav-link navbar-item text-white" href="@Url.Action("UrgentPrescriptions", "Pharmacist")">
-                    <i class="fas fa-exclamation"></i>
-                    Urgent Prescriptions
-                </a> *@
+                </a>              
                 <a class="nav-link navbar-item text-white" href="@Url.Action("MedicationList","Pharmacist")">
                     <i class="fas fa-pills"></i>
                     Medications
                 </a>
-                <a class="nav-link navbar-item text-white" href="@Url.Action("AddMedication","Pharmacist")">
-                    <i class="fas fa-pills"></i>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("AddMedication","Pharmacist")">                  
+                    <i class="fas fa-capsules"></i>
                     Add Medications
                 </a>
                 <a class="nav-link navbar-item text-white" href="@Url.Action("OrderMedications","Pharmacist")">
@@ -213,14 +213,10 @@
                     <i class="fas fa-check"></i>
                     Stock Received
                 </a>
-                <a class="nav-link navbar-item text-white" href="@Url.Action("ReceivedMedication","Pharmacist")">
-                    <i class="fas fa-pills"></i>
+                <a class="nav-link navbar-item text-white" href="@Url.Action("ReceivedMedication","Pharmacist")">                   
+                    <i class="fas fa-file-import"></i>
                     Capture Stock
-                </a>
-                @* <a class="nav-link navbar-item text-white" href="@Url.Action("StockOrdered", "Pharmacist")">
-                    <i class="fas fa-marker"></i>
-                    Stock Order
-                </a> *@
+                </a>               
             </div>
             <div class="content1">
                 <main role="main" class="pb-3">
