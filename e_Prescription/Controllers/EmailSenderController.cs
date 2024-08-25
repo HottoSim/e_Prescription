@@ -45,11 +45,17 @@ namespace e_Prescription.Controllers
         public async Task<IActionResult> SendEmail(int admissionId, string subject)
         {
             var admission = _context.Admissions
-                .Include(a => a.Patient)
-                .ThenInclude(p => p.PatientBooking)
-                .ThenInclude(pb => pb.ApplicationUser)
-                .Include(a => a.PatientsVitals)
-                .FirstOrDefault(a => a.Id == admissionId);
+                           .Include(a => a.Patient)
+                           .ThenInclude(p => p.PatientBooking)
+                           .ThenInclude(pb => pb.ApplicationUser)
+                           .Include(a => a.PatientsVitals)
+                           .ThenInclude(v => v.Vitals) // Ensure Vitals are included
+                           .Include(a => a.Ward) // Include Ward
+                           .Include(a => a.Bed) // Include Bed
+                           .Include(a => a.ApplicationUser) // Include Nurse (ApplicationUser)
+                           .FirstOrDefault(a => a.Id == admissionId);
+
+
 
             if (admission == null)
             {
@@ -66,23 +72,24 @@ namespace e_Prescription.Controllers
 
             var patientBooking = patient.PatientBooking;
             var applicationUser = patientBooking?.ApplicationUser;
+            var applicationUser2 = admission.ApplicationUser;
 
             var body = $@"
-        <h2>Patient Vitals for {patient.Firstname} {patient.Lastname}</h2>
-        <p><strong>Gender:</strong> {patient.Gender}</p>
-        <p><strong>Admission time:</strong> {admission.AdmissionDate.ToLongDateString()}, {admission.AdmissionDate.ToShortTimeString()}</p>
-        <p><strong>Ward and Bed:</strong> {admission.Ward?.WardName} - {admission.Bed?.BedName}</p>";
+                          <h2>Patient Vitals for {patient.Firstname} {patient.Lastname}</h2>
+                          <p><strong>Gender:</strong> {patient.Gender}</p>
+                          <p><strong>Admission time:</strong> {admission.AdmissionDate.ToLongDateString()}, {admission.AdmissionDate.ToShortTimeString()}</p>
+                          <p><strong>Ward and Bed:</strong> {admission.Ward?.WardName} - {admission.Bed?.BedName}</p>";
 
-            if (applicationUser != null)
+            if (applicationUser2 != null)
             {
                 body += $@"
-            <p><strong>Nurse Responsible:</strong> {admission.ApplicationUser.FirstName} {admission.ApplicationUser.LastName}</p>
-            <p><strong>Contact:</strong> {admission.ApplicationUser.ContactNumber} / {admission.ApplicationUser.Email}</p>";
+                           <p><strong>Nurse Responsible:</strong> {applicationUser2.FirstName} {applicationUser2.LastName}</p>
+                           <p><strong>Contact:</strong> {applicationUser2.ContactNumber} / {applicationUser2.Email}</p>";
             }
             else
             {
                 body += $@"
-            <p><strong>Nurse Responsible:</strong> Not available</p>";
+                           <p><strong>Nurse Responsible:</strong> Not available</p>";
             }
 
             body += "<p><strong>Vitals:</strong></p>";
@@ -90,20 +97,23 @@ namespace e_Prescription.Controllers
             foreach (var vital in admission.PatientsVitals)
             {
                 body += $@"
-            <p><strong>{vital.Vitals?.VitalName}:</strong> {vital.Reading} {vital.Vitals?.Units} at {vital.Time.ToShortTimeString()}</p>";
+                           <p><strong>{vital.Vitals?.VitalName}:</strong> {vital.Reading} {vital.Vitals?.Units} at {vital.Time.ToShortTimeString()}</p>";
             }
 
-            // Add more details as needed
 
-            var recipient = admission.Patient.PatientBooking.ApplicationUser.Email; // Modify as needed
-            if(recipient == null)
+
+            var recipient = patientBooking?.ApplicationUser?.Email;
+            if (recipient == null)
             {
                 return NotFound();
             }
-            await _emailSender.SendEmailAsync(recipient, subject, body);
+
+            // Indicate that the body is HTML
+            await _emailSender.SendEmailAsync(recipient, subject, body, isHtml: true);
 
             TempData["SuccessMessage"] = "Email sent successfully.";
             return RedirectToAction("ViewAdmission", "Admission", new { admissionId = admissionId });
         }
+
     }
 }
