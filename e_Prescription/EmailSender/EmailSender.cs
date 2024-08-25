@@ -5,7 +5,7 @@ namespace e_Prescription.EmailSender
 {
     public class EmailSender : IEmailSender
     {
-        public Task SendEmailAsync(string email, string subject, string message)
+        public Task SendEmailAsync(string email, string subject, string message, bool isHtml = true)
         {
             var mail = "baybreezeday@gmail.com";
             var pw = "ywbh axfa unmj xlbb";
@@ -16,7 +16,18 @@ namespace e_Prescription.EmailSender
                 Credentials = new NetworkCredential(mail, pw)
             };
 
-            return client.SendMailAsync(new MailMessage(from: mail, to: email, subject, message));
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress(mail),
+                Subject = subject,
+                Body = message,
+                IsBodyHtml = isHtml // This ensures that the email body is treated as HTML
+            };
+
+            mailMessage.To.Add(email);
+
+            return client.SendMailAsync(mailMessage);
         }
     }
+
 }
