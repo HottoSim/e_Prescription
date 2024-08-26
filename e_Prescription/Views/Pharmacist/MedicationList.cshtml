@@ -23,7 +23,7 @@
                     <th>Quantity On Hand</th>
                     <th>Reorder Level</th>
                     <th>Ingredients</th>
-                    @* <th>Order</th> *@
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,14 +43,9 @@
                                 }
                             </ul>
                         </td>
-                        @* <td>
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#orderModal"
-                                    data-medicationid="@medication.PharmacyMedicationId"
-                                    data-medicationname="@medication.MedicationName"
-                                    data-quantityonhand="@medication.QuantityOnHand">
-                                Order
-                            </button>
-                        </td> *@
+                        <td>
+                            <a class="btn btn-warning btn-sm" href="@Url.Action("UpdateMedication", "Pharmacist", new { id = medication.PharmacyMedicationId})">Update</a>                      
+                        </td>
                     </tr>
                 }
             </tbody>

@@ -1,0 +1,187 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - e_Prescription</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/e_Prescription.styles.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.14/css/bootstrap-select.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.14/js/bootstrap-select.min.js"></script>
+    <style>
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px; /* Add margin to create space between header and dashboard */
+        }
+
+        .align-left {
+            align-items: flex-end;
+            text-align: left;
+        }
+
+        .btn1 {
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+
+        .header {
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            width: 100%; /* Ensure the header spans the entire width */
+        }
+
+            .header h1 {
+                font-size: 36px;
+                font-family: fantasy;
+                color: dimgray;
+                margin-bottom: 5px;
+            }
+
+        .date {
+            font-size: 18px;
+            color: #555;
+        }
+
+        .card-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .card {
+            display: flex;
+            align-items: center;
+            background-color: dimgrey;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 250px;
+            transition: box-shadow 0.3s ease;
+        }
+
+            .card:hover {
+                box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            }
+
+        .icon {
+            font-size: 30px;
+            color: #28a745;
+            margin-right: 15px;
+        }
+
+        .divider-horizontal {
+            width: 80%; /* Adjust width as needed */
+            height: 1px;
+            background-color: #ccc; /* Line color */
+            margin-bottom: 15px; /* Space between the line and the text */
+        }
+
+        .card-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            text-decoration:none;
+        }
+
+            .card-name:hover {
+                text-decoration: underline; /* Add underline on hover */
+                color: #28a745; /* Change color on hover for better user feedback */
+
+    </style>
+</head>
+
+<div class="header">
+    <h1>Welcome</h1>
+    <h1>To</h1>
+    <h1>Bay Breeze Day Hospital</h1>
+    <p class="date">August 25, 2024</p> <!-- Update dynamically for today's date -->
+</div>
+<div class="card-container">
+    <div class="card">
+        <div class="icon">           
+            <i class="fas fa-prescription"></i>
+        </div>
+        <div class="divider-horizontal"></div> <!-- This is the horizontal line divider -->
+        <a href ="@Url.Action("GetPrescriptions", "Pharmacist")" class="card-name">
+            Prescriptions
+        </a>
+    </div>
+    <div class="card">
+        <div class="icon">
+            <i class="fas fa-pills"></i>
+        </div>
+        <div class="divider-horizontal"></div> <!-- This is the horizontal line divider -->
+        <a href="@Url.Action("MedicationList","Pharmacist")" class="card-name">
+            Medications
+        </a>
+    </div>
+    <div class="card">
+        <div class="icon">
+            <i class="fas fa-capsules"></i>
+        </div>
+        <div class="divider-horizontal"></div> <!-- This is the horizontal line divider -->
+        <a href="@Url.Action("AddMedication","Pharmacist")" class="card-name">
+            Add Medications
+        </a>
+    </div>
+</div>
+<div class="card-container">    
+    <div class="card">
+        <div class="icon">
+            <i class="fas fa-clipboard"></i>
+        </div>
+        <div class="divider-horizontal"></div> <!-- This is the horizontal line divider -->
+        <a href="@Url.Action("OrderMedications","Pharmacist")" class="card-name">
+            Stock Order
+        </a>
+    </div>
+    <div class="card">
+        <div class="icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="divider-horizontal"></div> <!-- This is the horizontal line divider -->
+        <a href="@Url.Action("ReceivedMedicationRecords","Pharmacist")" class="card-name">
+            Stock Received
+        </a>
+    </div>
+    <div class="card">
+        <div class="icon">
+            <i class="fas fa-file-import"></i>
+        </div>
+        <div class="divider-horizontal"></div> <!-- This is the horizontal line divider -->
+        <a href="@Url.Action("ReceivedMedication","Pharmacist")" class="card-name">
+            Capture Stock
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function openDashboardModal(url) {
+            $('#DashboardModalBody').load(url, function () {
+                $('#DashboardModal').modal('show');
+            });
+        }
+    </script>
+}
+

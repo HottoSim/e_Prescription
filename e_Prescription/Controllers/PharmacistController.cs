@@ -22,6 +22,10 @@ namespace e_Prescription.Controllers
         {
             return View();
         }
+        public IActionResult Dashboard()
+        {
+            return View();
+        }
 
         //Return Prescription
         [HttpGet]
@@ -54,32 +58,32 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public async Task<IActionResult> AddMedication(PharmacyMedication medication, List<int> selectedIngredients, List<string> ingredientStrengths)
         {
-           
-                // Add the medication first
-                _context.PharmacyMedications.Add(medication);
-                await _context.SaveChangesAsync();
 
-                // Now add the ingredients with the saved PharmacyMedicationId
-                if (selectedIngredients != null && ingredientStrengths != null)
+            // Add the medication first
+            _context.PharmacyMedications.Add(medication);
+            await _context.SaveChangesAsync();
+
+            // Now add the ingredients with the saved PharmacyMedicationId
+            if (selectedIngredients != null && ingredientStrengths != null)
+            {
+                for (int i = 0; i < selectedIngredients.Count; i++)
                 {
-                    for (int i = 0; i < selectedIngredients.Count; i++)
+                    var ingredient = new PharmacyMedicationIngredient
                     {
-                        var ingredient = new PharmacyMedicationIngredient
-                        {
-                            PharmacyMedicationId = medication.PharmacyMedicationId, 
-                            ActiveIngredientId = selectedIngredients[i],
-                            Strength = ingredientStrengths[i]
-                        };
-                        _context.PharmacyMedicationIngredients.Add(ingredient);
-                    }
-                    await _context.SaveChangesAsync();
+                        PharmacyMedicationId = medication.PharmacyMedicationId,
+                        ActiveIngredientId = selectedIngredients[i],
+                        Strength = ingredientStrengths[i]
+                    };
+                    _context.PharmacyMedicationIngredients.Add(ingredient);
                 }
+                await _context.SaveChangesAsync();
+            }
 
             ViewBag.DosageForms = new SelectList(_context.DosageForms, "DosageFormId", "Description", medication.DosageFormId);
             ViewBag.ActiveIngredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
 
             return RedirectToAction("MedicationList");
-            
+
         }
 
 
@@ -168,9 +172,34 @@ namespace e_Prescription.Controllers
             return View(medications);
         }
 
+        //Update Medication List
+        public IActionResult UpdateMedication(int? id)
+        {
+            if (id == null || id == 0)
+            {
+                return NotFound();
+            }
+            var objList = _context.PharmacyMedications.Find(id);
+            if (objList == null)
+            {
+                return NotFound();
+            }
 
+            ViewBag.DosageForms = new SelectList(_context.DosageForms, "DosageFormId", "Description");
+            ViewBag.ActiveIngredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+            return View(objList);
+        }
+        //Return Updated medication list
+        [HttpPost]
+        public IActionResult UpdateMedication(PharmacyMedication medication)
+        {
+           _context.PharmacyMedications.Update(medication);
+           ViewBag.DosageForms = new SelectList(_context.DosageForms, "DosageFormId", "Description", medication.DosageFormId);
+           ViewBag.ActiveIngredients = new SelectList(_context.ActiveIngredients, "ActiveIngredientId", "IngredientName");
+           _context.SaveChanges();
+            return RedirectToAction("MedicationList");
+        }
 
-        //Return Stock Records
         [HttpGet]
         public IActionResult StockRecords()
         {
@@ -364,6 +393,103 @@ namespace e_Prescription.Controllers
 
             return View(viewModel);
         }
+
+        ////Update Stock Received
+        //public IActionResult UpdateStockReceived(int? id)
+        //{
+        //    if (id == null || id == 0)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var objList = _context.StockOrders.Find(id);
+        //    if (objList == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View(objList);
+        //}
+        ////Return Updated medication list
+        //[HttpPost]
+        //public IActionResult UpdateStockReceived(ReceivedOrderViewModel model)
+        //{
+        //    _context.StockOrders.Update(stockReceived);
+        //    _context.SaveChanges();
+        //    return RedirectToAction("ReceivedMedicationRecords");
+        //}
+
+        ////Update Stock Received 2
+        //public IActionResult UpdateStockReceived(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var stockOrder = _context.StockOrders
+        //        .Include(o => o.PharmacyMedication)  // Ensure related data is included if needed
+        //        .FirstOrDefault(o => o.StockOrderId == id);
+
+        //    if (stockOrder == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    // Create a view model if necessary to match your form
+        //    //var model = new ReceivedOrderViewModel
+        //    //{
+        //    //    StockOrderId = stockOrder.StockOrderId,
+        //    //    SelectedMedicationId = stockOrder.PharmacyMedicationId,
+        //    //    // Other properties as needed
+        //    //};
+        //    var model = new ReceivedOrderViewModel
+        //    {
+        //        Medications = _context.StockOrders
+        //            .Include(o => o.PharmacyMedication)
+        //            .Select(o => new SelectListItem
+        //            {
+        //                Value = o.PharmacyMedicationId.ToString(),
+        //                Text = o.PharmacyMedication.MedicationName
+        //            })
+        //            .Distinct()
+        //            .ToList()
+        //    };
+
+        //    return View(model);
+        //}
+        //[HttpPost]
+        //public async Task<IActionResult> UpdateStockReceived(ReceivedOrderViewModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        // Repopulate dropdowns or other form elements if needed
+        //        model.Medications = _context.StockOrders
+        //            .Include(o => o.PharmacyMedication)
+        //            .Select(o => new SelectListItem
+        //            {
+        //                Value = o.PharmacyMedicationId.ToString(),
+        //                Text = o.PharmacyMedication.MedicationName
+        //            })
+        //            .Distinct()
+        //            .ToList();
+        //        return View(model);
+        //    }
+
+        //    var stockOrder = await _context.StockOrders.FindAsync(model.StockOrderId);
+        //    if (stockOrder == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    // Update the stock order properties
+        //    stockOrder.Status = "Updated"; // Set to the appropriate status
+        //                                   // Update other properties as needed
+
+        //    // Save changes
+        //    _context.StockOrders.Update(stockOrder);
+        //    await _context.SaveChangesAsync();
+
+        //    return RedirectToAction("ReceivedMedicationRecords");
+        //}
 
     }
 }
