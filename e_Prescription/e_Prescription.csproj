@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\images\Screenshot 2024-08-26 015039.png" />
     <_ContentIncludedByDefault Remove="wwwroot\images\Treatment.jpeg" />
   </ItemGroup>
 
