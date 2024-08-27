@@ -75,6 +75,10 @@ namespace e_Prescription.Controllers
                         {
                             return RedirectToAction("Users", "Admin");
                         }
+                        if (roles.Contains("Pharmacist"))
+                        {
+                            return RedirectToAction("Dashboard", "Pharmacist");
+                        }
 
                         return RedirectToLocal(returnUrl);
                     }
