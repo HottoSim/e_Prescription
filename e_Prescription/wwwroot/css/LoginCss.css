@@ -20,4 +20,7 @@ html {
 body {
     margin-bottom: 60px;
     background-image: url('../images/screenshot 2024-08-26 015039.png');
+    background-repeat: no-repeat;
+    background-size: cover; /* Adjust the background image to cover the entire area */
+    background-position: center; /* Center the background image */
 }
