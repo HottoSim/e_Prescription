@@ -394,14 +394,14 @@ namespace e_Prescription.Controllers
             return View(viewModel);
         }
 
-        ////Update Stock Received
+        //Update Stock Received
         //public IActionResult UpdateStockReceived(int? id)
         //{
         //    if (id == null || id == 0)
         //    {
         //        return NotFound();
         //    }
-        //    var objList = _context.StockOrders.Find(id);
+        //    var objList = _context.StockReceived.Find(id);
         //    if (objList == null)
         //    {
         //        return NotFound();
@@ -417,79 +417,73 @@ namespace e_Prescription.Controllers
         //    return RedirectToAction("ReceivedMedicationRecords");
         //}
 
-        ////Update Stock Received 2
-        //public IActionResult UpdateStockReceived(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
 
-        //    var stockOrder = _context.StockOrders
-        //        .Include(o => o.PharmacyMedication)  // Ensure related data is included if needed
-        //        .FirstOrDefault(o => o.StockOrderId == id);
+        //Update Stock Received 2
 
-        //    if (stockOrder == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // GET: EditReceivedMedication
+        [HttpGet]
+        public IActionResult EditReceivedMedication(int? id)
+        {
+            var stockReceived = _context.StockReceived
+                .Include(o => o.StockOrder)
+                .ThenInclude(o => o.PharmacyMedication)
+                .FirstOrDefault(o => o.StockOrderId == id);
 
-        //    // Create a view model if necessary to match your form
-        //    //var model = new ReceivedOrderViewModel
-        //    //{
-        //    //    StockOrderId = stockOrder.StockOrderId,
-        //    //    SelectedMedicationId = stockOrder.PharmacyMedicationId,
-        //    //    // Other properties as needed
-        //    //};
-        //    var model = new ReceivedOrderViewModel
-        //    {
-        //        Medications = _context.StockOrders
-        //            .Include(o => o.PharmacyMedication)
-        //            .Select(o => new SelectListItem
-        //            {
-        //                Value = o.PharmacyMedicationId.ToString(),
-        //                Text = o.PharmacyMedication.MedicationName
-        //            })
-        //            .Distinct()
-        //            .ToList()
-        //    };
+            if (stockReceived == null)
+            {
+                return NotFound();
+            }
 
-        //    return View(model);
-        //}
-        //[HttpPost]
-        //public async Task<IActionResult> UpdateStockReceived(ReceivedOrderViewModel model)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        // Repopulate dropdowns or other form elements if needed
-        //        model.Medications = _context.StockOrders
-        //            .Include(o => o.PharmacyMedication)
-        //            .Select(o => new SelectListItem
-        //            {
-        //                Value = o.PharmacyMedicationId.ToString(),
-        //                Text = o.PharmacyMedication.MedicationName
-        //            })
-        //            .Distinct()
-        //            .ToList();
-        //        return View(model);
-        //    }
+            var viewModel = new ReceivedOrderViewModel
+            {
+                StockOrderId = stockReceived.StockOrderId,
+                MedicationName = stockReceived.StockOrder.PharmacyMedication.MedicationName,
+                QuantityReceived = stockReceived.QuantityReceived,
+                DateReceived = stockReceived.Date
+            };
 
-        //    var stockOrder = await _context.StockOrders.FindAsync(model.StockOrderId);
-        //    if (stockOrder == null)
-        //    {
-        //        return NotFound();
-        //    }
+            return View(viewModel);
+        }
+        // POST: EditReceivedMedication
+        [HttpPost]
+        public async Task<IActionResult> EditReceivedMedication(ReceivedOrderViewModel model)
+        {
+            //if (!ModelState.IsValid)
+            //{
+            //    return View(model);
+            //}
 
-        //    // Update the stock order properties
-        //    stockOrder.Status = "Updated"; // Set to the appropriate status
-        //                                   // Update other properties as needed
+            var stockReceived = _context.StockReceived
+                .Include(o => o.StockOrder)
+                .FirstOrDefault(o => o.StockOrderId == model.StockOrderId);
 
-        //    // Save changes
-        //    _context.StockOrders.Update(stockOrder);
-        //    await _context.SaveChangesAsync();
+            if (stockReceived == null)
+            {
+                return NotFound();
+            }
 
-        //    return RedirectToAction("ReceivedMedicationRecords");
-        //}
+            // Update the QuantityReceived and Date
+            stockReceived.QuantityReceived = model.QuantityReceived;
+            stockReceived.Date = DateTime.Now;
+
+            // Update the related stock order and medication
+            var medication = _context.PharmacyMedications
+                .FirstOrDefault(m => m.PharmacyMedicationId == stockReceived.StockOrder.PharmacyMedicationId);
+
+            if (medication != null)
+            {
+                // Adjust the medication quantity based on the new value
+                int previousQuantity = stockReceived.QuantityReceived;
+                medication.QuantityOnHand -= previousQuantity; // Subtract the old quantity first
+                medication.QuantityOnHand += model.QuantityReceived; // Add the new quantity
+
+                _context.PharmacyMedications.Update(medication);
+            }
+
+            _context.StockReceived.Update(stockReceived);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("ReceivedMedicationRecords");
+        }
 
     }
 }

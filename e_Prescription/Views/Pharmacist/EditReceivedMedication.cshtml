@@ -1,0 +1,31 @@
+﻿@model e_Prescription.Models.ReceivedOrderViewModel
+
+@{
+    ViewData["Title"] = "Update Received Medication";
+}
+
+<div class="col-md-6 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-warning text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Update Received Medication</h4>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="EditReceivedMedication" method="post">
+                <div class="form-group">
+                    <label asp-for="MedicationName">Medication</label>
+                    <input type="text" asp-for="MedicationName" class="form-control" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="QuantityReceived">Quantity Received</label>
+                    <input type="number" asp-for="QuantityReceived" class="form-control" />
+                    <span asp-validation-for="QuantityReceived" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Update</button>
+                <a href="@Url.Action("ReceivedMedicationRecords", "Pharmacist")" class="btn btn-secondary ml-2">Back</a>
+            </form>
+        </div>
+    </div>
+</div>

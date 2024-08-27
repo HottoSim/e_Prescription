@@ -35,7 +35,7 @@
                     <td>@record.DateReceived.ToString("yyyy-MM-dd")</td>
                     <td>@record.Status</td>
                     <td>
-                      <a class="btn btn-warning btn-sm" href="@Url.Action("UpdateStockReceived", "Pharmacist", new { id = record.StockOrderId})">Update</a>
+                            <a class="btn btn-warning btn-sm" href="@Url.Action("EditReceivedMedication", "Pharmacist", new { id = record.StockOrderId})">Update</a>
                     </td>
                 </tr>
             }
