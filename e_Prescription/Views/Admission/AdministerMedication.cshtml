@@ -32,25 +32,29 @@
         <hr />
         <form asp-action="AdministerMedication" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="PrescriptionItemId" class="control-label">Select Medication</label>
-                <select asp-for="PrescriptionItemId" class="form-control" asp-items="@(new SelectList(ViewBag.PrescriptionItems, "PrescriptionItemId", "PharmacyMedication.MedicationName"))">
-                    <option value="">-- Select Medication --</option>
-                </select>
-                <span asp-validation-for="PrescriptionItemId" class="text-danger"></span>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label asp-for="PrescriptionItemId" class="control-label">Select Medication</label>
+                    <select asp-for="PrescriptionItemId" class="form-control" asp-items="@(new SelectList(ViewBag.PrescriptionItems, "PrescriptionItemId", "PharmacyMedication.MedicationName"))">
+                        <option value="">-- Select Medication --</option>
+                    </select>
+                    <span asp-validation-for="PrescriptionItemId" class="text-danger"></span>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label asp-for="Quantity" class="control-label">Quantity to Administer</label>
-                <input asp-for="Quantity" class="form-control" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Quantity" class="control-label">Quantity to Administer</label>
+                    <input asp-for="Quantity" class="form-control" />
+                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Time" class="control-label">Time</label>
+                    <input asp-for="Time" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
+                    <span asp-validation-for="Time" class="text-danger"></span>
+                </div>
             </div>
-
-            <input type="hidden" asp-for="Time" />
-
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Administer</button>
+                <button type="submit" class="btn btn-success">Administer</button>
                 <button type="button" class="btn btn-info" onclick="history.back()">Cancel</button>
             </div>
         </form>
