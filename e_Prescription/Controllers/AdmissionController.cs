@@ -99,7 +99,7 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult Contacts(int patientId)
         {
-            var provinces = context.Provinces.ToList();
+            var provinces = context.Provinces.OrderBy(p => p.ProvinceName).ToList();
             var cities = new List<City>
     {
         new City()
@@ -202,7 +202,7 @@ namespace e_Prescription.Controllers
 
 
             // Populate ViewBag.VitalNames with the available vital names
-            ViewBag.VitalNames = context.Vital
+            ViewBag.VitalNames = context.Vital.OrderBy(v => v.VitalName)
                                          .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
                                          .ToList();
 
@@ -319,7 +319,7 @@ namespace e_Prescription.Controllers
                 ViewBag.ErrorMessage = $"Error: Invalid format entered...";
             }
 
-            ViewBag.VitalNames = context.Vital
+            ViewBag.VitalNames = context.Vital.OrderBy(v => v.VitalName)
                 .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
                 .ToList();
 
@@ -610,7 +610,7 @@ namespace e_Prescription.Controllers
             }
 
             // Query for admitted patients
-            var admittedPatientsQuery = context.Admissions.OrderBy(a => a.AdmissionDate)
+            var admittedPatientsQuery = context.Admissions.OrderBy(a => a.Patient.Firstname)
                 .Where(a => a.NurseId == user.Id && !a.IsDischarged)
                 .Include(a => a.Patient)
                 .Include(a => a.ApplicationUser)
@@ -653,7 +653,7 @@ namespace e_Prescription.Controllers
                 return View(new List<Admission>());
             }
 
-            IQueryable<Admission> admissionsQuery = context.Admissions
+            IQueryable<Admission> admissionsQuery = context.Admissions.OrderBy(a => a.Patient.Firstname)
                 .Where(a => a.IsDischarged == false)
                 .Include(p => p.PatientsVitals)
                 .ThenInclude(pv => pv.Vitals)
@@ -729,6 +729,7 @@ namespace e_Prescription.Controllers
             }
 
             var prescriptionItems = await context.PrescriptionItems
+                .OrderBy(p => p.PharmacyMedication.MedicationName)
                 .Include(pi => pi.Prescription.Admission.Ward)
                 .Include(pi => pi.Prescription.Admission.Bed)
                 .Include(pi => pi.Prescription.Admission.Patient)
@@ -861,14 +862,26 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public async Task<IActionResult> AdministerMedication(MedicationGiven medicationGiven)
         {
+            if (medicationGiven == null || medicationGiven.PrescriptionItemId == 0)
+            {
+                ModelState.AddModelError("", "Invalid medication data.");
+                return View(medicationGiven);
+            }
 
             // Find the corresponding prescription item
             var prescriptionItem = await context.PrescriptionItems
+                .Include(pi => pi.Prescription)
                 .FirstOrDefaultAsync(pi => pi.PrescriptionItemId == medicationGiven.PrescriptionItemId);
 
-            if (prescriptionItem == null || prescriptionItem.Quantity < medicationGiven.Quantity)
+            if (prescriptionItem == null)
             {
-                ModelState.AddModelError("", "Invalid medication quantity.");
+                ModelState.AddModelError("", "Prescription item not found.");
+                return View(medicationGiven);
+            }
+
+            if (prescriptionItem.Quantity < medicationGiven.Quantity)
+            {
+                ModelState.AddModelError("", "Insufficient medication quantity.");
                 return View(medicationGiven);
             }
 
@@ -885,10 +898,16 @@ namespace e_Prescription.Controllers
 
             TempData["AdministrationSuccess"] = "Medication has been administered successfully.";
 
-            // If the model state is not valid, reload the form with the current data
+            // Fetch the updated prescription items related to the admission
+            var admissionId = prescriptionItem.Prescription?.AdmissionId ?? 0;
+            if (admissionId == 0)
+            {
+                return RedirectToAction("Error", new { message = "Admission ID is invalid." });
+            }
+
             var prescriptionItems = await context.PrescriptionItems
                 .Include(pi => pi.PharmacyMedication)
-                .Where(pi => pi.Prescription.AdmissionId == medicationGiven.PrescriptionItem.Prescription.AdmissionId && pi.Quantity > 0)
+                .Where(pi => pi.Prescription.AdmissionId == admissionId && pi.Quantity > 0)
                 .Select(pi => new
                 {
                     pi.PrescriptionItemId,
@@ -898,10 +917,9 @@ namespace e_Prescription.Controllers
                 .ToListAsync();
 
             ViewBag.PrescriptionItems = prescriptionItems;
-            ViewBag.AdmissionId = medicationGiven.PrescriptionItem.Prescription.AdmissionId;
+            ViewBag.AdmissionId = admissionId;
 
-            return RedirectToAction("ViewPrescription", new { admissionId = prescriptionItem.Prescription.AdmissionId });
-
+            return RedirectToAction("ViewPrescription", new { admissionId });
         }
     }
 }
