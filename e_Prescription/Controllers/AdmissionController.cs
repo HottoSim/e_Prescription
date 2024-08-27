@@ -875,7 +875,7 @@ namespace e_Prescription.Controllers
                 ViewBag.PrescriptionItems = new List<PrescriptionItem> { prescriptionItem };
                 ViewBag.AdmissionId = prescriptionItem.Prescription.AdmissionId;
             }
-
+            TempData["AdministrationSuccess"] = "Medication has been admistered successfully..";
             return RedirectToAction("ViewPrescription", new { admissionId = medicationGiven.PrescriptionItem.Prescription.AdmissionId });
 
         }
