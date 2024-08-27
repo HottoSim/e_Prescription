@@ -7,6 +7,8 @@
     var admissionId = Model?.FirstOrDefault()?.Prescription?.Admission?.Id;
 }
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
 <style>
     .form-card {
         border: 5px solid #f5f5f5;
@@ -58,6 +60,16 @@
 
 <div class="container">
     <div class="form-card">
+        @if (TempData["AdministrationSuccess"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["AdministrationSuccess"] 
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+
         <div class="form-group">
             <div class="table-responsive">
                 <table class="table table-striped table-sm table-sm-custom">
@@ -69,6 +81,7 @@
                             <th>Instructions</th>
                             <th>Time</th>
                             <th>Surgeon</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -83,13 +96,18 @@
                                     <td>@item.Instruction</td>
                                     <td>@item.Prescription.PresciptionDate.ToShortTimeString()</td>
                                     <td>@item.Prescription.ApplicationUser.FirstName @item.Prescription.ApplicationUser.LastName</td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#administerMedicationModal" data-prescriptionitem-id="@item.PrescriptionItemId" data-admission-id="@admissionId">
+                                            Administer Medication
+                                        </button>
+                                    </td>
                                 </tr>
                             }
                         }
                         else
                         {
                             <tr>
-                                <td colspan="6" class="text-center">No Prescription available for this patient</td>
+                                <td colspan="7" class="text-center">No Prescription available for this patient</td>
                             </tr>
                         }
                     </tbody>
@@ -101,3 +119,47 @@
         </div>
     </div>
 </div>
+
+<!-- Administer Medication Modal -->
+<div class="modal fade" id="administerMedicationModal" tabindex="-1" aria-labelledby="administerMedicationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="administerMedicationModalLabel">Administer Medication</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="administerMedicationForm" asp-action="AdministerMedication" method="post">
+                    <div class="row">
+                        <div class="mb-3">
+                            <label for="AdministerDate" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="AdministerDate" name="Time" value="@DateTime.Now.ToString("HH:mm")" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="Quantity" class="form-label">Quantity to Administer</label>
+                            <input type="number" class="form-control" id="Quantity" name="Quantity" required />
+                        </div>
+                    </div>
+                   
+                    <input type="hidden" id="PrescriptionItemId" name="PrescriptionItemId" />
+                    <input type="hidden" id="AdmissionId" name="AdmissionId" />
+                    <button type="submit" class="btn btn-primary">Administer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script> *@
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script>
+    var administerMedicationModal = document.getElementById('administerMedicationModal');
+    administerMedicationModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Button that triggered the modal
+        var prescriptionItemId = button.getAttribute('data-prescriptionitem-id'); // Extract info from data-* attributes
+        var admissionId = button.getAttribute('data-admission-id'); // Extract admissionId
+        var modal = $(this);
+        modal.find('.modal-body #PrescriptionItemId').val(prescriptionItemId); // Set the hidden input value
+        modal.find('.modal-body #AdmissionId').val(admissionId); // Set the hidden input value
+    });
+</script>

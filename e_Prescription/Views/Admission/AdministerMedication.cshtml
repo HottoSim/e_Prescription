@@ -1,0 +1,66 @@
+﻿@model e_Prescription.Models.MedicationGiven
+
+@{
+    ViewData["Title"] = "Administer Medication";
+    Layout = "_Layout2";
+}
+
+<style>
+    .form-card {
+        border: 5px solid #f5f5f5;
+        padding: 20px;
+        overflow: hidden;
+        background: linear-gradient(to bottom right, #ffffff, #f0f0f0),
+        radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 60%, rgba(230,230,230,1) 100%);
+        background-blend-mode: overlay;
+        border-radius: 20px;
+        box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .btn-primary {
+        border-radius: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="form-card">
+        <h2>Administer Medication</h2>
+        <hr />
+        <form asp-action="AdministerMedication" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label asp-for="PrescriptionItemId" class="control-label">Select Medication</label>
+                    <select asp-for="PrescriptionItemId" class="form-control" asp-items="@(new SelectList(ViewBag.PrescriptionItems, "PrescriptionItemId", "PharmacyMedication.MedicationName"))">
+                        <option value="">-- Select Medication --</option>
+                    </select>
+                    <span asp-validation-for="PrescriptionItemId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label asp-for="Quantity" class="control-label">Quantity to Administer</label>
+                    <input asp-for="Quantity" class="form-control" />
+                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="Time" class="control-label">Time</label>
+                    <input asp-for="Time" class="form-control" value="@DateTime.Now.ToString("HH:mm")" />
+                    <span asp-validation-for="Time" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Administer</button>
+                <button type="button" class="btn btn-info" onclick="history.back()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

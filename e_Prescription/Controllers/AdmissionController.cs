@@ -826,7 +826,7 @@ namespace e_Prescription.Controllers
             return RedirectToAction("NursePatients");
         }
 
-        //Administer
+        // GET: AdministerMedication
         // GET: AdministerMedication
         public async Task<IActionResult> AdministerMedication(int admissionId)
         {
@@ -835,14 +835,19 @@ namespace e_Prescription.Controllers
                 return BadRequest("Admission cannot be found");
             }
 
-            // Fetch prescription items related to the admission
+            // Fetch prescription items related to the admission with a quantity greater than 0
             var prescriptionItems = await context.PrescriptionItems
-                .Include(pi => pi.Prescription.Admission)
                 .Include(pi => pi.PharmacyMedication)
-                .Where(pi => pi.Prescription.AdmissionId == admissionId)
+                .Where(pi => pi.Prescription.AdmissionId == admissionId && pi.Quantity > 0)
+                .Select(pi => new
+                {
+                    pi.PrescriptionItemId,
+                    MedicationName = pi.PharmacyMedication.MedicationName,
+                    pi.Quantity
+                })
                 .ToListAsync();
 
-            if (prescriptionItems == null || !prescriptionItems.Any())
+            if (!prescriptionItems.Any())
             {
                 return NotFound("No prescriptions found for the specified admission.");
             }
@@ -852,32 +857,52 @@ namespace e_Prescription.Controllers
 
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> AdministerMedication(MedicationGiven medicationGiven)
         {
-            medicationGiven.Time = DateTime.Now;
+
+            // Find the corresponding prescription item
+            var prescriptionItem = await context.PrescriptionItems
+                .FirstOrDefaultAsync(pi => pi.PrescriptionItemId == medicationGiven.PrescriptionItemId);
+
+            if (prescriptionItem == null || prescriptionItem.Quantity < medicationGiven.Quantity)
+            {
+                ModelState.AddModelError("", "Invalid medication quantity.");
+                return View(medicationGiven);
+            }
+
+            // Subtract the administered quantity from the prescribed quantity
+            prescriptionItem.Quantity -= medicationGiven.Quantity;
 
             // Save the administered medication to the database
             context.MedicationsGiven.Add(medicationGiven);
+
+            // Update the prescription item in the database
+            context.PrescriptionItems.Update(prescriptionItem);
+
             await context.SaveChangesAsync();
 
-            // Redirect to a relevant view, for example, back to the prescription view
-
+            TempData["AdministrationSuccess"] = "Medication has been administered successfully.";
 
             // If the model state is not valid, reload the form with the current data
-            var prescriptionItem = await context.PrescriptionItems
-                .Include(pi => pi.Prescription.Admission)
+            var prescriptionItems = await context.PrescriptionItems
                 .Include(pi => pi.PharmacyMedication)
-                .FirstOrDefaultAsync(pi => pi.PrescriptionItemId == medicationGiven.PrescriptionItemId);
+                .Where(pi => pi.Prescription.AdmissionId == medicationGiven.PrescriptionItem.Prescription.AdmissionId && pi.Quantity > 0)
+                .Select(pi => new
+                {
+                    pi.PrescriptionItemId,
+                    MedicationName = pi.PharmacyMedication.MedicationName,
+                    pi.Quantity
+                })
+                .ToListAsync();
 
-            if (prescriptionItem != null)
-            {
-                ViewBag.PrescriptionItems = new List<PrescriptionItem> { prescriptionItem };
-                ViewBag.AdmissionId = prescriptionItem.Prescription.AdmissionId;
-            }
+            ViewBag.PrescriptionItems = prescriptionItems;
+            ViewBag.AdmissionId = medicationGiven.PrescriptionItem.Prescription.AdmissionId;
 
-            return RedirectToAction("ViewPrescription", new { admissionId = medicationGiven.PrescriptionItem.Prescription.AdmissionId });
+            return RedirectToAction("ViewPrescription", new { admissionId = prescriptionItem.Prescription.AdmissionId });
 
         }
     }
 }
+
