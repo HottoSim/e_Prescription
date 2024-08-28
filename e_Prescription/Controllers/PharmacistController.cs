@@ -5,6 +5,8 @@ using e_Prescription.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Build.ObjectModelRemoting;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 
 
 
@@ -27,13 +29,131 @@ namespace e_Prescription.Controllers
             return View();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> UpdatePrescriptionStatus(int id)
+        {
+            var prescriptionItem = await _context.PrescriptionItems
+                .Include(p => p.Prescription)
+                    .ThenInclude(p => p.Admission)
+                        .ThenInclude(a => a.Patient)
+                .Include(p => p.Prescription)
+                    .ThenInclude(p => p.ApplicationUser)
+                .Include(p => p.PharmacyMedication)
+                .FirstOrDefaultAsync(p => p.PrescriptionId == id);
+
+            if (prescriptionItem == null)
+            {
+                return NotFound();
+            }
+
+            // Prepare a list of status options
+            var statusOptions = new List<string> { "Pending", "Approved", "Rejected", "Dispensed" };
+
+            var viewModel = new ViewPrescriptionViewModel
+            {
+                PrescriptionItem = prescriptionItem,
+                StatusOptions = new SelectList(statusOptions)
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePrescriptionStatus(int id, string status)
+        {
+            if (string.IsNullOrEmpty(status))
+            {
+                ModelState.AddModelError(string.Empty, "Status is required.");
+                var statusOptions = new List<string> { "Pending", "Approved", "Rejected", "Dispensed" };
+
+                // Fetch the prescription item again to repopulate the view model
+                var prescriptionItem = await _context.PrescriptionItems
+                .Include(p => p.Prescription)
+                .ThenInclude(p => p.Admission)
+                .ThenInclude(a => a.Patient)
+                .Include(p => p.Prescription)
+                .ThenInclude(p => p.ApplicationUser)
+                .Include(p => p.PharmacyMedication)
+                .FirstOrDefaultAsync(p => p.PrescriptionId == id);
+
+                if (prescriptionItem == null)
+                {
+                    return NotFound();
+                }
+
+                var viewModel = new ViewPrescriptionViewModel
+                {
+                    PrescriptionItem = prescriptionItem,
+                    StatusOptions = new SelectList(statusOptions)
+                };
+
+                return View(viewModel);
+            }
+
+            try
+            {
+                var prescriptionItemToUpdate = await _context.PrescriptionItems
+                .Include(p => p.Prescription)
+                .FirstOrDefaultAsync(p => p.PrescriptionId == id);
+
+                if (prescriptionItemToUpdate == null)
+                {
+                    return NotFound();
+                }
+
+                // Update the status
+                prescriptionItemToUpdate.Prescription.Status = status;
+
+                // Save changes to the database
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Prescription status updated successfully.";
+                return RedirectToAction("GetPrescriptions");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                ModelState.AddModelError(string.Empty, "An error occurred while updating the prescription status: " + ex.Message);
+
+                // Return the view with the current model state
+                var statusOptions = new List<string> { "Pending", "Approved", "Rejected", "Dispensed" };
+                var prescriptionItem = await _context.PrescriptionItems
+                .Include(p => p.Prescription)
+                .ThenInclude(p => p.Admission)
+                .ThenInclude(a => a.Patient)
+                .Include(p => p.Prescription)
+                .ThenInclude(p => p.ApplicationUser)
+                .Include(p => p.PharmacyMedication)
+                .FirstOrDefaultAsync(p => p.PrescriptionId == id);
+
+                var viewModel = new ViewPrescriptionViewModel
+                {
+                    PrescriptionItem = prescriptionItem,
+                    StatusOptions = new SelectList(statusOptions)
+                };
+
+                return View(viewModel);
+            }
+        }
+
+
+
         //Return Prescription
         [HttpGet]
         public IActionResult GetPrescriptions()
         {
-            var prescriptions = _context.Prescriptions.Where(a => a.Status == "Prescribed").ToList();
+            var prescriptions = _context.PrescriptionItems
+                .Include(p => p.Prescription.Admission.Patient)
+                .Include(us => us.Prescription.ApplicationUser)
+                .Include(p => p.PharmacyMedication)
+                .Where(a => a.Prescription.Status == "Dispensed").ToList();
             return View(prescriptions);
         }
+
+        //View medication
+       
+
+
 
         //Return Medication
         [HttpGet]
@@ -419,7 +539,6 @@ namespace e_Prescription.Controllers
 
 
         //Update Stock Received 2
-
         // GET: EditReceivedMedication
         [HttpGet]
         public IActionResult EditReceivedMedication(int? id)
@@ -444,15 +563,12 @@ namespace e_Prescription.Controllers
 
             return View(viewModel);
         }
-        // POST: EditReceivedMedication
+
+        // POST: EditReceivedMedication 1        
         [HttpPost]
         public async Task<IActionResult> EditReceivedMedication(ReceivedOrderViewModel model)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return View(model);
-            //}
-
+            // Find the stock received record
             var stockReceived = _context.StockReceived
                 .Include(o => o.StockOrder)
                 .FirstOrDefault(o => o.StockOrderId == model.StockOrderId);
@@ -461,6 +577,9 @@ namespace e_Prescription.Controllers
             {
                 return NotFound();
             }
+
+            // Store the previous quantity before updating
+            int previousQuantity = stockReceived.QuantityReceived;
 
             // Update the QuantityReceived and Date
             stockReceived.QuantityReceived = model.QuantityReceived;
@@ -472,9 +591,8 @@ namespace e_Prescription.Controllers
 
             if (medication != null)
             {
-                // Adjust the medication quantity based on the new value
-                int previousQuantity = stockReceived.QuantityReceived;
-                medication.QuantityOnHand -= previousQuantity; // Subtract the old quantity first
+                // Adjust the medication quantity based on the old and new quantity received
+                medication.QuantityOnHand -= previousQuantity; // Subtract the old quantity
                 medication.QuantityOnHand += model.QuantityReceived; // Add the new quantity
 
                 _context.PharmacyMedications.Update(medication);
@@ -482,6 +600,8 @@ namespace e_Prescription.Controllers
 
             _context.StockReceived.Update(stockReceived);
             await _context.SaveChangesAsync();
+
+            // Redirect to the correct action or view
             return RedirectToAction("ReceivedMedicationRecords");
         }
 

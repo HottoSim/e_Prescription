@@ -1,0 +1,73 @@
+﻿@model ViewPrescriptionViewModel
+
+@{
+    ViewData["Title"] = "Update Prescription Status";
+}
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+<div class="card">
+    <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+        <h4 class="text-center">Update Prescription Status</h4>
+    </div>
+
+    <div class="card-body">
+        <div class="container">
+            <div class="row justify-content-center">
+            <form asp-action="UpdatePrescriptionStatus" method="post">
+                <input type="hidden" name="id" value="@Model.PrescriptionItem?.PrescriptionId" />
+
+                <div class="form-group">
+                    <label>Prescription Date:</label>
+                    <p class="form-control-plaintext d-inline ml-2">
+                        @Model.PrescriptionItem?.Prescription?.PresciptionDate
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label>Patient Name:</label>
+                    <p class="form-control-plaintext d-inline ml-2">
+                        @Model.PrescriptionItem?.Prescription?.Admission?.Patient?.Firstname
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label>Surgeon Name:</label>
+                    <p class="form-control-plaintext d-inline ml-2">
+                        Dr. @Model.PrescriptionItem?.Prescription?.ApplicationUser?.FirstName @Model.PrescriptionItem?.Prescription?.ApplicationUser?.LastName
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label>Medication Name:</label>
+                    <p class="form-control-plaintext d-inline ml-2">@Model.PrescriptionItem?.PharmacyMedication?.MedicationName</p>
+                </div>
+                <div class="form-group">
+                    <label>Quantity:</label>
+                    <p class="form-control-plaintext d-inline ml-2">@Model.PrescriptionItem?.Quantity</p>
+                </div>
+                <div class="form-group">
+                    <label>Vitals:</label>
+                    <a class="btn btn-info" href="@Url.Action("ViewPatientVitals", "Admission", new { admissionId = Model.PrescriptionItem?.Prescription?.AdmissionId })">View</a>
+                </div>
+
+                <div class="form-group">
+                    <label>Medical History:</label>
+                    <a class="btn btn-info" href="@Url.Action("", "Pharmacist")">View</a>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select class="form-control" asp-for="PrescriptionItem.Prescription.Status" asp-items="Model.StatusOptions">
+                        <option selected disabled>--Select status--</option>
+                    </select>
+                </div>
+
+                <div class="form-group text-right">
+                    <a href="@Url.Action("GetPrescriptions", "Pharmacist")" class="btn btn-secondary ml-2">Back</a>
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                </div>
+
+            </form>
+            </div>
+    </div>
+    </div>
+    </div>
+</div>

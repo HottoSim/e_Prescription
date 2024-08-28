@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace e_Prescription.Controllers
 {
-    [Authorize(Roles = "Nurse")]
+    //[Authorize(Roles = "Nurse")]
     public class AdmissionController : Controller
     {
         private readonly ApplicationDbContext context;

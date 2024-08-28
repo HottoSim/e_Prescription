@@ -325,6 +325,7 @@ namespace e_Prescription.Controllers
 
             return View(model); // Return the main view on validation failure
         }
+
         // Deactivate users
         [HttpPost]
         public async Task<IActionResult> ToggleUserStatus(string userId)

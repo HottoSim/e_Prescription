@@ -21,5 +21,7 @@ namespace e_Prescription.Models
 
         [Required]
         public string Instruction { get; set; }
+
+        public string? RejectionNote { get; set; }
     }
 }

@@ -1,0 +1,56 @@
+﻿@model ViewPrescriptionViewModel
+
+@{
+    ViewData["Title"] = "Update Prescription Status";
+}
+
+<div class="col-md-6 mx-auto">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="text-center">Update Prescription Status</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="UpdatePrescriptionStatus" method="post">
+                <input type="hidden" name="id" value="@Model.PrescriptionItem?.PrescriptionId" />
+
+                <div class="form-group">
+                    <label>Prescription Date</label>
+                    <p class="form-control-plaintext">
+                        @Model.PrescriptionItem?.Prescription?.PresciptionDate.ToShortDateString()
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label>Patient Name</label>
+                    <p class="form-control-plaintext">
+                        @Model.PrescriptionItem?.Prescription?.Admission?.Patient?.Firstname
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label>Surgeon Name</label>
+                    <p class="form-control-plaintext">
+                        Dr. @Model.PrescriptionItem?.Prescription?.ApplicationUser?.FirstName @Model.PrescriptionItem?.Prescription?.ApplicationUser?.LastName
+                    </p>
+                </div>
+                <div class="form-group">
+                    <label>Medication Name</label>
+                    <p class="form-control-plaintext">@Model.PrescriptionItem?.PharmacyMedication?.MedicationName</p>
+                </div>
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <p class="form-control-plaintext">@Model.PrescriptionItem?.Quantity</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select class="form-control" asp-for="PrescriptionItem.Prescription.Status" asp-items="Model.StatusOptions">
+                        <option selected disabled>--Select status--</option>
+                    </select>
+                </div>
+
+                <div class="form-group text-right">
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

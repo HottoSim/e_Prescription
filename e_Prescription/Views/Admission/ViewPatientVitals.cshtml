@@ -1,7 +1,6 @@
-﻿@* @model IEnumerable<e_Prescription.Models.PatientVital>
+﻿@model IEnumerable<e_Prescription.Models.PatientsVitals>
 
 @{
-   Layout = null;  // This line removes the layout
     ViewData["Title"] = "Patient Vitals";
 }
 
@@ -51,6 +50,7 @@
             }
         </tbody>
     </table>
-
+    <div class="form-group text-right">
+        <a href="@Url.Action("UpdatePrescriptionStatus", "Pharmacist")" class="btn btn-secondary ml-2">Back</a>
+    </div>
 </div>
- *@

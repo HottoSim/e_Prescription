@@ -1,4 +1,4 @@
-﻿@* @model IEnumerable<e_Prescription.Models.Prescriptions> *@
+﻿@model IEnumerable<e_Prescription.Models.PrescriptionItem>
 
 @{
     ViewData["Title"] = "Prescriptions";
@@ -27,11 +27,7 @@
     <div class="card">
         <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
             <h4 class="text-center">Manage Prescriptions</h4>
-        </div>
-        @* <div class="d-flex justify-content-end btn1">
-            <button class="btn btn-primary" onclick="openVitalModal('@Url.Action("AddVitals", "Admin")')">Create New</button>
-        </div> *@
-
+        </div>       
 
         @if (TempData["SuccessMessage"] != null)
         {
@@ -69,60 +65,46 @@
                     <th>
                         Rejection Note
                     </th>
+                   
                 </tr>
             </thead>
-           @*  <tbody>
+            <tbody>
                 @foreach (var item in Model)
                 {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.VitalName)
+                            @item.Prescription.PresciptionDate.ToShortDateString()
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.LowLimit)
+                            @item.Prescription.Admission.Patient.Firstname
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.HighLimit)
+                            Dr. @item.Prescription.ApplicationUser.FirstName @item.Prescription.ApplicationUser.LastName
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Units)
+                            @item.PharmacyMedication.MedicationName
                         </td>
                         <td>
-                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.VitalId">Update</a>
+                            @item.Quantity
+                        </td>
+                        <td>
+                            @item.Prescription.Status
+                        </td>
+                        @if(item.Prescription.Status == "Rejected")
+                        {
+                            <td>
+                                @item.RejectionNote
+                            </td>
+                        }
+                        <td>
+                            <a class="btn btn-info" href="@Url.Action("UpdatePrescriptionStatus", "Pharmacist", new { id = item.PrescriptionId })">Update</a>
                         </td>
                     </tr>
                 }
-            </tbody> *@
+            </tbody>
         </table>
-        @* <div class="modal fade" id="VitalModal" tabindex="-1" role="dialog" aria-labelledby="VitalModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title text-center" id="VitalModalLabel">Add New Vital</h5>
-                        <button type="button" class="close" onclick="window.location.href='@Url.Action("ManageVitals", "Admin")'" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body" id="VitalModalBody">
-                        <!-- Content loaded dynamically -->
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div> *@
-    </div>
 </div>
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-
-    <script>
-        function openPrescriptionModal(url) {
-            $('#PrescriptionModalBody').load(url, function () {
-                $('#PrescriptionModal').modal('show');
-            });
-        }
-    </script>
+    
 }
 
