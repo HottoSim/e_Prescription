@@ -1,137 +1,142 @@
 ﻿@model e_Prescription.Models.ViewModels.PatientReportViewModel
 
-<h1>Patient Report</h1>
 
-<h2>Patient Information</h2>
-<p><strong>First Name:</strong> @Model.Firstname</p>
-<p><strong>Last Name:</strong> @Model.Lastname</p>
-<p><strong>Gender:</strong> @Model.Gender</p>
-<p><strong>ID Number:</strong> @Model.IdNumber</p>
-<p><strong>Date of Birth:</strong> @Model.DateOfBirth.ToShortDateString()</p>
-<p><strong>Status:</strong> @Model.Status</p>
+<div class="col-md-12">
+    <div class="card">
+        <h1>Patient Report</h1>
 
-<h2>Allergies</h2>
-<ul>
-    @foreach (var allergy in Model.Allergies)
-    {
-        <li>@allergy.ActiveIngredient?.IngredientName ?? "Unknown Allergy"</li>
-    }
-</ul>
+        <h2>Patient Information</h2>
+        <p><strong>First Name:</strong> @Model.Firstname</p>
+        <p><strong>Last Name:</strong> @Model.Lastname</p>
+        <p><strong>Gender:</strong> @Model.Gender</p>
+        <p><strong>ID Number:</strong> @Model.IdNumber</p>
+        <p><strong>Date of Birth:</strong> @Model.DateOfBirth.ToShortDateString()</p>
+        <p><strong>Status:</strong> @Model.Status</p>
 
-<h2>Conditions</h2>
-<ul>
-    @foreach (var condition in Model.Conditions)
-    {
-        <li>@condition.ChronicCondition?.ICD_10_CODE ?? "Unknown Condition"</li>
-    }
-</ul>
-
-<h2>Medications</h2>
-<ul>
-    @foreach (var medication in Model.Medications)
-    {
-        <li>@medication.Medication?.MedicationName ?? "Unknown Medication"</li>
-    }
-</ul>
-
-<h2>Booking</h2>
-@if (Model.Booking != null)
-{
-    <p><strong>Date:</strong> @Model.Booking.Date.ToShortDateString()</p>
-    <p><strong>Time Slot:</strong> @Model.Booking.TimeSlot</p>
-    <p><strong>Theatre:</strong> @Model.Booking.Theatre?.TheatreName ?? "Unknown Theatre"</p>
-}
-
-<h2>Admission Details</h2>
-@if (Model.Admission != null)
-{
-    <p><strong>Admission Date:</strong> @Model.Admission.AdmissionDate.ToShortDateString()</p>
-    <p><strong>Ward:</strong> @Model.Admission.Ward?.WardName ?? "Unknown Ward"</p>
-    <p><strong>Bed:</strong> @Model.Admission.Bed?.BedName ?? "Unknown Bed"</p>
-    <p><strong>Weight:</strong> @Model.Admission.Weight</p>
-    <p><strong>Height:</strong> @Model.Admission.Height</p>
-}
-
-<h2>Discharge Details</h2>
-@if (Model.Discharge != null)
-{
-    <p><strong>Discharge Note:</strong> @Model.Discharge.DischargeNote</p>
-    <p><strong>Discharge Time:</strong> @Model.Discharge.DischargeTime.ToShortDateString()</p>
-    <p><strong>Nurse:</strong> @Model.Discharge.ApplicationUser?.UserName ?? "Unknown Nurse"</p>
-}
-
-<h2>Vitals</h2>
-@if (Model.Vitals.Any())
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Vital</th>
-                <th>Reading</th>
-                <th>Time</th>
-                <th>Note</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var vital in Model.Vitals)
+        <h2>Allergies</h2>
+        <ul>
+            @foreach (var allergy in Model.Allergies)
             {
-                <tr>
-                    <td>@vital.Vitals?.VitalName ?? "Unknown Vital"</td>
-                    <td>@vital.Reading</td>
-                    <td>@vital.Time.ToShortDateString()</td>
-                    <td>@vital.Note</td>
-                </tr>
+                <li>@allergy.ActiveIngredient?.IngredientName ?? "Unknown Allergy"</li>
             }
-        </tbody>
-    </table>
-}
+        </ul>
 
-<h2>Prescriptions</h2>
-@if (Model.Prescriptions.Any())
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Surgeon</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var prescription in Model.Prescriptions)
+        <h2>Conditions</h2>
+        <ul>
+            @foreach (var condition in Model.Conditions)
             {
-                <tr>
-                    <td>@prescription.PresciptionDate.ToShortDateString()</td>
-                    <td>@prescription.ApplicationUser?.UserName ?? "Unknown Surgeon"</td>
-                    <td>@prescription.Status</td>
-                </tr>
+                <li>@condition.ChronicCondition?.ICD_10_CODE ?? "Unknown Condition"</li>
             }
-        </tbody>
-    </table>
-}
+        </ul>
 
-<h2>Prescription Items</h2>
-@if (Model.PrescriptionItems.Any())
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Medication</th>
-                <th>Quantity</th>
-                <th>Instruction</th>
-                @* <th>Rejection Note</th> *@
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.PrescriptionItems)
+        <h2>Medications</h2>
+        <ul>
+            @foreach (var medication in Model.Medications)
             {
-                <tr>
-                    <td>@item.PharmacyMedication?.MedicationName ?? "Unknown Medication"</td>
-                    <td>@item.Quantity</td>
-                    <td>@item.Instruction</td>
-                    @* <td>@item.RejectionNote ?? "N/A"</td> *@
-                </tr>
+                <li>@medication.Medication?.MedicationName ?? "Unknown Medication"</li>
             }
-        </tbody>
-    </table>
-}
+        </ul>
+
+        <h2>Booking</h2>
+        @if (Model.Booking != null)
+        {
+            <p><strong>Date:</strong> @Model.Booking.Date.ToShortDateString()</p>
+            <p><strong>Time Slot:</strong> @Model.Booking.TimeSlot</p>
+            <p><strong>Theatre:</strong> @Model.Booking.Theatre?.TheatreName ?? "Unknown Theatre"</p>
+        }
+
+        <h2>Admission Details</h2>
+        @if (Model.Admission != null)
+        {
+            <p><strong>Admission Date:</strong> @Model.Admission.AdmissionDate.ToShortDateString()</p>
+            <p><strong>Ward:</strong> @Model.Admission.Ward?.WardName ?? "Unknown Ward"</p>
+            <p><strong>Bed:</strong> @Model.Admission.Bed?.BedName ?? "Unknown Bed"</p>
+            <p><strong>Weight:</strong> @Model.Admission.Weight</p>
+            <p><strong>Height:</strong> @Model.Admission.Height</p>
+        }
+
+        <h2>Discharge Details</h2>
+        @if (Model.Discharge != null)
+        {
+            <p><strong>Discharge Note:</strong> @Model.Discharge.DischargeNote</p>
+            <p><strong>Discharge Time:</strong> @Model.Discharge.DischargeTime.ToShortDateString()</p>
+            <p><strong>Nurse:</strong> @Model.Discharge.ApplicationUser?.UserName ?? "Unknown Nurse"</p>
+        }
+
+        <h2>Vitals</h2>
+        @if (Model.Vitals.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Vital</th>
+                        <th>Reading</th>
+                        <th>Time</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var vital in Model.Vitals)
+                    {
+                        <tr>
+                            <td>@vital.Vitals?.VitalName ?? "Unknown Vital"</td>
+                            <td>@vital.Reading</td>
+                            <td>@vital.Time.ToShortDateString()</td>
+                            <td>@vital.Note</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <h2>Prescriptions</h2>
+        @if (Model.Prescriptions.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Surgeon</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var prescription in Model.Prescriptions)
+                    {
+                        <tr>
+                            <td>@prescription.PresciptionDate.ToShortDateString()</td>
+                            <td>@prescription.ApplicationUser?.UserName ?? "Unknown Surgeon"</td>
+                            <td>@prescription.Status</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <h2>Prescription Items</h2>
+        @if (Model.PrescriptionItems.Any())
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Medication</th>
+                        <th>Quantity</th>
+                        <th>Instruction</th>
+                        @* <th>Rejection Note</th> *@
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.PrescriptionItems)
+                    {
+                        <tr>
+                            <td>@item.PharmacyMedication?.MedicationName ?? "Unknown Medication"</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Instruction</td>
+                            @* <td>@item.RejectionNote ?? "N/A"</td> *@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
