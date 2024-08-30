@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using e_Prescription.Data;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace e_Prescription.Models
@@ -12,6 +13,9 @@ namespace e_Prescription.Models
         public int PrescriptionItemId { get; set; }
         public virtual PrescriptionItem PrescriptionItem { get; set; }
 
+        [ForeignKey("ApplicationUser")]
+        public string NurseId { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
 
         [Required(ErrorMessage = "*Required")]
         public int Quantity { get; set; }
