@@ -175,9 +175,12 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label asp-for="AdmissionDate" class="control-label">Date and time</label>
-                                            <input asp-for="AdmissionDate" class="form-control" type="datetime-local" value="" aria-required="true" style="width: 100%;" required />
+                                            <input asp-for="AdmissionDate" class="form-control" type="datetime-local"
+                                                   value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                                                   aria-required="true" style="width: 100%;" required />
                                             <span asp-validation-for="AdmissionDate" class="text-danger"></span>
                                         </div>
+
                                     </div>
 
                                     <div class="col-md-4">

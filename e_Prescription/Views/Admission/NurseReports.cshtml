@@ -1,0 +1,173 @@
+﻿@model IEnumerable<e_Prescription.Models.Admission>
+
+@{
+    ViewBag.Title = "Nurse Reports";
+}
+
+<head>
+    <style>
+        .form-card {
+            border: 5px solid #f5f5f5;
+            padding: 20px; /* Increased padding */
+            overflow: hidden;
+            background: linear-gradient(to bottom right, #ffffff, #f0f0f0), radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 60%, rgba(230,230,230,1) 100%);
+            background-blend-mode: overlay;
+            border-radius: 20px;
+            box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+            width: 100%; /* Make the card full width */
+            max-width: 1200px; /* Maximum width to fit larger screens */
+            /* margin: auto;  */
+        }
+
+        .card {
+            background-color: lightgray;
+            color: #000;
+            border-radius: 15px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #28a745;
+            color: #ffffff;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .table {
+            margin-top: 20px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            width: 100%; /* Full width */
+            max-width: 100%; /* Prevent table overflow */
+        }
+
+        .btn-primary,
+        .btn-success,
+        .btn-info {
+            border-radius: 10px;
+        }
+
+        .text-center h4 {
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+        .container {
+            width: 100%; /* Make the card full width */
+            max-width: 1200px; /* Maximum width to fit larger screens */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-card col-md-12">
+            <div class="form-group">
+                <div class="col-12 text-center card-header">
+                    <h4><i class="fas fa-file-alt"></i> Nurse Reports</h4>
+                </div>
+            </div>
+
+            <!-- Search by ID form -->
+            <div class="row mt-3 mb-3">
+                <div class="col-md-8 offset-md-2">
+                    <form asp-controller="Admission" asp-action="NurseReports" method="get" class="form-inline justify-content-center">
+                        <div class="input-group">
+                            <input type="text" name="patientId" class="form-control mr-2" placeholder="Search by ID Number">
+                            <input type="date" name="searchDate" class="form-control mr-2" placeholder="Enter Date to search" />
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
+            @if (Model != null && Model.Any())
+            {
+                <!-- Table displaying admitted patients -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID Number</th>
+                                    <th>
+                                        Name
+                                        <div class="btn-group" role="group" style="margin-left: 5px;">
+                                            <a class="btn text-black p-0" asp-action="NurseReports" asp-route-sortOrder="FirstName">
+                                                ⬆ <!-- Bold Up arrow for ascending -->
+                                            </a>
+                                            <a class="btn text-black p-0" asp-action="NurseReports" asp-route-sortOrder="FirstName_desc">
+                                                ⬇ <!-- Bold Down arrow for descending -->
+                                            </a>
+                                        </div>
+                                    </th>
+                                    <th>Surname</th>
+                                    <th>Gender</th>
+                                    <th>Surgeon</th>
+                                    <th>Admission date</th>
+                                    <th>Ward-Bed</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var admission in Model)
+                                {
+                                    <tr>
+                                        <td>@admission.Patient.IdNumber</td>
+                                        <td>@admission.Patient.Firstname</td>
+                                        <td>@admission.Patient.Lastname</td>
+                                        <td>@admission.Patient.Gender</td>
+                                        <td>Dr. @admission.Patient.PatientBooking.ApplicationUser.FirstName @admission.Patient.PatientBooking.ApplicationUser.LastName</td>
+                                        <td>@admission.AdmissionDate.ToString("yyyy-MM-ddTHH:mm")</td>
+                                        <td>@admission.Ward.WardName - @admission.Bed.BedName</td>
+                                        <td>
+                                            <a class="btn btn-success" asp-controller="NurseReports" asp-action="Report" asp-route-id="@admission.PatientId">
+                                                <i class="fas fa-file-alt"></i> Full Report
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- No admitted patients found -->
+                <div class="text-center">
+                    <h4>You do not have any admissions...</h4>
+                </div>
+            }
+
+            <div class="d-flex justify-content-center mt-4">
+                <a asp-controller="Admission" asp-action="NurseLandingPage" type="button" class="btn btn-info" onclick="history.back()">Go Back</a>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+</body>

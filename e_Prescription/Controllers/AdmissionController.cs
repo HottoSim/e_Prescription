@@ -946,6 +946,58 @@ namespace e_Prescription.Controllers
             return RedirectToAction("ViewPrescription", new { admissionId });
         }
 
+
+        //Nurse Reports (Admission details)
+        [HttpGet]
+        public async Task<IActionResult> NurseReports(string patientId, DateTime? searchDate, string sortOrder)
+        {
+            var user = await userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Query for admitted patients
+            var PatientsQuery = context.Admissions.OrderBy(a => a.Patient.Firstname)
+                .Where(a => a.NurseId == user.Id && a.IsDischarged)
+                .Include(a => a.Patient)
+                .ThenInclude(a => a.PatientBooking.ApplicationUser)
+                .Include(a => a.ApplicationUser)
+                .Include(a => a.Ward)
+                .Include(a => a.Bed)
+                .AsQueryable();  // Ensure queryable for further querying
+
+            // Filter by patient ID if provided
+            if (!string.IsNullOrEmpty(patientId))
+            {
+                PatientsQuery = PatientsQuery.Where(a => a.Patient.IdNumber.Contains(patientId));
+            }
+
+            if (searchDate.HasValue)
+            {
+                PatientsQuery = PatientsQuery.Where(b => b.AdmissionDate.Date.Date == searchDate.Value.Date);
+            }
+            // Sorting logic
+            ViewData["FirstNameSortParam"] = sortOrder == "FirstName" ? "FirstName_desc" : "FirstName";
+            switch (sortOrder)
+            {
+                case "FirstName_desc":
+                    PatientsQuery = PatientsQuery.OrderByDescending(a => a.Patient.Firstname);
+                    break;
+                case "FirstName":
+                    PatientsQuery = PatientsQuery.OrderBy(a => a.Patient.Firstname);
+                    break;
+                default:
+                    PatientsQuery = PatientsQuery.OrderBy(a => a.Patient.IdNumber);
+                    break;
+            }
+
+            var admittedPatients = await PatientsQuery.ToListAsync();
+
+            return View(admittedPatients);
+        }
+
     }
 }
 
