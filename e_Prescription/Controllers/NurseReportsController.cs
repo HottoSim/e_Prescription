@@ -4,6 +4,8 @@ using e_Prescription.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace e_Prescription.Controllers
 {
@@ -17,6 +19,7 @@ namespace e_Prescription.Controllers
             _context = context;
             _userManager = userManager;
         }
+
         public IActionResult Index()
         {
             return View();
@@ -38,7 +41,7 @@ namespace e_Prescription.Controllers
 
             if (patient == null)
             {
-                return NotFound();
+                return NotFound("patient");
             }
 
             var admission = await _context.Admissions
@@ -46,23 +49,24 @@ namespace e_Prescription.Controllers
                 .Include(a => a.Bed)
                 .Include(a => a.PatientsVitals)
                     .ThenInclude(v => v.Vitals)
-                .FirstOrDefaultAsync(a => a.PatientId == id && !a.IsDischarged);
-
-            
-
-            var discharge = admission != null ? await _context.Discharges
-                .Include(d => d.ApplicationUser)
-                .FirstOrDefaultAsync(d => d.AdmissionId == admission.Id) : null;
+                .Where(a => a.Patient.PatientId == id && a.IsDischarged)
+                .FirstOrDefaultAsync();
 
             if (admission == null)
             {
-                return NotFound();
+                return NotFound("Admission");
             }
+
+            var discharge = await _context.Discharges
+                .Include(d => d.ApplicationUser)
+                .Where(d => d.AdmissionId == admission.Id)
+                .FirstOrDefaultAsync();
 
             if (discharge == null)
             {
-                return NotFound();
+                return NotFound("Discharge");
             }
+
             var prescriptions = await _context.Prescriptions
                 .Include(p => p.ApplicationUser)
                 .Include(p => p.Admission)
@@ -89,7 +93,7 @@ namespace e_Prescription.Controllers
                 Booking = patient.PatientBooking,
                 Admission = admission,
                 Discharge = discharge,
-                Vitals = admission?.PatientsVitals.ToList() ?? new List<PatientsVitals>(),
+                Vitals = admission.PatientsVitals.ToList(),
                 Prescriptions = prescriptions,
                 PrescriptionItems = prescriptionItems
             };

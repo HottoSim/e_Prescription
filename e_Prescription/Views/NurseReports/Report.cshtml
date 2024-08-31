@@ -1,98 +1,251 @@
 ﻿@model e_Prescription.Models.ViewModels.PatientReportViewModel
 
-
-<div class="col-md-12">
-    <div class="card">
-        <h1>Patient Report</h1>
-
-        <h2>Patient Information</h2>
-        <p><strong>First Name:</strong> @Model.Firstname</p>
-        <p><strong>Last Name:</strong> @Model.Lastname</p>
-        <p><strong>Gender:</strong> @Model.Gender</p>
-        <p><strong>ID Number:</strong> @Model.IdNumber</p>
-        <p><strong>Date of Birth:</strong> @Model.DateOfBirth.ToShortDateString()</p>
-        <p><strong>Status:</strong> @Model.Status</p>
-
-        <h2>Allergies</h2>
-        <ul>
-            @foreach (var allergy in Model.Allergies)
-            {
-                <li>@allergy.ActiveIngredient?.IngredientName ?? "Unknown Allergy"</li>
-            }
-        </ul>
-
-        <h2>Conditions</h2>
-        <ul>
-            @foreach (var condition in Model.Conditions)
-            {
-                <li>@condition.ChronicCondition?.ICD_10_CODE ?? "Unknown Condition"</li>
-            }
-        </ul>
-
-        <h2>Medications</h2>
-        <ul>
-            @foreach (var medication in Model.Medications)
-            {
-                <li>@medication.Medication?.MedicationName ?? "Unknown Medication"</li>
-            }
-        </ul>
-
-        <h2>Booking</h2>
-        @if (Model.Booking != null)
-        {
-            <p><strong>Date:</strong> @Model.Booking.Date.ToShortDateString()</p>
-            <p><strong>Time Slot:</strong> @Model.Booking.TimeSlot</p>
-            <p><strong>Theatre:</strong> @Model.Booking.Theatre?.TheatreName ?? "Unknown Theatre"</p>
+<head>
+    <style>
+        .card-deck .card {
+            margin-bottom: 20px;
         }
 
-        <h2>Admission Details</h2>
-        @if (Model.Admission != null)
-        {
-            <p><strong>Admission Date:</strong> @Model.Admission.AdmissionDate.ToShortDateString()</p>
-            <p><strong>Ward:</strong> @Model.Admission.Ward?.WardName ?? "Unknown Ward"</p>
-            <p><strong>Bed:</strong> @Model.Admission.Bed?.BedName ?? "Unknown Bed"</p>
-            <p><strong>Weight:</strong> @Model.Admission.Weight</p>
-            <p><strong>Height:</strong> @Model.Admission.Height</p>
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        <h2>Discharge Details</h2>
-        @if (Model.Discharge != null)
-        {
-            <p><strong>Discharge Note:</strong> @Model.Discharge.DischargeNote</p>
-            <p><strong>Discharge Time:</strong> @Model.Discharge.DischargeTime.ToShortDateString()</p>
-            <p><strong>Nurse:</strong> @Model.Discharge.ApplicationUser?.UserName ?? "Unknown Nurse"</p>
+            .modal-body button {
+                margin-top: 10px;
+            }
+
+        .card {
+            border: 0px;
         }
 
-        <h2>Vitals</h2>
+        .align-right {
+            text-align: right;
+        }
+
+        .form-card {
+            border: 5px solid #f5f5f5;
+            padding: 20px;
+            overflow: hidden;
+            background: linear-gradient(to bottom right, #ffffff, #f0f0f0), radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 60%, rgba(230,230,230,1) 100%);
+            background-blend-mode: overlay;
+            border-radius: 20px;
+            box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+            .form-card::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: url('/images/screenshot%202024-08-26%20015039.png') no-repeat center center;
+                background-size: cover;
+                filter: blur(8px);
+                z-index: -1;
+                opacity: 0.3;
+            }
+
+        .card {
+            background-color: lightgray;
+            color: #000;
+            border-radius: 15px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #28a745;
+            color: #ffffff;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        /* Add underline to each heading and section */
+        h3, h4, h5 {
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+
+        .card-footer {
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-top: 1px solid #ddd;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="d-flex justify-content-end">
+        <button onclick="downloadPDF()" class="btn btn-primary btn-sm">
+            <i class="fas fa-download"></i> Download PDF
+        </button>
+    </div>
+    <div class="form-card" id="card-content">
+        <div class="card-header bg-success d-flex justify-content-center align-content-center">
+            <h2 class="text-white fw-bolder">Patient Report</h2>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <h4 class="fw-bold">Patient Information</h4>
+                <p><strong>Full Name:</strong> @Model.Firstname @Model.Lastname, @Model.IdNumber</p>
+                <p><strong>Gender:</strong> @Model.Gender</p>
+                <p><strong>Date of Birth:</strong> @Model.DateOfBirth.ToShortDateString()</p>
+                <p><strong>Weight:</strong> @Model.Admission.Weight kg</p>
+                <p><strong>Height:</strong> @Model.Admission.Height cm</p>
+                <p><strong>Status:</strong> @Model.Status</p>
+            </div>
+            <div class="col-md-4 d-flex justify-content-center">
+                <img src="/images/LogoFanil.png" alt="Logo" class="img-fluid" style="max-width: 100%; height: auto;">
+            </div>
+            <div class="col-md-4">
+                <h4 class="fw-bold">Contact Details</h4>
+                <p><strong>Hospital Name:</strong> Example Hospital</p>
+                <p><strong>Address:</strong> 123 Main St, City, Country</p>
+                <p><strong>Phone:</strong> (123) 456-7890</p>
+                <p><strong>Email:</strong> contact@example.com</p>
+            </div>
+        </div>
+
+        <h3 class="text-center justify-content-center fw-bolder" style="background-color: lightgrey;">Admission Details</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Booking</h5>
+                @if (Model.Booking != null)
+                {
+                    <p><strong>Date:</strong> @Model.Booking.Date.ToShortDateString()</p>
+                    <p><strong>Time Slot:</strong> @Model.Booking.TimeSlot</p>
+                    <p><strong>Theatre:</strong> @Model.Booking.Theatre?.TheatreName</p>
+                }
+            </div>
+            <div class="col-md-6">
+                <h5>Admission</h5>
+                @if (Model.Admission != null)
+                {
+                    <p><strong>Admission Date:</strong> @Model.Admission.AdmissionDate.ToShortDateString(), @Model.Admission.AdmissionDate.ToShortTimeString()</p>
+                    <p><strong>Ward:</strong> @Model.Admission.Ward?.WardName</p>
+                    <p><strong>Bed:</strong> @Model.Admission.Bed?.BedName</p>
+
+                }
+            </div>
+        </div>
+
+        <h3 class="text-center justify-content-center fw-bolder" style="background-color: lightgrey;">Patient History</h3>
+        <div class="row">
+            <div class="col-md-4">
+                <h5>Allergies</h5>
+                @if (Model.Allergies != null && Model.Allergies.Any())
+                {
+                    <ul>
+                        @foreach (var allergy in Model.Allergies)
+                        {
+                            <li>@allergy.ActiveIngredient?.IngredientName</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>No allergies found.</p>
+                }
+            </div>
+
+            <div class="col-md-4">
+                <h5>Conditions</h5>
+                @if (Model.Conditions != null && Model.Conditions.Any())
+                {
+                    <ul>
+                        @foreach (var condition in Model.Conditions)
+                        {
+                            <li>@condition.ChronicCondition?.ICD_10_CODE</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>No Chronic conditions</p>
+                }
+            </div>
+
+            <div class="col-md-4">
+                <h5>Medications</h5>
+                @if (Model.Medications != null && Model.Medications.Any())
+                {
+                    <ul>
+                        @foreach (var medication in Model.Medications)
+                        {
+                            <li>@medication.Medication?.MedicationName</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>Not previous medication</p>
+                }
+            </div>
+        </div>
+
+
+        <h3 style="border-bottom: 2px solid #000; background-color: lightgrey;" class="text-center justify-content-center fw-bolder">Vitals</h3>
         @if (Model.Vitals.Any())
         {
-            <table>
+            <table class="table-bordered" style="width: 100%;">
                 <thead>
                     <tr>
                         <th>Vital</th>
                         <th>Reading</th>
                         <th>Time</th>
                         <th>Note</th>
+                        <th>Acceptable range</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var vital in Model.Vitals)
                     {
-                        <tr>
-                            <td>@vital.Vitals?.VitalName ?? "Unknown Vital"</td>
-                            <td>@vital.Reading</td>
-                            <td>@vital.Time.ToShortDateString()</td>
+                        <tr style="border-bottom: 1px solid #ccc;">
+                            <td>@vital.Vitals?.VitalName</td>
+                            <td>@vital.Reading @vital.Vitals?.Units</td>
+                            <td>@vital.Time.ToShortTimeString()</td>
                             <td>@vital.Note</td>
+                            <td>@vital.Vitals?.LowLimit @vital.Vitals?.Units - @vital.Vitals?.HighLimit @vital.Vitals?.Units</td>
                         </tr>
                     }
                 </tbody>
             </table>
         }
 
-        <h2>Prescriptions</h2>
-        @if (Model.Prescriptions.Any())
+        <h3 class="text-center justify-content-center fw-bolder" style="background-color: lightgrey">Prescription Items</h3>
+        @if (Model.PrescriptionItems.Any())
         {
             <table>
+                <thead>
+                    <tr>
+                        <th>Medication</th>
+                        <th>Quantity</th>
+                        <th>Instruction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.PrescriptionItems)
+                    {
+                        <tr>
+                            <td>@item.PharmacyMedication?.MedicationName</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Instruction</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        <h3 class="text-center justify-content-center fw-bolder" style="border-bottom: 2px solid #000; margin-top: 20px;background-color: lightgrey;">Prescriptions details</h3>
+        @if (Model.Prescriptions.Any())
+        {
+            <table style="width: 100%;">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -103,9 +256,9 @@
                 <tbody>
                     @foreach (var prescription in Model.Prescriptions)
                     {
-                        <tr>
+                        <tr style="border-bottom: 1px solid #ccc;">
                             <td>@prescription.PresciptionDate.ToShortDateString()</td>
-                            <td>@prescription.ApplicationUser?.UserName ?? "Unknown Surgeon"</td>
+                            <td>Dr.@prescription.ApplicationUser?.FirstName @prescription.ApplicationUser?.LastName</td>
                             <td>@prescription.Status</td>
                         </tr>
                     }
@@ -113,30 +266,36 @@
             </table>
         }
 
-        <h2>Prescription Items</h2>
-        @if (Model.PrescriptionItems.Any())
+        <h3 class="text-center justify-content-center fw-bolder" style="background-color: lightgrey;">Discharge Details</h3>
+        @if (Model.Discharge != null)
         {
-            <table>
-                <thead>
-                    <tr>
-                        <th>Medication</th>
-                        <th>Quantity</th>
-                        <th>Instruction</th>
-                        @* <th>Rejection Note</th> *@
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.PrescriptionItems)
-                    {
-                        <tr>
-                            <td>@item.PharmacyMedication?.MedicationName ?? "Unknown Medication"</td>
-                            <td>@item.Quantity</td>
-                            <td>@item.Instruction</td>
-                            @* <td>@item.RejectionNote ?? "N/A"</td> *@
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <p><strong>Discharge Note:</strong> @Model.Discharge.DischargeNote</p>
+            <p><strong>Discharge Time:</strong> @Model.Discharge.DischargeTime.ToShortDateString()</p>
+            <p><strong>Nurse:</strong> @Model.Discharge.ApplicationUser?.FirstName @Model.Discharge.ApplicationUser?.LastName</p>
         }
+
+        <div class="card-footer bg-success d-flex justify-content-center text-white">
+            <p><h6 class="fw-bolder">Report generated on: @DateTime.Now.ToLongDateString()</h6></p>
+        </div>
     </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function downloadPDF() {
+            const element = document.getElementById('card-content');
+            html2pdf(element, {
+                margin: 10,
+                filename: 'patient_admission.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            });
+        }
+
+    </script>
+}

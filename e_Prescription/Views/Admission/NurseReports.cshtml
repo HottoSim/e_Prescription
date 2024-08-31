@@ -140,7 +140,7 @@
                                         <td>@admission.AdmissionDate.ToString("yyyy-MM-ddTHH:mm")</td>
                                         <td>@admission.Ward.WardName - @admission.Bed.BedName</td>
                                         <td>
-                                            <a class="btn btn-success" asp-controller="NurseReports" asp-action="Report" asp-route-id="@admission.PatientId">
+                                            <a class="btn btn-success" asp-controller="NurseReports" asp-action="Report" asp-route-id="@admission.Patient.PatientId">
                                                 <i class="fas fa-file-alt"></i> Full Report
                                             </a>
                                         </td>
