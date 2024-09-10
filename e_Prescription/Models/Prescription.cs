@@ -26,5 +26,7 @@ namespace e_Prescription.Models
         [Required]
         public string Status { get; set; }
 
+        public virtual List<PrescriptionItem> PrescriptionItems { get; set; } = new List<PrescriptionItem>();
+
     }
 }

@@ -1,0 +1,225 @@
+﻿@model IEnumerable<e_Prescription.Models.ViewModels.PatientMedicationGroupViewModel>
+
+@{
+    ViewBag.Title = "Nurse Reports";
+    var totalPatients = ViewBag.CountPatients;
+    var medicineSummary = ViewBag.MedicineSummary;
+    var startDate = ViewData["StartDate"]?.ToString();
+    var endDate = ViewData["EndDate"]?.ToString();
+    var nurseName = ViewBag.NurseName;
+}
+
+<head>
+    <style>
+        .form-card {
+            border: 5px solid #f5f5f5;
+            padding: 20px;
+            overflow: hidden;
+            background: linear-gradient(to bottom right, #ffffff, #f0f0f0), radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 60%, rgba(230,230,230,1) 100%);
+            background-blend-mode: overlay;
+            border-radius: 20px;
+            box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .card {
+            background-color: lightgray;
+            color: #000;
+            border-radius: 15px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #28a745;
+            color: #ffffff;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .table {
+            margin-top: 20px;
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .btn-primary,
+        .btn-success,
+        .btn-info {
+            border-radius: 10px;
+        }
+
+        .text-center h4 {
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-card col-md-12">
+            <div class="form-group">
+                <div class="col-12 text-center card-header">
+                    <h4><i class="fas fa-file-alt"></i> Medication Reports</h4>
+                </div>
+            </div>
+
+            <!-- Search by ID form -->
+            <div class="row mt-3 mb-3">
+                <div class="col-md-8 offset-md-2">
+                    <form asp-controller="NurseReports" asp-action="GetPatientMedicationReport" method="get" class="form-inline justify-content-center" id="dateRangeForm">
+                        <div class="input-group">
+                            <label for="startDate" class="sr-only">Start Date:</label>
+                            <input type="date" name="startDate" id="startDate" class="form-control mr-2" value="@Model.FirstOrDefault()?.DateRangeStart.ToString("yyyy-MM-dd")" placeholder="Start Date" required />
+
+                            <label for="endDate" class="sr-only">End Date:</label>
+                            <input type="date" name="endDate" id="endDate" class="form-control mr-2" value="@Model.FirstOrDefault()?.DateRangeEnd.ToString("yyyy-MM-dd")" placeholder="End Date" required />
+
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+
+            <div class="row">
+                <div class="d-flex justify-content-center">
+                    <p><h4 class="fw-bolder">Nurse, @nurseName</h4></p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 d-flex justify-content-start">
+                    <p><h6 class="fw-bolder">Date Range: @ViewData["StartDate"] - @ViewData["EndDate"]</h6></p>
+                </div>
+                <div class="col-md-6 d-flex justify-content-end">
+                    <p><h6 class="fw-bolder">Report generated on: @DateTime.Now.ToLongDateString()</h6></p>
+                </div>
+            </div>
+
+            @if (Model != null && Model.Any())
+            {
+                <!-- Table displaying admitted patients -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Patient Name</th>
+                                    <th>Admission Date</th>
+                                    <th>Medication Name</th>
+                                    <th>Quantity</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var patientGroup in Model)
+                                {
+                                    <tr>
+                                        <td rowspan="@patientGroup.Medications.Count">@patientGroup.PatientName</td>
+                                        <td rowspan="@patientGroup.Medications.Count">@patientGroup.AdmissionDate.ToShortDateString()</td>
+
+                                        <td>@patientGroup.Medications.First().MedicationName</td>
+                                        <td>@patientGroup.Medications.First().QuantityGiven</td>
+                                        <td>@patientGroup.Medications.First().Time.ToShortTimeString()</td>
+                                    </tr>
+
+                                    @foreach (var medication in patientGroup.Medications.Skip(1))
+                                    {
+                                        <tr>
+                                            <td>@medication.MedicationName</td>
+                                            <td>@medication.QuantityGiven</td>
+                                            <td>@medication.Time.ToShortTimeString()</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p><strong>Total Patients:</strong> @totalPatients</p>
+                            </div>
+                        </div>
+                        <!-- Medicine Summary -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Summary Per Medicine:</h5>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Medicine</th>
+                                            <th>Qty Administered</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var summary in medicineSummary)
+                                        {
+                                            <tr>
+                                                <td>@summary.Medicine</td>
+                                                <td>@summary.QtyAdministered</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- No admitted patients found -->
+                <div class="text">
+                    <h4>No admissions found for the selected date range...</h4>
+                </div>
+            }
+
+            <div class="d-flex justify-content-center mt-4">
+                <a asp-controller="Admission" asp-action="NurseLandingPage" type="button" class="btn btn-info" onclick="history.back()">Go Back</a>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+        <script>
+            document.getElementById('dateRangeForm').addEventListener('submit', function (e) {
+                var startDate = document.getElementById('startDate').value;
+                var endDate = document.getElementById('endDate').value;
+
+                if (!startDate || !endDate) {
+                    e.preventDefault(); // Prevent form submission
+                    alert('Please select both start and end dates.');
+                }
+            });
+        </script>
+    }
+</body>

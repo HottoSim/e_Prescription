@@ -35,6 +35,7 @@ namespace e_Prescription.Models
         public double? Height { get; set; }
 
         public virtual List<PatientsVitals> PatientsVitals { get; set; } = new List<PatientsVitals>();
+        public virtual List<Prescription> Prescriptions { get; set; } = new List<Prescription>();
 
         [Required]
         public bool IsDischarged { get; set; } = false;

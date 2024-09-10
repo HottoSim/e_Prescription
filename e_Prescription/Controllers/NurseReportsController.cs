@@ -20,10 +20,78 @@ namespace e_Prescription.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> NurseReport(DateTime startDate, DateTime endDate)
         {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             return View();
         }
+        public async Task<ActionResult> GetPatientMedicationReport(DateTime? startDate, DateTime? endDate)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.NurseName = user.FirstName + " " + user.LastName;
+
+            // Set default date range if not provided
+            var start = startDate ?? DateTime.MinValue;
+            var end = endDate ?? DateTime.MaxValue;
+
+            // Query using navigation properties, and sorting by AdmissionDate
+            var report = await _context.Admissions
+                .Where(a => a.AdmissionDate >= start && a.AdmissionDate <= end && a.NurseId == user.Id)
+                .SelectMany(a => a.Prescriptions.SelectMany(p => p.PrescriptionItems.SelectMany(pi => pi.MedicationGiven.Select(mg => new PatientMedicationReportViewModel
+                {
+                    PatientId = a.PatientId,
+                    PatientName = a.Patient.Firstname + " " + a.Patient.Lastname,
+                    AdmissionDate = a.AdmissionDate,
+                    MedicationName = pi.PharmacyMedication.MedicationName,
+                    QuantityGiven = mg.Quantity,
+                    Time = mg.Time,
+                    DateRangeStart = start,
+                    DateRangeEnd = end
+                }))))
+                .OrderBy(r => r.AdmissionDate)
+                .ToListAsync();
+
+            // Summarize medication data
+            var medicineSummary = report
+                .GroupBy(r => r.MedicationName)
+                .Select(g => new
+                {
+                    Medicine = g.Key,
+                    QtyAdministered = g.Sum(r => r.QuantityGiven)
+                })
+                .ToList();
+
+            // Group by patient name and admission date
+            var groupedReport = report
+                .GroupBy(r => new { r.PatientName, r.AdmissionDate })
+                .Select(g => new PatientMedicationGroupViewModel
+                {
+                    PatientName = g.Key.PatientName,
+                    AdmissionDate = g.Key.AdmissionDate,
+                    Medications = g.ToList()
+                })
+                .ToList();
+
+            ViewBag.CountPatients = groupedReport.Count;
+            ViewData["StartDate"] = start.ToLongDateString();
+            ViewData["EndDate"] = end.ToLongDateString();
+            ViewBag.MedicineSummary = medicineSummary;
+
+            return View(groupedReport);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> Report(int id)

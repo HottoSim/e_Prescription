@@ -23,5 +23,7 @@ namespace e_Prescription.Models
         public string Instruction { get; set; }
 
         public string? RejectionNote { get; set; }
+
+        public virtual List<MedicationGiven> MedicationGiven { get; set; } = new List<MedicationGiven>();
     }
 }
