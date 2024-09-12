@@ -10,12 +10,17 @@
 }
 
 <head>
+    <!-- Include Chart.js and html2pdf.js libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
     <style>
         .form-card {
             border: 5px solid #f5f5f5;
             padding: 20px;
             overflow: hidden;
-            background: linear-gradient(to bottom right, #ffffff, #f0f0f0), radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 60%, rgba(230,230,230,1) 100%);
+            background: linear-gradient(to bottom right, #ffffff, #f0f0f0),
+            radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(240, 240, 240, 1) 60%, rgba(230, 230, 230, 1) 100%);
             background-blend-mode: overlay;
             border-radius: 20px;
             box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
@@ -52,9 +57,7 @@
             max-width: 100%;
         }
 
-        .btn-primary,
-        .btn-success,
-        .btn-info {
+        .btn-primary, .btn-success, .btn-info {
             border-radius: 10px;
         }
 
@@ -85,10 +88,12 @@
                     <form asp-controller="NurseReports" asp-action="GetPatientMedicationReport" method="get" class="form-inline justify-content-center" id="dateRangeForm">
                         <div class="input-group">
                             <label for="startDate" class="sr-only">Start Date:</label>
-                            <input type="date" name="startDate" id="startDate" class="form-control mr-2" value="@Model.FirstOrDefault()?.DateRangeStart.ToString("yyyy-MM-dd")" placeholder="Start Date" required />
+                            <input type="date" name="startDate" id="startDate" class="form-control mr-2"
+                                   value="@Model.FirstOrDefault()?.DateRangeStart.ToString("yyyy-MM-dd")" placeholder="Start Date" required />
 
                             <label for="endDate" class="sr-only">End Date:</label>
-                            <input type="date" name="endDate" id="endDate" class="form-control mr-2" value="@Model.FirstOrDefault()?.DateRangeEnd.ToString("yyyy-MM-dd")" placeholder="End Date" required />
+                            <input type="date" name="endDate" id="endDate" class="form-control mr-2"
+                                   value="@Model.FirstOrDefault()?.DateRangeEnd.ToString("yyyy-MM-dd")" placeholder="End Date" required />
 
                             <div class="input-group-append">
                                 <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
@@ -119,7 +124,7 @@
                     <p><h6 class="fw-bolder">Date Range: @ViewData["StartDate"] - @ViewData["EndDate"]</h6></p>
                 </div>
                 <div class="col-md-6 d-flex justify-content-end">
-                    <p><h6 class="fw-bolder">Report generated on: @DateTime.Now.ToLongDateString()</h6></p>
+                    <p><h6 class="fw-bolder">Report generated on: @DateTime.Now.ToString("d MMMM, yyyy")</h6></p>
                 </div>
             </div>
 
@@ -131,6 +136,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>Patient Name</th>
                                     <th>Admission Date</th>
                                     <th>Medication Name</th>
@@ -142,6 +148,12 @@
                                 @foreach (var patientGroup in Model)
                                 {
                                     <tr>
+                                        <td rowspan="@patientGroup.Medications.Count">
+                                            <a asp-controller="NurseReports" asp-action="Report" asp-route-patientId="@patientGroup.PatientId" class="text-success">
+                                            <i class="fas fa-check"></i> <!-- Font Awesome tick icon -->
+                                            </a>
+                                         </td>
+
                                         <td rowspan="@patientGroup.Medications.Count">@patientGroup.PatientName</td>
                                         <td rowspan="@patientGroup.Medications.Count">@patientGroup.AdmissionDate.ToShortDateString()</td>
 
@@ -161,13 +173,15 @@
                                 }
                             </tbody>
                         </table>
+
                         <div class="row">
                             <div class="col-md-12">
                                 <p><strong>Total Patients:</strong> @totalPatients</p>
                             </div>
                         </div>
-                        <!-- Medicine Summary -->
-                        <div class="row">
+
+                        <!-- Medicine Summary - Table and Bar Graph side by side -->
+                        <div class="row mt-5">
                             <div class="col-md-6">
                                 <h5>Summary Per Medicine:</h5>
                                 <table class="table table-striped">
@@ -188,6 +202,17 @@
                                     </tbody>
                                 </table>
                             </div>
+
+                            <div class="col-md-6">
+                                <h5>Summary Per Medicine (Chart):</h5>
+                                <canvas id="medicineChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                        <!-- Download PDF button -->
+                        <div class="d-flex justify-content-end mt-3">
+                             <button id="downloadPdfBtn" class="btn btn-success">
+                                 <i class="fas fa-file-pdf"></i> Download PDF
+                             </button>
                         </div>
                     </div>
                 </div>
@@ -219,6 +244,56 @@
                     e.preventDefault(); // Prevent form submission
                     alert('Please select both start and end dates.');
                 }
+            });
+
+            var ctx = document.getElementById('medicineChart').getContext('2d');
+            var medicineLabels = [];
+            var qtyAdministeredData = [];
+
+            @foreach (var summary in medicineSummary)
+            {
+                <text>medicineLabels.push('@summary.Medicine');</text>
+                <text>qtyAdministeredData.push(@summary.QtyAdministered);</text>
+            }
+
+            var medicineChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: medicineLabels,
+                    datasets: [{
+                        label: 'Qty Administered',
+                        data: qtyAdministeredData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+
+        <!-- html2pdf.js Script for generating the PDF -->
+        <script>
+            document.getElementById('downloadPdfBtn').addEventListener('click', function () {
+                var element = document.querySelector('.form-card'); // Select the report container
+
+                var opt = {
+                    margin: 0.5,
+                    filename: 'Medication_Report.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+
+                // Generate the PDF
+                html2pdf().from(element).set(opt).save();
             });
         </script>
     }

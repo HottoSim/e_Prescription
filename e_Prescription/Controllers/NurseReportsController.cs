@@ -73,11 +73,12 @@ namespace e_Prescription.Controllers
                 })
                 .ToList();
 
-            // Group by patient name and admission date
+            // Group by patient name, admission date, and include PatientId
             var groupedReport = report
-                .GroupBy(r => new { r.PatientName, r.AdmissionDate })
+                .GroupBy(r => new { r.PatientId, r.PatientName, r.AdmissionDate })
                 .Select(g => new PatientMedicationGroupViewModel
                 {
+                    PatientId = g.Key.PatientId,
                     PatientName = g.Key.PatientName,
                     AdmissionDate = g.Key.AdmissionDate,
                     Medications = g.ToList()
@@ -85,16 +86,17 @@ namespace e_Prescription.Controllers
                 .ToList();
 
             ViewBag.CountPatients = groupedReport.Count;
-            ViewData["StartDate"] = start.ToLongDateString();
-            ViewData["EndDate"] = end.ToLongDateString();
+            ViewData["StartDate"] = start.ToString("d MMMM, yyyy");
+            ViewData["EndDate"] = end.ToString("d MMMM, yyyy");
             ViewBag.MedicineSummary = medicineSummary;
 
             return View(groupedReport);
         }
 
 
+
         [HttpGet]
-        public async Task<IActionResult> Report(int id)
+        public async Task<IActionResult> Report(int patientId)
         {
             var patient = await _context.Patients
                 .Include(p => p.PatientAllergies)
@@ -105,7 +107,7 @@ namespace e_Prescription.Controllers
                     .ThenInclude(pm => pm.Medication)
                 .Include(p => p.PatientBooking)
                     .ThenInclude(pb => pb.Theatre)
-                .FirstOrDefaultAsync(p => p.PatientId == id);
+                .FirstOrDefaultAsync(p => p.PatientId == patientId);
 
             if (patient == null)
             {
@@ -117,7 +119,7 @@ namespace e_Prescription.Controllers
                 .Include(a => a.Bed)
                 .Include(a => a.PatientsVitals)
                     .ThenInclude(v => v.Vitals)
-                .Where(a => a.Patient.PatientId == id && a.IsDischarged)
+                .Where(a => a.Patient.PatientId == patientId && a.IsDischarged)
                 .FirstOrDefaultAsync();
 
             if (admission == null)
