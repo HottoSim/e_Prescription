@@ -146,7 +146,7 @@ namespace e_Prescription.Controllers
                 .Include(p => p.Prescription.Admission.Patient)
                 .Include(us => us.Prescription.ApplicationUser)
                 .Include(p => p.PharmacyMedication)
-                .Where(a => a.Prescription.Status == "Dispensed").ToList();
+                .ToList();
             return View(prescriptions);
         }
 

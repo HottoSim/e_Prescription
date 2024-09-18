@@ -53,12 +53,23 @@
                 </div>
 
 
-                <div class="form-group">
+                @* <div class="form-group">
                     <label>Status</label>
                     <select class="form-control" asp-for="PrescriptionItem.Prescription.Status" asp-items="Model.StatusOptions">
                         <option selected disabled>--Select status--</option>
                     </select>
-                </div>
+                </div> *@
+
+                  <div class="form-group">
+                    <label>Status</label>
+                    <select class="form-control" name="status" asp-items="Model.StatusOptions">
+                       <option selected disabled>--Select status--</option>
+                       @* @foreach (var option in Model.StatusOptions)
+                       {
+                          <option value="@option.Value">@option.Text</option>
+                       } *@
+                    </select>
+                  </div>
 
                 <div class="form-group text-right">
                     <a href="@Url.Action("GetPrescriptions", "Pharmacist")" class="btn btn-secondary ml-2">Back</a>
