@@ -58,14 +58,13 @@
                     </th>
                     <th>
                         Status
+                    </th>                                       
+                    <th>
+                        Rejection Note
                     </th>
                     <th>
                         Action
                     </th>
-                    <th>
-                        Rejection Note
-                    </th>
-                   
                 </tr>
             </thead>
             <tbody>
@@ -87,15 +86,14 @@
                         <td>
                             @item.Quantity
                         </td>
+                        
                         <td>
                             @item.Prescription.Status
                         </td>
-                        @if(item.Prescription.Status == "Rejected")
-                        {
-                            <td>
-                                @item.RejectionNote
-                            </td>
-                        }
+                        <td>
+                            @item.RejectionNote
+                        </td>
+
                         <td>
                             <a class="btn btn-info" href="@Url.Action("UpdatePrescriptionStatus", "Pharmacist", new { id = item.PrescriptionId })">Update</a>
                         </td>
@@ -104,7 +102,4 @@
             </tbody>
         </table>
 </div>
-@section Scripts {
     
-}
-

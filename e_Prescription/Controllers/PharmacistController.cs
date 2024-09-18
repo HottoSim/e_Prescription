@@ -59,7 +59,7 @@ namespace e_Prescription.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdatePrescriptionStatus(int id, string status)
+        public async Task<IActionResult> UpdatePrescriptionStatus(int id, string status, string rejectionReason)
         {
             if (string.IsNullOrEmpty(status))
             {
@@ -104,6 +104,12 @@ namespace e_Prescription.Controllers
                 // Update the status
                 prescriptionItemToUpdate.Prescription.Status = status;
 
+                if (status == "Rejected")
+                {
+                    // Handle rejection reason, e.g., log it or save it as needed
+                    prescriptionItemToUpdate.RejectionNote = rejectionReason; // Adjust this line as needed
+                }
+
                 // Save changes to the database
                 await _context.SaveChangesAsync();
 
@@ -145,7 +151,7 @@ namespace e_Prescription.Controllers
             var prescriptions = _context.PrescriptionItems
                 .Include(p => p.Prescription.Admission.Patient)
                 .Include(us => us.Prescription.ApplicationUser)
-                .Include(p => p.PharmacyMedication)
+                .Include(p => p.PharmacyMedication)               
                 .ToList();
             return View(prescriptions);
         }

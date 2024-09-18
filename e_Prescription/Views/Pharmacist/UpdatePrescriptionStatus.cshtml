@@ -51,24 +51,17 @@
                     <label>Medical History:</label>
                     <a class="btn btn-info" href="@Url.Action("", "Pharmacist")">View</a>
                 </div>
-
-
-                @* <div class="form-group">
-                    <label>Status</label>
-                    <select class="form-control" asp-for="PrescriptionItem.Prescription.Status" asp-items="Model.StatusOptions">
-                        <option selected disabled>--Select status--</option>
-                    </select>
-                </div> *@
-
+               
                   <div class="form-group">
                     <label>Status</label>
-                    <select class="form-control" name="status" asp-items="Model.StatusOptions">
-                       <option selected disabled>--Select status--</option>
-                       @* @foreach (var option in Model.StatusOptions)
-                       {
-                          <option value="@option.Value">@option.Text</option>
-                       } *@
+                    <select class="form-control" name="status" id="statusDropdown" asp-items="Model.StatusOptions">
+                       <option selected disabled>--Select status--</option>                     
                     </select>
+                  </div>
+
+                  <div class="form-group" id="rejectionReasonContainer" style="display: none;">
+                    <label>Reason for Rejection</label>
+                    <textarea class="form-control" name="rejectionReason" rows="3"></textarea>
                   </div>
 
                 <div class="form-group text-right">
@@ -82,3 +75,15 @@
     </div>
     </div>
 </div>
+<script>
+    document.getElementById('statusDropdown').addEventListener('change', function () {
+        var rejectionReasonContainer = document.getElementById('rejectionReasonContainer');
+        if (this.value === 'Rejected') {
+            rejectionReasonContainer.style.display = 'block'; // Show text box
+        } else {
+            rejectionReasonContainer.style.display = 'none'; // Hide text box
+        }
+    });
+</script>
+
+
