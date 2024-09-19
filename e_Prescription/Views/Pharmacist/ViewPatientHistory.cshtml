@@ -1,0 +1,147 @@
+﻿@model IEnumerable<e_Prescription.Models.Admission>
+@{
+    ViewData["Title"] = "Patient History";
+}
+<style>
+    .card-deck .card {
+        margin-bottom: 20px;
+    }
+
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+        .modal-body button {
+            margin-top: 10px;
+        }
+
+    .card {
+        border: 0px;
+    }
+
+
+
+    .align-right {
+        text-align: right;
+    }
+
+    .form-card {
+        border: 5px solid #f5f5f5;
+        padding: 20px;
+        overflow: hidden;
+        background: linear-gradient(to bottom right, #ffffff, #f0f0f0), radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(240,240,240,1) 60%, rgba(230,230,230,1) 100%);
+        background-blend-mode: overlay;
+        border-radius: 20px;
+        box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .card {
+        background-color: lightgray;
+        color: #000;
+        border-radius: 15px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #28a745;
+        color: #ffffff;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        text-align: center;
+        padding: 10px 0;
+    }
+</style>
+<div class="col-12 mx-auto pt-0 p-0">
+
+    @foreach (var item in Model)
+    {
+       <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4 mb-1">
+                <!-- Reduced margin-bottom -->
+                <div class="card">
+                    <p class="card-text card-header bg-success d-flex justify-content-center" style="height:40px;">
+                        <strong>Allergies</strong>
+                    </p>
+                    <ul class="list-group list-group-flush">
+                        @if (item.Patient?.PatientAllergies != null && item.Patient.PatientAllergies.Any())
+                        {
+                            @foreach (var allergy in item.Patient.PatientAllergies)
+                            {
+                                <li class="list-group-item">@allergy.ActiveIngredient?.IngredientName</li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item">None</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-1">
+                <!-- Reduced margin-bottom -->
+                <div class="card">
+                    <p class="card-text card-header  bg-success d-flex justify-content-center" style="height:40px;">
+                        <strong>Conditions</strong>
+                    </p>
+                    <ul class="list-group list-group-flush">
+                        @if (item.Patient?.PatientConditions != null && item.Patient.PatientConditions.Any())
+                        {
+                            @foreach (var condition in item.Patient.PatientConditions)
+                            {
+                                <li class="list-group-item">@condition.ChronicCondition?.Diagnosis</li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item">None</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-1">
+                <!-- Reduced margin-bottom -->
+                <div class="card">
+                    <p class="card-text card-header bg-success d-flex justify-content-center" style="height:40px;">
+                        <strong>Medications</strong>
+                    </p>
+                    <ul class="list-group list-group-flush">
+                        @if (item.Patient?.PatientMedications != null && item.Patient.PatientMedications.Any())
+                        {
+                            @foreach (var medication in item.Patient.PatientMedications)
+                            {
+                                <li class="list-group-item">
+                                    <strong>@medication.Medication?.MedicationName:</strong>
+                                    @if (medication.Medication?.MedicationIngredient != null)
+                                    {
+                                        <div>
+                                            @medication.Medication.MedicationIngredient.ActiveIngredient?.IngredientName (@medication.Medication.MedicationIngredient.IngredientStrength) * [@medication.Medication?.Schedule]
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div>No active ingredients listed</div>
+                                    }
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item">None</li>
+                        }
+                    </ul>
+
+                </div>
+            </div> 
+        </div>
+            
+   
+</div>
+}
+    <div class="d-flex justify-content-center">
+        <button type="button" class="btn btn-info" onclick="history.back()">Go Back</button>
+    </div>
