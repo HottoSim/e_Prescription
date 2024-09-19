@@ -31,6 +31,18 @@ namespace e_Prescription.Controllers
 
             return View();
         }
+        //Search report 
+        public IActionResult SearchReport(DateTime? startDate, DateTime? endDate)
+        {
+            if (!startDate.HasValue || !endDate.HasValue)
+            {
+                TempData["ErrorMessage"] = "Please select both start and end dates.";
+                return View();
+            }
+
+            return RedirectToAction("GetPatientMedicationReport", new { startDate, endDate });
+        }
+
         public async Task<ActionResult> GetPatientMedicationReport(DateTime? startDate, DateTime? endDate)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -42,9 +54,18 @@ namespace e_Prescription.Controllers
 
             ViewBag.NurseName = user.FirstName + " " + user.LastName;
 
-            // Set default date range if not provided
-            var start = startDate ?? DateTime.MinValue;
-            var end = endDate ?? DateTime.MaxValue;
+            // If no dates are provided, return an empty view
+            if (!startDate.HasValue || !endDate.HasValue)
+            {
+                ViewBag.MedicineSummary = new List<object>();
+                ViewBag.CountPatients = 0;
+                ViewData["StartDate"] = string.Empty;
+                ViewData["EndDate"] = string.Empty;
+                return View(new List<PatientMedicationGroupViewModel>());
+            }
+
+            var start = startDate.Value;
+            var end = endDate.Value;
 
             // Query using navigation properties, and sorting by AdmissionDate
             var report = await _context.Admissions
@@ -92,7 +113,6 @@ namespace e_Prescription.Controllers
 
             return View(groupedReport);
         }
-
 
 
         [HttpGet]
