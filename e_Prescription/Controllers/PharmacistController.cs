@@ -156,8 +156,55 @@ namespace e_Prescription.Controllers
             return View(prescriptions);
         }
 
-        //View medication
-       
+        //View patient history
+        public async Task<IActionResult> ViewPatientHistory(string patientId, int admissionId)
+        {
+            if (string.IsNullOrEmpty(patientId) && admissionId == 0)
+            {
+                return View(new List<Admission>());
+            }
+
+            IQueryable<Admission> admissionsQuery = _context.Admissions.OrderBy(a => a.Patient.Firstname)
+                .Where(a => a.IsDischarged == false)
+                .Include(a => a.Patient)
+                .ThenInclude(p => p.PatientAllergies)
+                .ThenInclude(pa => pa.ActiveIngredient)
+                .Include(a => a.Patient)
+                .Include(p => p.Patient.PatientBooking.ApplicationUser)
+                .Include(pc => pc.Patient.PatientConditions)
+                .ThenInclude(pc => pc.ChronicCondition)
+                .Include(a => a.Patient)
+                .ThenInclude(p => p.PatientMedications)
+                .ThenInclude(pm => pm.Medication)
+                .ThenInclude(am => am.MedicationIngredient)
+                .ThenInclude(lc => lc.ActiveIngredient)
+                .Include(a => a.ApplicationUser);
+                
+
+            if (!string.IsNullOrEmpty(patientId))
+            {
+                admissionsQuery = admissionsQuery.Where(a => a.Patient.IdNumber == patientId);
+            }
+            else if (admissionId > 0)
+            {
+                admissionsQuery = admissionsQuery.Where(p => p.Id == admissionId);
+            }
+
+            var admissions = await admissionsQuery.ToListAsync();
+
+            if (admissions == null || !admissions.Any())
+            {
+                return NotFound($"No admissions found for PatientId: {patientId}");
+            }
+
+            //ViewBag.VitalNames = context.Vital
+            //    .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
+            //    .ToList();
+
+            return View(admissions);
+        }
+
+
 
 
 
