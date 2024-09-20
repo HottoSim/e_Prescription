@@ -76,7 +76,7 @@
                                 Admit Patients
                             </h5>
                             <p class="card-text">Number of patients booked: @Model.BookedPatients</p>
-                            <a class="btn btn-primary" href="@Url.Action("Index", "Admission")">Booked patients</a>
+                            <a class="btn btn-success" href="@Url.Action("Index", "Admission")">Booked patients</a>
                         </div>
                     </div>
                 </div>
@@ -100,7 +100,7 @@
                                 Nurse Reports
                             </h5>
                             <p class="card-text">View and manage your reports</p>
-                            <a href="@Url.Action("SearchReport", "NurseReports")" class="btn btn-info">View Reports</a>
+                            <button data-bs-toggle="modal" data-bs-target="#administerMedicationModal" class="btn btn-success">View Reports</button>
                         </div>
                     </div>
                 </div>
@@ -144,6 +144,34 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="administerMedicationModal" tabindex="-1" aria-labelledby="administerMedicationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-success">
+                        <h5 class="modal-title text-white" id="administerMedicationModalLabel">Generate report: Choose the date range</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form asp-action="SearchReport" asp-controller="NurseReports" method="get" id="dateRangeForm">
+                            <div class="input-group">
+                                <div class="col-md-6">
+                                    <label for="startDate">Start Date:</label>
+                                    <input type="date" name="startDate" id="startDate" class="form-control mr-2" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="startDate">End Date:</label>
+                                    <input type="date" name="endDate" id="endDate" class="form-control mr-2" required />
+                                </div>
+                            </div>
+                            <br />
+                            <div class="d-flex justify-content-center">
+                                <button type="submit" class="btn btn-success"><i class="fas fa-search"></i> Search</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     @section Scripts {
@@ -168,6 +196,18 @@
                         maintainAspectRatio: false
                     }
                 });
+            });
+        </script>
+
+        <script>
+            var administerMedicationModal = document.getElementById('administerMedicationModal');
+            administerMedicationModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget; // Button that triggered the modal
+                var prescriptionItemId = button.getAttribute('data-prescriptionitem-id'); // Extract info from data-* attributes
+                var admissionId = button.getAttribute('data-admission-id'); // Extract admissionId
+                var modal = $(this);
+                modal.find('.modal-body #PrescriptionItemId').val(prescriptionItemId); // Set the hidden input value
+                modal.find('.modal-body #AdmissionId').val(admissionId); // Set the hidden input value
             });
         </script>
     }
