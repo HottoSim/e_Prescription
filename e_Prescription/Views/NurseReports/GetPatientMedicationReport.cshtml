@@ -82,28 +82,6 @@
                 </div>
             </div>
 
-            <!-- Search by ID form -->
-           
-            <div class="row mt-3 mb-3">
-                <div class="col-md-8 offset-md-2">
-                    <form asp-controller="NurseReports" asp-action="GetPatientMedicationReport" method="get" class="form-inline justify-content-center" id="dateRangeForm">
-                        <div class="input-group">
-                            <label for="startDate" class="sr-only">Start Date:</label>
-                            <input type="date" name="startDate" id="startDate" class="form-control mr-2"
-                                   value="@Model.FirstOrDefault()?.DateRangeStart.ToString("yyyy-MM-dd")" placeholder="Start Date" required />
-
-                            <label for="endDate" class="sr-only">End Date:</label>
-                            <input type="date" name="endDate" id="endDate" class="form-control mr-2"
-                                   value="@Model.FirstOrDefault()?.DateRangeEnd.ToString("yyyy-MM-dd")" placeholder="End Date" required />
-
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
             @if (TempData["SuccessMessage"] != null)
             {
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -116,7 +94,7 @@
 
             <div class="row">
                 <div class="d-flex justify-content-center">
-                    <p><h4 class="fw-bolder">Nurse, @nurseName</h4></p>
+                    <p><h4 class="fw-bolder" style="border-bottom:2px solid #000">Nurse, @nurseName</h4></p>
                 </div>
             </div>
 
@@ -221,8 +199,8 @@
             else
             {
                 <!-- No admitted patients found -->
-                <div class="text">
-                    <h4>No admissions found for the selected date range...</h4>
+                <div class="text text-danger d-flex justify-content-center">
+                    <h4 class="fw-bolder">No reports found for the selected date range...</h4>
                 </div>
             }
 
@@ -237,16 +215,6 @@
             await Html.RenderPartialAsync("_ValidationScriptsPartial");
         }
         <script>
-            document.getElementById('dateRangeForm').addEventListener('submit', function (e) {
-                var startDate = document.getElementById('startDate').value;
-                var endDate = document.getElementById('endDate').value;
-
-                if (!startDate || !endDate) {
-                    e.preventDefault(); // Prevent form submission
-                    alert('Please select both start and end dates.');
-                }
-            });
-
             var ctx = document.getElementById('medicineChart').getContext('2d');
             var medicineLabels = [];
             var qtyAdministeredData = [];
@@ -283,17 +251,14 @@
         <!-- html2pdf.js Script for generating the PDF -->
         <script>
             document.getElementById('downloadPdfBtn').addEventListener('click', function () {
-                var element = document.querySelector('.form-card'); // Select the report container
-
+                var element = document.querySelector('.form-card');
                 var opt = {
-                    margin: 0.5,
-                    filename: 'Medication_Report.pdf',
+                    margin: 1,
+                    filename: 'MedicationReport.pdf',
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { scale: 2 },
                     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
                 };
-
-                // Generate the PDF
                 html2pdf().from(element).set(opt).save();
             });
         </script>

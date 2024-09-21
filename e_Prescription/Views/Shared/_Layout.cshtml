@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/e_Prescription.styles.css" asp-append-version="true" />
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.14/css/bootstrap-select.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
@@ -99,9 +101,10 @@
                         @if (User.IsInRole("Nurse"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Admission" asp-action="NurseLandingPage">
-                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                <a class="nav-link text-white fw-bolder" asp-area="" asp-controller="Admission" asp-action="NurseLandingPage">
+                                    <i class="fa-solid fa-grip fa-lg"></i> Dashboard
                                 </a>
+
                             </li>
                         }
 

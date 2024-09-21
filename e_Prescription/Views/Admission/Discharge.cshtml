@@ -25,7 +25,6 @@
 
     .container {
         border: 5px solid #f5f5f5; /* Whitish color */
-        /* padding: 10px; */
         overflow: hidden; /* Ensures content doesn't overflow the rounded corners */
         background-color: #f5f5f5;
     }
@@ -37,7 +36,6 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <input type="hidden" asp-for="AdmissionId" />
-            @* <input type="hidden" asp-for="NurseId" /> *@
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-4">
@@ -49,7 +47,7 @@
                     </div>
                     <div class="form-group">
                         <label asp-for="DischargeNote" class="control-label">Discharge note</label>
-                        <textarea asp-for="DischargeNote" class="form-control" id="DischargeNote"></textarea>
+                        <textarea asp-for="DischargeNote" class="form-control" id="DischargeNote" required></textarea>
                         <span asp-validation-for="DischargeNote" class="text-danger"></span>
                     </div>
                 </div>
@@ -94,20 +92,25 @@
     <script>
         document.getElementById("dischargeButton").addEventListener("click", function () {
             var dischargeNote = document.getElementById("DischargeNote").value;
-            var dichargeTime = document.getElementById("DischargeTime").value;
+            var dischargeTime = document.getElementById("DischargeTime").value;
+
+            // Validate both the discharge note and time
             if (dischargeNote.trim() === "") {
                 alert("Please fill in the discharge note.");
+                return;
             }
-            if (dichargeTime.trim() === "") {
+            if (dischargeTime.trim() === "") {
                 alert("Please fill in the discharge time.");
-            } else {
-                $('#confirmModal').modal('show');
+                return;
             }
+
+            // If both fields are valid, show the modal
+            $('#confirmModal').modal('show');
         });
 
         document.getElementById("confirmDischarge").addEventListener("click", function () {
             document.getElementById("dischargeForm").submit();
         });
     </script>
-   
+
 }
