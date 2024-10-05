@@ -17,6 +17,13 @@ namespace e_Prescription.Models
         [Required(ErrorMessage = "*Required")]
         public string Gender { get; set; }
 
+        [Required(ErrorMessage = "*Required")]
+        [RegularExpression(@"^(\+27|0)[6-8][0-9]{8}$", ErrorMessage = "Invalid South African phone number.")]
+        public string CellphoneNumber { get; set; }
+
+        [RegularExpression(@"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", ErrorMessage = "Invalid email address.")]
+        public string Email { get; set; }
+
         [Required(ErrorMessage = "*Required")]                                                                                                                                                        
         [RegularExpression("^(\\d{2})(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])(\\d{4})([01])(\\d)(\\d)$", ErrorMessage = "Invalid South African ID number format.")]
         public string IdNumber { get; set; }

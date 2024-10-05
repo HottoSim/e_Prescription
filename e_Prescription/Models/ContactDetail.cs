@@ -29,13 +29,6 @@ namespace e_Prescription.Models
         public int SuburbId { get; set; }
         public virtual Suburb Suburb { get; set; }
 
-        [Required(ErrorMessage = "*Required")]
-        [RegularExpression(@"^(\+27|0)[6-8][0-9]{8}$", ErrorMessage = "Invalid South African phone number.")]
-        public string CellphoneNumber { get; set; }
-
-        [RegularExpression(@"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", ErrorMessage = "Invalid email address.")]
-        public string? Email { get; set; }
-
         public string? StreetAddress { get; set; }
 
     }

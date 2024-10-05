@@ -1,4 +1,4 @@
-﻿@model e_Prescription.Models.ContactDetail
+﻿@model e_Prescription.Models.ViewModels.ContactDetailViewModel
 
 @{
     ViewData["Title"] = "Contacts";
@@ -86,7 +86,7 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <input asp-for="PatientId" class="form-control" hidden />
 
-                        <!-- Row 1 -->
+                        <!-- Row 1: Contact Number and Email -->
                         <div class="form-group row">
                             <div class="col-md-6">
                                 <label asp-for="CellphoneNumber" class="control-label">Contact</label>
@@ -103,7 +103,7 @@
                         <!-- Row 2 -->
                         <div class="card-contact">
                             <div class="card-header">
-                                <h6 class="text-center text-black text-capitalize">Residential Address</h6>
+                                <h6 class="text-center text-white fw-bold">Address</h6>
                             </div>
                             <div class="form-group row">
                                 <div class="col-md-4">

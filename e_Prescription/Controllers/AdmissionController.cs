@@ -100,19 +100,15 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult Contacts(int patientId)
         {
+            // Populate only the provinces for initial selection
             var provinces = context.Provinces.OrderBy(p => p.ProvinceName).ToList();
-            var cities = new List<City>
-    {
-        new City()
-        {
-            CityId = 0,
-            CityName = "--Select City--"
-        }
-    };
-
             ViewBag.Provinces = new SelectList(provinces, "ProvinceId", "ProvinceName");
-            ViewBag.Cities = new SelectList(cities, "CityId", "CityName");
 
+            // Create empty dropdowns for cities and suburbs
+            ViewBag.Cities = new SelectList(new List<City>(), "CityId", "CityName");
+            ViewBag.Suburbs = new SelectList(new List<Suburb>(), "SuburbId", "SuburbName");
+
+            // Find the patient and set patient details
             var patient = context.Patients.Find(patientId);
             if (patient == null)
             {
@@ -121,66 +117,97 @@ namespace e_Prescription.Controllers
 
             ViewBag.PatientName = $"{patient.Firstname} {patient.Lastname}";
 
+            // Prepare a ViewModel with only patient contact info (not Province/City/Suburb)
             var contactDetail = context.ContactDetails.FirstOrDefault(c => c.PatientId == patientId);
-            if (contactDetail != null)
+            var viewModel = new ContactDetailViewModel
             {
-                // Populate ViewBag for existing contact detail
-                ViewBag.SelectedCityId = contactDetail.CityId;
-                ViewBag.SelectedSuburbId = contactDetail.SuburbId;
-                return View(contactDetail);
-            }
+                PatientId = patientId,
+                CellphoneNumber = patient.CellphoneNumber,
+                Email = patient.Email,
+                ProvinceId = 0,   // Do not display ProvinceId initially
+                CityId = 0,       // Do not display CityId initially
+                SuburbId = 0,     // Do not display SuburbId initially
+                StreetAddress = ""
+            };
 
-            return View(new ContactDetail { PatientId = patientId });
+            return View(viewModel);
         }
 
         [HttpPost]
-        public IActionResult Contacts(int patientId, ContactDetail contactDetail)
+        public IActionResult Contacts(ContactDetailViewModel viewModel)
         {
-            var existingContactDetail = context.ContactDetails.FirstOrDefault(c => c.PatientId == patientId);
+            if (!ModelState.IsValid)
+            {
+                // Reload ViewBag data
+                var provinces = context.Provinces.OrderBy(p => p.ProvinceName).ToList();
+                ViewBag.Provinces = new SelectList(provinces, "ProvinceId", "ProvinceName");
+
+                // Reload cities based on selected province
+                var cities = context.Cities.Where(c => c.ProvinceId == viewModel.ProvinceId).ToList();
+                ViewBag.Cities = new SelectList(cities, "CityId", "CityName");
+
+                // Reload suburbs based on selected city
+                var suburbs = context.Suburbs.Where(s => s.CityId == viewModel.CityId).ToList();
+                ViewBag.Suburbs = new SelectList(suburbs, "SuburbId", "SuburbName");
+
+                ViewBag.PatientName = context.Patients
+                    .Where(p => p.PatientId == viewModel.PatientId)
+                    .Select(p => $"{p.Firstname} {p.Lastname}")
+                    .FirstOrDefault();
+
+                return View(viewModel);
+            }
+
+            // Retrieve existing contact detail for the patient
+            var existingContactDetail = context.ContactDetails.FirstOrDefault(c => c.PatientId == viewModel.PatientId);
             if (existingContactDetail != null)
             {
-                // Update existing contact detail
-                existingContactDetail.CellphoneNumber = contactDetail.CellphoneNumber;
-                existingContactDetail.Email = contactDetail.Email;
-                existingContactDetail.ProvinceId = contactDetail.ProvinceId;
-                existingContactDetail.CityId = contactDetail.CityId;
-                existingContactDetail.SuburbId = contactDetail.SuburbId;
-                existingContactDetail.StreetAddress = contactDetail.StreetAddress;
+                // Update contact detail fields
+                existingContactDetail.ProvinceId = viewModel.ProvinceId;
+                existingContactDetail.CityId = viewModel.CityId;
+                existingContactDetail.SuburbId = viewModel.SuburbId;
+                existingContactDetail.StreetAddress = viewModel.StreetAddress;
             }
             else
             {
-                // Add new contact detail
-                context.ContactDetails.Add(contactDetail);
+                // Add new contact detail if it doesn't exist
+                context.ContactDetails.Add(new ContactDetail
+                {
+                    PatientId = viewModel.PatientId,
+                    ProvinceId = viewModel.ProvinceId,
+                    CityId = viewModel.CityId,
+                    SuburbId = viewModel.SuburbId,
+                    StreetAddress = viewModel.StreetAddress
+                });
+            }
+
+            // Update patient contact information
+            var patient = context.Patients.Find(viewModel.PatientId);
+            if (patient != null)
+            {
+                patient.CellphoneNumber = viewModel.CellphoneNumber;
+                patient.Email = viewModel.Email;
             }
 
             context.SaveChanges();
-
-            var patient = context.Patients.Find(patientId);
-            if (patient == null)
-            {
-                return NotFound();
-            }
-
-            //patient.IsActive = false;
-           // context.SaveChanges(); // Save changes to update the patient's availability
-
-            ViewBag.PatientName = $"{patient.Firstname} {patient.Lastname}";
-
-            return RedirectToAction("Admission", "Admission", new { patientId = contactDetail.PatientId });
+            return RedirectToAction("Admission", "Admission", new { patientId = viewModel.PatientId });
         }
 
-        //Get City by the selected Province
+
+        // Get City by the selected Province
         public JsonResult GetCityByProvinceId(int provinceId)
         {
             var city = context.Cities.Where(a => a.ProvinceId == provinceId).ToList();
             return Json(city);
         }
-        //Get Suburb by the selected city
+
+        // Get Suburb by the selected city
         public JsonResult GetSuburbByCityId(int cityId)
         {
             var suburbs = context.Suburbs.Where(s => s.CityId == cityId).ToList();
             return Json(suburbs);
         }
+
 
         // GET: AddVitals
         [HttpGet]
@@ -241,29 +268,41 @@ namespace e_Prescription.Controllers
                                 double.TryParse(bloodPressureParts[0], out double systolic) &&
                                 double.TryParse(bloodPressureParts[1], out double diastolic))
                             {
-                                // Split the blood pressure limit ranges
-                                var limitParts = vitalInfo.LowLimit.Split('/');
-                                double lowSystolic = double.Parse(limitParts[0]);
-                                double lowDiastolic = double.Parse(limitParts[1]);
+                                // Split and parse the low and high blood pressure limits
+                                var lowLimitParts = vitalInfo.LowLimit.Split('/');
+                                double lowSystolic = double.Parse(lowLimitParts[0]);
+                                double lowDiastolic = double.Parse(lowLimitParts[1]);
 
-                                limitParts = vitalInfo.HighLimit.Split('/');
-                                double highSystolic = double.Parse(limitParts[0]);
-                                double highDiastolic = double.Parse(limitParts[1]);
+                                var highLimitParts = vitalInfo.HighLimit.Split('/');
+                                double highSystolic = double.Parse(highLimitParts[0]);
+                                double highDiastolic = double.Parse(highLimitParts[1]);
 
-                                // Compare both systolic and diastolic values
-                                bool systolicInRange = systolic >= lowSystolic && systolic <= highSystolic;
-                                bool diastolicInRange = diastolic >= lowDiastolic && diastolic <= highDiastolic;
+                                // Determine if systolic and diastolic are within their respective ranges
+                                bool isSystolicLow = systolic < lowSystolic;
+                                bool isSystolicHigh = systolic > highSystolic;
+                                bool isDiastolicLow = diastolic < lowDiastolic;
+                                bool isDiastolicHigh = diastolic > highDiastolic;
 
-                                if (!systolicInRange || !diastolicInRange)
+                                if (isSystolicLow || isDiastolicLow)
                                 {
-                                    notifications.Add($"The reading for {vitalInfo.VitalName} is out of range: {systolic}/{diastolic} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit} - {vitalInfo.HighLimit} {vitalInfo.Units})");
-                                    vital.Note = "Out of range";
+                                    // Either systolic or diastolic is below the defined low limit
+                                    notifications.Add($"The reading for {vitalInfo.VitalName} is **LOWER** than normal range: {systolic}/{diastolic} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit} - {vitalInfo.HighLimit} {vitalInfo.Units})");
+                                    vital.Note = "Lower than normal";
+                                }
+                                else if (isSystolicHigh || isDiastolicHigh)
+                                {
+                                    // Either systolic or diastolic is above the defined high limit
+                                    notifications.Add($"The reading for {vitalInfo.VitalName} is **HIGHER** than normal range: {systolic}/{diastolic} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit} - {vitalInfo.HighLimit} {vitalInfo.Units})");
+                                    vital.Note = "Higher than normal";
                                 }
                                 else
                                 {
-                                    vital.Note = "Normal";
+                                    // Both systolic and diastolic are within the normal range
+                                    //notifications.Add($"The reading for {vitalInfo.VitalName} is **WITHIN NORMAL RANGE**: {systolic}/{diastolic} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit} - {vitalInfo.HighLimit} {vitalInfo.Units})");
+                                    vital.Note = "Within normal range";
                                 }
                             }
+
                             else
                             {
                                 ModelState.AddModelError(string.Empty, $"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input.");
@@ -277,25 +316,30 @@ namespace e_Prescription.Controllers
                                 double.TryParse(vitalInfo.HighLimit, out double highLimit) &&
                                 double.TryParse(vital.Reading, out double normalReading))
                             {
-                                if (normalReading < lowLimit || normalReading > highLimit)
+                                if (normalReading < lowLimit)
                                 {
-                                    notifications.Add($"The reading for {vitalInfo.VitalName} is out of range: {normalReading} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit} - {vitalInfo.HighLimit} {vitalInfo.Units})");
-                                    vital.Note = "Out of range";
+                                    notifications.Add($"The reading for {vitalInfo.VitalName} is **LOWER** than normal range: {normalReading} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit} - {vitalInfo.HighLimit} {vitalInfo.Units})");
+                                    vital.Note = "Lower than normal";
+                                }
+                                else if(normalReading > highLimit)
+                                {
+                                    notifications.Add($"The reading for {vitalInfo.VitalName} is **HIGHER** than normal range: {normalReading} {vitalInfo.Units} (Normal range: {vitalInfo.LowLimit} - {vitalInfo.HighLimit} {vitalInfo.Units})");
+                                    vital.Note = "Higher than normal";
                                 }
                                 else
                                 {
-                                    vital.Note = "Normal";
+                                    vital.Note = "Within normal range";
                                 }
                             }
                             else
                             {
-                                ViewBag.ErrorMessage = $"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input.";
+                                ViewBag.ErrorMessage = $"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input!!";
                                 return View(model);
                             }
                         }
                         else
                         {
-                            ViewBag.ErrorMessage = $"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input.";
+                            ViewBag.ErrorMessage = $"Invalid format for the reading of {vitalInfo.VitalName}. Please check the input!!";
                             return View(model);
                         }
 
@@ -390,27 +434,41 @@ namespace e_Prescription.Controllers
                                 double.TryParse(bloodPressureParts[0], out double systolic) &&
                                 double.TryParse(bloodPressureParts[1], out double diastolic))
                             {
-                                var limitParts = vital.LowLimit.Split('/');
-                                double lowSystolic = double.Parse(limitParts[0]);
-                                double lowDiastolic = double.Parse(limitParts[1]);
+                                // Parsing the low and high limits for systolic and diastolic readings
+                                var lowLimitParts = vital.LowLimit.Split('/');
+                                double lowSystolic = double.Parse(lowLimitParts[0]);
+                                double lowDiastolic = double.Parse(lowLimitParts[1]);
 
-                                limitParts = vital.HighLimit.Split('/');
-                                double highSystolic = double.Parse(limitParts[0]);
-                                double highDiastolic = double.Parse(limitParts[1]);
+                                var highLimitParts = vital.HighLimit.Split('/');
+                                double highSystolic = double.Parse(highLimitParts[0]);
+                                double highDiastolic = double.Parse(highLimitParts[1]);
 
-                                bool systolicInRange = systolic >= lowSystolic && systolic <= highSystolic;
-                                bool diastolicInRange = diastolic >= lowDiastolic && diastolic <= highDiastolic;
+                                // Check if systolic and diastolic readings are in the defined ranges
+                                bool isSystolicLow = systolic < lowSystolic;
+                                bool isSystolicHigh = systolic > highSystolic;
+                                bool isDiastolicLow = diastolic < lowDiastolic;
+                                bool isDiastolicHigh = diastolic > highDiastolic;
 
-                                if (!systolicInRange || !diastolicInRange)
+                                if (isSystolicLow || isDiastolicLow)
                                 {
-                                    notifications.Add($"The reading for {vital.VitalName} is out of range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
-                                    patientVital.Note = "Out of range";
+                                    // Systolic or Diastolic pressure is below the normal range
+                                    notifications.Add($"The reading for {vital.VitalName} is **LOWER** than normal range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
+                                    patientVital.Note = "Lower than normal";
+                                }
+                                else if (isSystolicHigh || isDiastolicHigh)
+                                {
+                                    // Systolic or Diastolic pressure is above the normal range
+                                    notifications.Add($"The reading for {vital.VitalName} is **HIGHER** than normal range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
+                                    patientVital.Note = "Higher than normal";
                                 }
                                 else
                                 {
-                                    patientVital.Note = "Normal";
+                                    // Systolic and Diastolic pressures are within the normal range
+                                   // notifications.Add($"The reading for {vital.VitalName} is **WITHIN NORMAL RANGE**: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
+                                    patientVital.Note = "Within normal range";
                                 }
                             }
+
                             else
                             {
                                 ModelState.AddModelError(string.Empty, $"Invalid format for the blood pressure reading of {vital.VitalName}. Please check the input.");
@@ -424,14 +482,19 @@ namespace e_Prescription.Controllers
                                 double.TryParse(vital.HighLimit, out double highLimit) &&
                                 double.TryParse(patientVital.Reading, out double normalReading))
                             {
-                                if (normalReading < lowLimit || normalReading > highLimit)
+                                if (normalReading < lowLimit)
                                 {
-                                    notifications.Add($"The reading for {vital.VitalName} is out of range: {normalReading} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
-                                    patientVital.Note = "Out of range";
+                                    notifications.Add($"The reading for {vital.VitalName} is **LOWER** than normal range: {normalReading} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
+                                    patientVital.Note = "Lower than normal";
+                                }
+                                else if (normalReading > highLimit)
+                                {
+                                    notifications.Add($"The reading for {vital.VitalName} is **HIGHER** than normal range: {normalReading} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
+                                    patientVital.Note = "Higher than normal";
                                 }
                                 else
                                 {
-                                    patientVital.Note = "Normal";
+                                    patientVital.Note = "Within normal range";
                                 }
                             }
                             else
@@ -490,7 +553,7 @@ namespace e_Prescription.Controllers
                 }
                 else
                 {
-                    ViewBag.AlertMessage = "Vitals seem to be normal!";
+                    ViewBag.AlertMessage = "All patient Vitals seem normal!";
                 }
 
                 ViewBag.Vitals = context.Vital.OrderBy(v => v.VitalName).ToList();  // Reinitialize Vitals

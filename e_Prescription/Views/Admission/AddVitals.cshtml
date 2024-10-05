@@ -110,8 +110,13 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <a asp-controller="Admission" class="btn btn-info" asp-action="ViewAdmission" asp-route-patientId="@Model.Patient.IdNumber">Go back</a>
+                                    <form asp-controller="Admission" asp-action="ViewAdmission" method="get">
+                                        <input type="hidden" name="patientId" value="@Model.Patient.IdNumber" />
+                                        <button type="submit" class="btn btn-info">Go back</button>
+                                    </form>
                                 </div>
+
+
                             </div>
                         </div>
                     </div>

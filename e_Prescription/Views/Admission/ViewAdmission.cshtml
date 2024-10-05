@@ -143,7 +143,7 @@
                                             bool isBloodPressureFormat = reading.Contains("/");
 
                                             // Determine row style based on note content
-                                            string rowStyle = vital.Note?.Contains("Out of range") == true ? "background-color: orangered" : "";
+                                            string rowStyle = vital.Note?.Contains("Within normal range") != true ? "background-color: orangered" : "";
 
                                             <tr style="@rowStyle">
                                                 <td>@vital.Vitals?.VitalName</td>
