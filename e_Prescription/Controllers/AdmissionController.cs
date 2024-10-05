@@ -626,22 +626,46 @@ namespace e_Prescription.Controllers
         [HttpPost]
         public IActionResult History(PatientHistory viewModel)
         {
-            // Add the patient allergies to the database
+            // Update patient allergies
             foreach (var allergyId in viewModel.SelectedAllergies)
             {
-                context.PatientAllergies.Add(new PatientAllergies { PatientId = viewModel.PatientId, ActiveIngredientId = allergyId });
+                // Check if the allergy already exists for the patient
+                var existingAllergy = context.PatientAllergies
+                    .FirstOrDefault(a => a.PatientId == viewModel.PatientId && a.ActiveIngredientId == allergyId);
+
+                if (existingAllergy == null)
+                {
+                    // Add new allergy if it doesn't exist
+                    context.PatientAllergies.Add(new PatientAllergies { PatientId = viewModel.PatientId, ActiveIngredientId = allergyId });
+                }
             }
 
-            // Add the patient conditions to the database
+            // Update patient conditions
             foreach (var conditionId in viewModel.SelectedConditions)
             {
-                context.PatientConditions.Add(new PatientCondition { PatientId = viewModel.PatientId, ChronicConditionId = conditionId });
+                // Check if the condition already exists for the patient
+                var existingCondition = context.PatientConditions
+                    .FirstOrDefault(c => c.PatientId == viewModel.PatientId && c.ChronicConditionId == conditionId);
+
+                if (existingCondition == null)
+                {
+                    // Add new condition if it doesn't exist
+                    context.PatientConditions.Add(new PatientCondition { PatientId = viewModel.PatientId, ChronicConditionId = conditionId });
+                }
             }
 
-            // Add the patient medications to the database
+            // Update patient medications
             foreach (var medicationId in viewModel.SelectedMedications)
             {
-                context.PatientMedications.Add(new PatientMedication { PatientId = viewModel.PatientId, MedicationId = medicationId });
+                // Check if the medication already exists for the patient
+                var existingMedication = context.PatientMedications
+                    .FirstOrDefault(m => m.PatientId == viewModel.PatientId && m.MedicationId == medicationId);
+
+                if (existingMedication == null)
+                {
+                    // Add new medication if it doesn't exist
+                    context.PatientMedications.Add(new PatientMedication { PatientId = viewModel.PatientId, MedicationId = medicationId });
+                }
             }
 
             context.SaveChanges();
@@ -652,6 +676,7 @@ namespace e_Prescription.Controllers
             {
                 return NotFound();
             }
+
             viewModel.Patient = patient;
 
             ViewBag.PatientName = $"{patient.Firstname} {patient.Lastname}";
@@ -660,8 +685,10 @@ namespace e_Prescription.Controllers
             ViewBag.Conditions = new SelectList(context.ChronicConditions.OrderBy(c => c.Diagnosis), "ChronicCondotionId", "Diagnosis");
             ViewBag.Medications = new SelectList(context.Medications.OrderBy(c => c.MedicationName), "MedicationId", "MedicationName");
             TempData["AlertMessage"] = $"{patient.Firstname} {patient.Lastname} has been admitted successfully!";
-            return View(viewModel); // Or any appropriate action
+
+            return View(viewModel); // Return the updated view model
         }
+
 
         //Retrieve all admitted patients by the Nurse
         public async Task<IActionResult> NursePatients(string patientId, string sortOrder)
