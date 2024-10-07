@@ -100,6 +100,28 @@ namespace e_Prescription.Controllers
             return View(model);
         }
 
+        //Return admissions for the surgeon
+        [HttpGet]
+        public async Task<IActionResult> GetAdmission()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var admission = await _context.Admissions
+                            .Include(p => p.Patient)
+                            .ThenInclude(pa => pa.PatientBooking)
+                            .ThenInclude(pc => pc.ApplicationUser)
+                            .Include(bd => bd.Bed)
+                            .Include(wd => wd.Ward)
+                            .Where(a => a.Patient.PatientBooking.ApplicationUser.Id  == user.Id)
+                            .ToListAsync();
+            return View(admission);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> BookSurgery(BookingTreatmentViewModel model)
