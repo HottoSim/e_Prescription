@@ -1,0 +1,52 @@
+﻿@model List<e_Prescription.Models.Admission>
+
+@{
+    ViewData["Title"] = "Surgeon's Admissions";
+}
+
+<h2>Surgeon's Admissions</h2>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Patient Name</th>
+                <th>Gender</th>
+                <th>Date of Birth</th>
+                <th>Admission Date</th>
+                <th>Ward</th>
+                <th>Bed</th>
+                <th>Status</th>
+                <th></th> <!-- Empty header for button column -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var admission in Model)
+            {
+                <tr>
+                    <td>@(admission.Patient.Firstname + " " + admission.Patient.Lastname)</td>
+                    <td>@admission.Patient.Gender</td>
+                    <td>@admission.Patient.DateOfBirth.ToString("yyyy-MM-dd")</td>
+                    <td>@admission.AdmissionDate.ToString("yyyy-MM-dd")</td>
+                    <td>@admission.Ward.WardName</td>
+                    <td>@admission.Bed.BedName</td>
+                    <td>@(admission.IsDischarged ? "Discharged" : "Admitted")</td>
+                    <td>
+                        <!-- Button to prescribe medication -->
+                        <form asp-controller="Prescription" asp-action="Create" method="get">
+                            <input type="hidden" name="admissionId" value="@admission.Id" />
+                            <button type="submit" class="btn btn-primary">Prescribe Medication</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        No admissions found for the current surgeon.
+    </div>
+}
