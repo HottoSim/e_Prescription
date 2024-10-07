@@ -171,5 +171,86 @@ namespace e_Prescription.Controllers
             return RedirectToAction("SurgeonAppointments");
         }
 
+        public async Task<IActionResult> Create(int admissionId)
+        {
+            // Retrieve the admission details including patient information
+            var admission = await _context.Admissions
+                                .Include(a => a.Patient)
+                                .FirstOrDefaultAsync(a => a.Id == admissionId);
+
+            if (admission == null || admission.Patient == null)
+            {
+                // Return a 404 view if the admission or patient is not found
+                return NotFound("Admission or Patient details not found.");
+            }
+
+            // Load the available medications for selection
+            var medications = await _context.PharmacyMedications.ToListAsync();
+
+            if (medications == null || !medications.Any())
+            {
+                ModelState.AddModelError(string.Empty, "No medications available for prescription.");
+                return View(new Prescription());
+            }
+
+            // Create a new prescription object to pass to the view
+            var prescription = new Prescription
+            {
+                AdmissionId = admissionId,
+                Admission = admission,
+                PresciptionDate = DateTime.Now,
+                Status = "Pending",
+            };
+
+            // Pass the single prescription and list of medications to the view
+            ViewBag.Medications = medications;
+            return View(prescription);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(Prescription model, int selectedMedicationId, int quantity, string instruction)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+             // Find the selected medication based on the passed medication ID
+                var selectedMedication = await _context.PharmacyMedications
+                    .FirstOrDefaultAsync(m => m.PharmacyMedicationId == selectedMedicationId);
+
+                if (selectedMedication == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Selected medication not found.");
+                    return View(model);
+                }
+
+                // Create a new prescription item with the selected medication details
+                var prescriptionItem = new PrescriptionItem
+                {
+                    PrescriptionId = model.PrescriptionId,
+                    MedicationId = selectedMedicationId,
+                    Quantity = quantity,
+                    Instruction = instruction
+                };
+
+                // Save the prescription and prescription item to the database
+                model.PrescriptionItems.Add(prescriptionItem);
+                model.SurgeonId = user.Id;
+                model.Status = "Prescribed";
+                _context.Prescriptions.Add(model);
+                await _context.SaveChangesAsync();
+
+            
+
+            // Reload available medications in case of an error
+            ViewBag.Medications = await _context.PharmacyMedications.ToListAsync();
+            return RedirectToAction("GetAdmission"); // Redirect to a list of prescriptions or another view
+        }
+
     }
+
 }
+

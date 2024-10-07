@@ -1,0 +1,37 @@
+﻿@model e_Prescription.Models.Prescription
+
+@{
+    ViewData["Title"] = "Prescribe Medication";
+}
+
+<h2>Prescribe Medication</h2>
+
+<form asp-action="Create" method="post">
+    <input type="hidden" name="PrescriptionId" value="@Model.PrescriptionId" />
+    <input type="hidden" name="AdmissionId" value="@Model.AdmissionId" />
+
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label>Medication</label>
+            <select class="form-control" name="selectedMedicationId">
+                <option value="">-- Select Medication --</option>
+                @foreach (var medication in ViewBag.Medications)
+                {
+                    <option value="@medication.PharmacyMedicationId">@medication.MedicationName</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group col-md-6">
+            <label>Quantity</label>
+            <input type="number" class="form-control" name="quantity" min="1" required />
+        </div>
+    </div>
+   <div class="row">
+        <div class="form-group col-md-8">
+            <label>Instruction</label>
+            <textarea class="form-control" name="instruction" rows="3" required></textarea>
+        </div>
+   </div>
+    <button type="submit" class="btn btn-primary">Prescribe</button>
+</form>

@@ -34,7 +34,7 @@
                     <td>@(admission.IsDischarged ? "Discharged" : "Admitted")</td>
                     <td>
                         <!-- Button to prescribe medication -->
-                        <form asp-controller="Prescription" asp-action="Create" method="get">
+                        <form asp-controller="Surgeon" asp-action="Create" method="get">
                             <input type="hidden" name="admissionId" value="@admission.Id" />
                             <button type="submit" class="btn btn-primary">Prescribe Medication</button>
                         </form>

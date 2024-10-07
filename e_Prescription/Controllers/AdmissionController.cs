@@ -828,7 +828,7 @@ namespace e_Prescription.Controllers
                 .Include(pi => pi.Prescription.ApplicationUser)
                 .Include(pi => pi.PharmacyMedication.DosageForm)
                 .Include(pi => pi.Prescription)
-                .Where(pi => pi.Prescription.AdmissionId == admissionId && pi.Quantity > 0)
+                .Where(pi => pi.Prescription.AdmissionId == admissionId && pi.Quantity > 0 && pi.Prescription.Status == "Dispensed")
                 .ToListAsync();
 
             // Fetch Administered Medications
