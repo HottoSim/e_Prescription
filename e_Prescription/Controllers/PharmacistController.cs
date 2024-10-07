@@ -47,7 +47,7 @@ namespace e_Prescription.Controllers
             }
 
             // Prepare a list of status options
-            var statusOptions = new List<string> { "Pending", "Approved", "Rejected", "Dispensed" };
+            var statusOptions = new List<string> { "Pending","Rejected", "Dispensed" };
 
             var viewModel = new ViewPrescriptionViewModel
             {
@@ -64,7 +64,7 @@ namespace e_Prescription.Controllers
             if (string.IsNullOrEmpty(status))
             {
                 ModelState.AddModelError(string.Empty, "Status is required.");
-                var statusOptions = new List<string> { "Pending", "Approved", "Rejected", "Dispensed" };
+                var statusOptions = new List<string> { "Pending", "Rejected", "Dispensed" };
 
                 // Fetch the prescription item again to repopulate the view model
                 var prescriptionItem = await _context.PrescriptionItems
@@ -122,7 +122,7 @@ namespace e_Prescription.Controllers
                 ModelState.AddModelError(string.Empty, "An error occurred while updating the prescription status: " + ex.Message);
 
                 // Return the view with the current model state
-                var statusOptions = new List<string> { "Pending", "Approved", "Rejected", "Dispensed" };
+                var statusOptions = new List<string> { "Pending", "Rejected", "Dispensed" };
                 var prescriptionItem = await _context.PrescriptionItems
                 .Include(p => p.Prescription)
                 .ThenInclude(p => p.Admission)
