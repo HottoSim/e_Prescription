@@ -171,6 +171,7 @@ namespace e_Prescription.Controllers
             return RedirectToAction("SurgeonAppointments");
         }
 
+
         public async Task<IActionResult> Create(int admissionId)
         {
             // Retrieve the admission details including patient information
@@ -254,6 +255,3 @@ namespace e_Prescription.Controllers
 
 }
 
-
-    }
-}
