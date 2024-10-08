@@ -21,6 +21,9 @@ namespace e_Prescription.Models
         public DateTime PresciptionDate { get; set; }
 
         [Required]
+        public DateTime Date { get; set; }
+
+        [Required]
         public bool IsUrgent { get; set; } = false;
 
         [Required]

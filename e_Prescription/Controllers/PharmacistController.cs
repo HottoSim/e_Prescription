@@ -156,6 +156,48 @@ namespace e_Prescription.Controllers
             return View(prescriptions);
         }
 
+        //Generating A Report
+        [HttpGet]
+        public IActionResult GenerateDispensaryReport(DateTime startDate, DateTime endDate)
+        {
+            var pharmacistName = User.Identity.Name; // This gets the logged-in user's username
+
+            // Filter prescriptions by date range and include related data
+            var prescriptions = _context.PrescriptionItems
+                .Where(p => p.Prescription.Date >= startDate && p.Prescription.Date <= endDate)
+                .Include(p => p.Prescription.Admission.Patient)
+                .Include(p => p.PharmacyMedication)
+                .ToList();
+
+            // Calculate total dispensed and rejected scripts
+            var totalDispensed = prescriptions.Count(p => p.Prescription.Status == "Dispensed");
+            var totalRejected = prescriptions.Count(p => p.Prescription.Status == "Rejected");
+
+            // Summary per medication
+            var summaryPerMedication = prescriptions
+                .Where(p => p.Prescription.Status == "Dispensed")
+                .GroupBy(p => p.PharmacyMedication.MedicationName)
+                .Select(g => new
+                {
+                    Medication = g.Key,
+                    QuantityDispensed = g.Sum(p => p.Quantity)
+                }).ToList();
+
+            // Prepare view model for the report
+            var viewModel = new PDispensaryReportViewModel
+            {
+                StartDate = startDate,
+                EndDate = endDate,
+                Prescriptions = prescriptions,
+                TotalDispensed = totalDispensed,
+                TotalRejected = totalRejected,
+                SummaryPerMedication = summaryPerMedication
+            };
+
+            return View(viewModel);
+        }
+
+
         //View patient history
         public async Task<IActionResult> ViewPatientHistory(string patientId, int admissionId)
         {
