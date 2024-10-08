@@ -12,6 +12,8 @@
 
         <div class="card-body">
             <form asp-action="EditReceivedMedication" method="post">
+                <input type="hidden" asp-for="StockOrderId" />
+
                 <div class="form-group">
                     <label asp-for="MedicationName">Medication</label>
                     <input type="text" asp-for="MedicationName" class="form-control" readonly />
