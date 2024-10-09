@@ -58,12 +58,14 @@
                     </th>
                     <th>
                         Status
-                    </th>                                       
+                    </th> 
+                    <th>
+                        Urgency
+                    </th>
                     <th>
                         Rejection Note
                     </th>
                     <th>
-                        Action
                     </th>
                 </tr>
             </thead>
@@ -89,6 +91,16 @@
                         
                         <td>
                             @item.Prescription.Status
+                        </td>
+                        <td>
+                            @if (item.Prescription.IsUrgent)
+                            {
+                                <span class="badge badge-danger">Urgent</span>
+                            }
+                            else
+                            {
+                                <span>Not Urgent</span>
+                            }
                         </td>
                         <td>
                             @item.RejectionNote

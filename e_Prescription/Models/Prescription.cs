@@ -18,7 +18,7 @@ namespace e_Prescription.Models
         public virtual Admission Admission { get; set; } 
 
         [Required]
-        public DateTime PresciptionDate { get; set; }
+        public DateTime PresciptionDate { get; set; } =  DateTime.Now;
 
         [Required]
         public DateTime Date { get; set; }
