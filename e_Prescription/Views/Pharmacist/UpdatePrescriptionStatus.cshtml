@@ -43,6 +43,10 @@
                     <p class="form-control-plaintext d-inline ml-2">@Model.PrescriptionItem?.Quantity</p>
                 </div>
                 <div class="form-group">
+                    <label>Instructions:</label>
+                    <p class="form-control-plaintext d-inline ml-2">@Model.PrescriptionItem?.Instruction</p>
+                </div>
+                <div class="form-group">
                     <label>Vitals:</label>
                     <a class="btn btn-info" href="@Url.Action("ViewPatientVitals", "Admission", new { admissionId = Model.PrescriptionItem?.Prescription?.AdmissionId })">View</a>
                 </div>

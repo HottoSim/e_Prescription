@@ -94,6 +94,7 @@ namespace e_Prescription.Controllers
             {
                 var prescriptionItemToUpdate = await _context.PrescriptionItems
                 .Include(p => p.Prescription)
+                .Include(p => p.PharmacyMedication) // Include PharmacyMedication to access medication detail
                 .FirstOrDefaultAsync(p => p.PrescriptionId == id);
 
                 if (prescriptionItemToUpdate == null)
@@ -108,6 +109,31 @@ namespace e_Prescription.Controllers
                 {
                     // Handle rejection reason, e.g., log it or save it as needed
                     prescriptionItemToUpdate.RejectionNote = rejectionReason; // Adjust this line as needed
+                }
+
+                if (status == "Dispensed")
+                {
+                    // Reduce stock only if the status is "Dispensed"
+                    var medication = prescriptionItemToUpdate.PharmacyMedication;
+                    if (medication != null)
+                    {
+                        // Assuming you have a Quantity property in PrescriptionItem representing the amount dispensed
+                        var quantityDispensed = prescriptionItemToUpdate.Quantity;
+                        if (medication.QuantityOnHand >= quantityDispensed)
+                        {
+                            medication.QuantityOnHand -= quantityDispensed;
+                        }
+                        else
+                        {
+                            // Handle the case where there's not enough stock
+                            ModelState.AddModelError(string.Empty, "Not enough stock to dispense the medication.");
+                            return View(new ViewPrescriptionViewModel
+                            {
+                                PrescriptionItem = prescriptionItemToUpdate,
+                                StatusOptions = new SelectList(new List<string> { "Pending", "Rejected", "Dispensed" })
+                            });
+                        }
+                    }
                 }
 
                 // Save changes to the database
