@@ -7,6 +7,7 @@ using Microsoft.Build.ObjectModelRemoting;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
+using System.Configuration;
 
 
 
@@ -15,10 +16,12 @@ namespace e_Prescription.Controllers
     public class PharmacistController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration; // Add IConfiguration as a field
 
-        public PharmacistController(ApplicationDbContext context)
+        public PharmacistController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration; // Assign IConfiguration
         }
         public IActionResult Index()
         {
@@ -184,8 +187,14 @@ namespace e_Prescription.Controllers
 
         //Generating A Report
         [HttpGet]
-        public IActionResult GenerateDispensaryReport(DateTime startDate, DateTime endDate)
+        public IActionResult GenerateDispensaryReport(DateTime? startDate, DateTime? endDate)
         {
+            // Set default date range if no dates are provided
+            if (!startDate.HasValue)
+                startDate = DateTime.Now.AddMonths(-1); // Default to the past 1 month
+            if (!endDate.HasValue)
+                endDate = DateTime.Now;
+
             var pharmacistName = User.Identity.Name; // This gets the logged-in user's username
 
             // Filter prescriptions by date range and include related data
@@ -212,8 +221,8 @@ namespace e_Prescription.Controllers
             // Prepare view model for the report
             var viewModel = new PDispensaryReportViewModel
             {
-                StartDate = startDate,
-                EndDate = endDate,
+                StartDate = startDate.Value,
+                EndDate = endDate.Value,
                 Prescriptions = prescriptions,
                 TotalDispensed = totalDispensed,
                 TotalRejected = totalRejected,
@@ -489,8 +498,13 @@ namespace e_Prescription.Controllers
 
         // Action to process the order
         [HttpPost]
-        public IActionResult OrderMedications(MedicationOrderViewModel model)
+        public async Task<IActionResult> OrderMedications(MedicationOrderViewModel model)
         {
+            var emailService = new EmailService(_configuration);
+            var purchaseManagerEmail = "zisandanodali01@gmail.com"; // Replace with actual email
+
+            var orderedMedications = new List<string>(); // To track medications being ordered
+
             foreach (var item in model.Medications.Where(m => m.IsSelected && m.OrderQuantity > 0))
             {
                 var stockOrder = new StockOrder
@@ -502,10 +516,24 @@ namespace e_Prescription.Controllers
                 };
 
                 _context.StockOrders.Add(stockOrder);
+                // Track the ordered medications for the email body
+                orderedMedications.Add($"{item.MedicationName} - Quantity: {item.OrderQuantity}");
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
+            // If medications were ordered, send an email to the purchase manager
+            if (orderedMedications.Any())
+            {
+                var subject = "Stock Order Notification";
+                var message = $"Dear Purchase Manager,<br/><br/>The following medications have been ordered:<br/>" +
+                              string.Join("<br/>", orderedMedications) +
+                              "<br/><br/>Best regards,<br/>Pharmacy Team";
+
+                await emailService.SendEmailAsync(purchaseManagerEmail, subject, message);
+            }
+
+            TempData["SuccessMessage"] = "Stock order placed successfully and email notification sent.";
             return RedirectToAction("OrderMedications");
         }
 

@@ -1,7 +1,25 @@
 ﻿@model PDispensaryReportViewModel
 
 <h2>Dispensary Report</h2>
+
+<!-- Date Range Selection Form -->
+<form method="get" action="@Url.Action("GenerateDispensaryReport", "YourControllerName")">
+    <div class="form-group">
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate" name="startDate" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="form-group">
+        <label for="endDate">End Date</label>
+        <input type="date" id="endDate" name="endDate" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+    </div>
+    <button type="submit" class="btn btn-primary">Generate Report</button>
+</form>
+
 @* <p><strong>Dorothy Daniels</strong></p> *@
+@* <p><strong>Pharmacist:</strong> @Model.PharmacistName</p>
+<p><strong>Date Range:</strong> @Model.StartDate.ToString("dd MMMM yyyy") - @Model.EndDate.ToString("dd MMMM yyyy")</p>
+<p><strong>Report Generated:</strong> @DateTime.Now.ToString("dd MMMM yyyy")</p> *@
+
 <p><strong>Pharmacist:</strong> @Model.PharmacistName</p>
 <p><strong>Date Range:</strong> @Model.StartDate.ToString("dd MMMM yyyy") - @Model.EndDate.ToString("dd MMMM yyyy")</p>
 <p><strong>Report Generated:</strong> @DateTime.Now.ToString("dd MMMM yyyy")</p>
