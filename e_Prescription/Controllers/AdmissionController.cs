@@ -1011,7 +1011,7 @@ namespace e_Prescription.Controllers
             medicationGiven.Time = DateTime.Now;
 
             // Update the status of the Prescription to "Administered"
-            prescriptionItem.Prescription.Status = "Administered";
+           // prescriptionItem.Prescription.Status = "Administered";
 
             // Save the administered medication to the database
             context.MedicationsGiven.Add(medicationGiven);
@@ -1020,7 +1020,7 @@ namespace e_Prescription.Controllers
             context.PrescriptionItems.Update(prescriptionItem);
 
             // Update the prescription status in the database
-            context.Prescriptions.Update(prescriptionItem.Prescription);
+            //context.Prescriptions.Update(prescriptionItem.Prescription);
 
             await context.SaveChangesAsync();
 

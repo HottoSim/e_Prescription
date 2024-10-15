@@ -160,7 +160,6 @@
                                 <th>Quantity</th>
                                 <th>Time</th>
                                 <th>Nurse</th>
-                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -171,7 +170,6 @@
                                     <td>@item.Quantity</td>
                                     <td>@item.Time.ToString("HH:mm")</td>
                                     <td>@item.ApplicationUser.FirstName @item.ApplicationUser.LastName</td>
-                                    <td>@item.PrescriptionItem.Prescription.Status</td>
                                 </tr>
                             }
                         </tbody>
