@@ -124,12 +124,24 @@
                                     <td>@item.Prescription.PresciptionDate.ToShortTimeString()</td>
                                     <td>Dr. @item.Prescription.ApplicationUser.FirstName @item.Prescription.ApplicationUser.LastName</td>
                                     <td>
-                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#administerMedicationModal" data-prescriptionitem-id="@item.PrescriptionItemId" data-admission-id="@admissionId">
-                                            <i class="fas fa-pills"></i> Administer
-                                        </button>
+                                        @if (item.AdministeredQuantity >= item.Quantity)
+                                        {
+                                            <!-- If administered quantity is equal to or exceeds the prescribed quantity, disable button and change text -->
+                                            <button type="button" class="btn btn-secondary" disabled>
+                                                Administered
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <!-- If not fully administered, show the administer button -->
+                                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#administerMedicationModal" data-prescriptionitem-id="@item.PrescriptionItemId" data-admission-id="@admissionId">
+                                                <i class="fas fa-pills"></i> Administer
+                                            </button>
+                                        }
                                     </td>
                                 </tr>
                             }
+
                         }
                         else
                         {

@@ -1004,7 +1004,7 @@ namespace e_Prescription.Controllers
             }
 
             // Subtract the administered quantity from the prescribed quantity
-            prescriptionItem.Quantity -= medicationGiven.Quantity;
+            prescriptionItem.AdministeredQuantity += medicationGiven.Quantity;
 
             // Set the NurseId and Time for MedicationGiven
             medicationGiven.NurseId = nurse.Id;
@@ -1020,7 +1020,7 @@ namespace e_Prescription.Controllers
             context.PrescriptionItems.Update(prescriptionItem);
 
             // Update the prescription status in the database
-            //context.Prescriptions.Update(prescriptionItem.Prescription);
+            context.Prescriptions.Update(prescriptionItem.Prescription);
 
             await context.SaveChangesAsync();
 
