@@ -249,18 +249,29 @@
         </script>
 
         <!-- html2pdf.js Script for generating the PDF -->
-        <script>
-            document.getElementById('downloadPdfBtn').addEventListener('click', function () {
-                var element = document.querySelector('.form-card');
-                var opt = {
-                    margin: 1,
-                    filename: 'MedicationReport.pdf',
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
-                };
-                html2pdf().from(element).set(opt).save();
-            });
-        </script>
+       <script>
+    document.getElementById('downloadPdfBtn').addEventListener('click', function () {
+        var element = document.querySelector('.form-card');
+
+        var opt = {
+            margin: 1,
+            filename: 'MedicationReport.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'a3', orientation: 'landscape' }
+        };
+
+        // Generate the PDF and add page numbers
+        html2pdf().from(element).set(opt).toPdf().get('pdf').then(function (pdf) {
+            var totalPages = pdf.internal.getNumberOfPages();
+            for (var i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFontSize(10);
+                pdf.text('Page ' + i + ' of ' + totalPages, pdf.internal.pageSize.width - 2, pdf.internal.pageSize.height - 0.5); // Adjust position for page numbers
+            }
+        }).save();
+    });
+</script>
+
     }
 </body>
