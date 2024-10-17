@@ -291,56 +291,6 @@ namespace e_Prescription.Controllers
         }
 
 
-
-        //// New Search Action
-        //[HttpGet]
-        //public IActionResult SearchPrescriptions(DateTime? startDate, DateTime? endDate)
-        //{
-        //    if (!startDate.HasValue || !endDate.HasValue)
-        //    {
-        //        TempData["ErrorMessage"] = "Please select both start and end dates.";
-        //        return View(); // Redirect to the main page or wherever appropriate
-        //    }
-
-        //    return RedirectToAction("GenerateDispensaryReport", new { startDate, endDate });
-        //}
-
-
-
-        //Downloading the report
-        //[HttpGet]
-        //public IActionResult DownloadReport()
-        //{
-        //    try
-        //    {
-        //        using (var stream = new MemoryStream())
-        //        {
-        //            // Create a PdfWriter
-        //            var writer = new PdfWriter(stream);
-        //            // Initialize PdfDocument
-        //            using (var pdf = new PdfDocument(writer))
-        //            {
-        //                // Create a new document
-        //                var document = new Document(pdf);
-        //                // Add a simple paragraph
-        //                document.Add(new Paragraph("Hello World!"));
-        //            }
-
-        //            // Finalize the document
-        //            var pdfBytes = stream.ToArray();
-        //            return File(pdfBytes, "application/pdf", "Report.pdf");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Log the exception details
-        //        Console.WriteLine($"Error: {ex.Message}");
-        //        Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-        //        return BadRequest("Error generating the PDF report.");
-        //    }
-        //}
-
-
         //View patient history
         public async Task<IActionResult> ViewPatientHistory(string patientId, int admissionId)
         {
