@@ -994,16 +994,16 @@ namespace e_Prescription.Controllers
             if (prescriptionItem == null)
             {
                 ModelState.AddModelError("", "Prescription item not found.");
-                return View(medicationGiven);
+                return View(prescriptionItem);
             }
 
-            if (prescriptionItem.Quantity < medicationGiven.Quantity)
+            var setAdministerd = prescriptionItem.Quantity -= prescriptionItem.AdministeredQuantity;
+            if (prescriptionItem.Quantity < medicationGiven.Quantity && medicationGiven.Quantity >= setAdministerd)
             {
-                ModelState.AddModelError("", "Insufficient medication quantity.");
-                return View(medicationGiven);
+                TempData["ErrorMessage"] = "Insufficient medication quantity.";
+                return RedirectToAction("ViewPrescription", new { prescriptionItem.Prescription.AdmissionId });
             }
 
-            // Subtract the administered quantity from the prescribed quantity
             prescriptionItem.AdministeredQuantity += medicationGiven.Quantity;
 
             // Set the NurseId and Time for MedicationGiven
