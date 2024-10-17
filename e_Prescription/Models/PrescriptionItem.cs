@@ -26,6 +26,6 @@ namespace e_Prescription.Models
 
         public virtual List<MedicationGiven> MedicationGiven { get; set; } = new List<MedicationGiven>();
 
-        public int AdministeredQuantity { get; set; }
+        public int AdministeredQuantity { get; set; } = 0;
     }
 }
