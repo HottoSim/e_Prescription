@@ -65,7 +65,7 @@ namespace e_Prescription.Controllers
             }
 
             var start = startDate.Value;
-            var end = endDate.Value;
+            var end = endDate.Value.Date.AddDays(1).AddTicks(-1);
 
             // Query using navigation properties, and sorting by AdmissionDate
             var report = await _context.Admissions
