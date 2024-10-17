@@ -25,7 +25,7 @@
             border-radius: 20px;
             box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 1200px;
+            max-width: 1100px;
         }
 
         .card {
@@ -76,7 +76,8 @@
 <body>
     <div class="container">
         <div class="form-card col-md-12">
-            <div class="form-group">
+            <div class="d-form-card">
+                <div class="form-group">
                 <div class="col-12 text-center card-header">
                     <h4><i class="fas fa-file-alt"></i> Medication Reports</h4>
                 </div>
@@ -187,12 +188,7 @@
                                 <canvas id="medicineChart" width="400" height="200"></canvas>
                             </div>
                         </div>
-                        <!-- Download PDF button -->
-                        <div class="d-flex justify-content-end mt-3">
-                             <button id="downloadPdfBtn" class="btn btn-success">
-                                 <i class="fas fa-file-pdf"></i> Download PDF
-                             </button>
-                        </div>
+                        
                     </div>
                 </div>
             }
@@ -203,10 +199,20 @@
                     <h4 class="fw-bolder">No reports found for the selected date range...</h4>
                 </div>
             }
-
-            <div class="d-flex justify-content-center mt-4">
+            </div>
+            
+            <div class="row">
+                 <!-- Download PDF button -->
+                 <div class="d-flex justify-content-end mt-3">
+                             <button id="downloadPdfBtn" class="btn btn-success">
+                                 <i class="fas fa-file-pdf"></i> Download PDF
+                             </button>
+                 </div>
+            <div class="d-flex justify-content-start mt-4">
                 <a asp-controller="Admission" asp-action="NurseLandingPage" type="button" class="btn btn-info" onclick="history.back()">Go Back</a>
             </div>
+            </div>
+           
         </div>
     </div>
 
@@ -251,11 +257,11 @@
         <!-- html2pdf.js Script for generating the PDF -->
        <script>
     document.getElementById('downloadPdfBtn').addEventListener('click', function () {
-        var element = document.querySelector('.form-card');
+        var element = document.querySelector('.d-form-card');
 
         var opt = {
             margin: 1,
-            filename: 'MedicationReport.pdf',
+            filename: 'Medication_Report.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'in', format: 'a3', orientation: 'landscape' }
@@ -267,7 +273,7 @@
             for (var i = 1; i <= totalPages; i++) {
                 pdf.setPage(i);
                 pdf.setFontSize(10);
-                pdf.text('Page ' + i + ' of ' + totalPages, pdf.internal.pageSize.width - 2, pdf.internal.pageSize.height - 0.5); // Adjust position for page numbers
+                pdf.text('Page ' + i + ' of ' + totalPages, pdf.internal.pageSize.width - 2, pdf.internal.pageSize.height - 2); // Adjust position for page numbers
             }
         }).save();
     });
