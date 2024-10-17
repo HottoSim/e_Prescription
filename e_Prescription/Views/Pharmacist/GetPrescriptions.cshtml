@@ -38,6 +38,20 @@
                 </button>
             </div>
         }
+
+        <div class="col-md-12 d-flex justify-content-end mt-3">
+            <!-- Urgent Filter Form -->
+            <form method="get" action="@Url.Action("GetPrescriptions", "Pharmacist")">
+                <div class="form-group">
+                    <input type="checkbox" id="showUrgentOnly" name="showUrgentOnly" value="true" @(ViewBag.ShowUrgentOnly ? "checked" : "") />
+                    <label for="showUrgentOnly">Show only urgent prescriptions</label>
+                    <button type="submit" class="btn btn-danger btn-sm">Filter</button>
+                </div>
+            </form>
+        </div>
+
+
+
         <table class="table table-striped">
             <thead>
                 <tr>   

@@ -1,74 +1,87 @@
 ﻿@model PDispensaryReportViewModel
 
-<h2>Dispensary Report</h2>
+@{
+    ViewData["Title"] = "Generate Dispensary Report";
+}
 
-<!-- Date Range Selection Form -->
-<form method="get" action="@Url.Action("GenerateDispensaryReport", "YourControllerName")">
-    <div class="form-group">
-        <label for="startDate">Start Date</label>
-        <input type="date" id="startDate" name="startDate" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+<div class="col-md-12 mx-auto pt-0 p-0">
+    <div class="card">
+        <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
+            <h4 class="text-center">Dispensary Report</h4>
+        </div>
+        <p><strong>Pharmacist:</strong> @Model.PharmacistName</p>
+
+        <!-- Date Range Selection Form -->
+        <form method="get" action="@Url.Action("GenerateDispensaryReport", "Pharmacist")" style="width: 50%;">
+            <div class="form-group" style="margin-bottom: 10px;">
+                <label for="startDate" style="font-size: 16px; font-weight: bold; display: inline-block; width: 100px;">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" style="font-size: 16px; padding: 5px; width: 150px; height: 30px; display: inline-block;" />
+            </div>
+            <div class="form-group" style="margin-bottom: 10px;">
+                <label for="endDate" style="font-size: 16px; font-weight: bold; display: inline-block; width: 100px;">End Date:</label>
+                <input type="date" id="endDate" name="endDate" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")" style="font-size: 16px; padding: 5px; width: 150px; height: 30px; display: inline-block;" />
+            </div>
+            <button type="submit" class="btn btn-warning btn-sm">Generate Report</button>
+            <a href="@Url.Action("DownloadReport", "Pharmacist", new { startDate = Model.StartDate, endDate = Model.EndDate })" class="btn btn-danger btn-sm">Download Report</a>
+        </form>
+
+        <p><strong>Date Range:</strong> @Model.StartDate.ToString("dd MMMM yyyy") - @Model.EndDate.ToString("dd MMMM yyyy")</p>
+        <p><strong>Report Generated:</strong> @DateTime.Now.ToString("dd MMMM yyyy")</p>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Patient</th>
+                    <th>Script By</th>
+                    <th>Medication</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var prescription in Model.Prescriptions)
+                {
+                    <tr>
+                        <td>@prescription.Prescription?.Date.ToString("dd MMM yyyy")</td> <!-- Null-safe access -->
+                        <td>@prescription.Prescription?.Admission?.Patient?.Firstname </td> <!-- Null-safe access -->
+                        @* <td>@prescription.Prescription?.ApplicationUser?.UserName </td> <!-- Null-safe access --> *@
+                        <td>Dr.@prescription.Prescription?.ApplicationUser?.FirstName @prescription.Prescription?.ApplicationUser?.LastName </td>
+                        <td>@prescription.PharmacyMedication?.MedicationName </td> <!-- Null-safe access -->
+                        <td>@prescription.Quantity</td>
+                        <td>@prescription.Prescription?.Status </td> <!-- Null-safe access -->
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <p><strong>Total Scripts Dispensed:</strong> @Model.TotalDispensed</p>
+        <p><strong>Total Scripts Rejected:</strong> @Model.TotalRejected</p>
+
+        <h3>Summary Per Medication:</h3>
+        <table class="table table-striped" style="width: 50%; font-size: 16px; padding: 5px;">
+            <thead>
+                <tr>
+                    <th style="padding: 5px;">Medication</th>
+                    <th style="padding: 5px;">Quantity Dispensed</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.SummaryPerMedication)
+                {
+                    <tr>
+                        <td style="padding: 5px;">@item.Medication</td>
+                        <td style="padding: 5px;">@item.QuantityDispensed</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+       
+
     </div>
-    <div class="form-group">
-        <label for="endDate">End Date</label>
-        <input type="date" id="endDate" name="endDate" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
-    </div>
-    <button type="submit" class="btn btn-primary">Generate Report</button>
-</form>
+</div>
 
-@* <p><strong>Dorothy Daniels</strong></p> *@
-@* <p><strong>Pharmacist:</strong> @Model.PharmacistName</p>
-<p><strong>Date Range:</strong> @Model.StartDate.ToString("dd MMMM yyyy") - @Model.EndDate.ToString("dd MMMM yyyy")</p>
-<p><strong>Report Generated:</strong> @DateTime.Now.ToString("dd MMMM yyyy")</p> *@
 
-<p><strong>Pharmacist:</strong> @Model.PharmacistName</p>
-<p><strong>Date Range:</strong> @Model.StartDate.ToString("dd MMMM yyyy") - @Model.EndDate.ToString("dd MMMM yyyy")</p>
-<p><strong>Report Generated:</strong> @DateTime.Now.ToString("dd MMMM yyyy")</p>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Patient</th>
-            <th>Script By</th>
-            <th>Medication</th>
-            <th>Quantity</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var prescription in Model.Prescriptions)
-        {
-            <tr>
-                <td>@prescription.Prescription?.Date.ToString("dd MMM yyyy")</td> <!-- Null-safe access -->
-                <td>@prescription.Prescription?.Admission?.Patient?.Firstname </td> <!-- Null-safe access -->
-                @* <td>@prescription.Prescription?.ApplicationUser?.UserName </td> <!-- Null-safe access --> *@
-                <td>Dr.@prescription.Prescription?.ApplicationUser?.FirstName @prescription.Prescription?.ApplicationUser?.LastName </td>
-                <td>@prescription.PharmacyMedication?.MedicationName </td> <!-- Null-safe access -->
-                <td>@prescription.Quantity</td>
-                <td>@prescription.Prescription?.Status </td> <!-- Null-safe access -->
-            </tr>
-        }
-    </tbody>
-</table>
 
-<p><strong>Total Scripts Dispensed:</strong> @Model.TotalDispensed</p>
-<p><strong>Total Scripts Rejected:</strong> @Model.TotalRejected</p>
 
-<h3>Summary Per Medication:</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Medication</th>
-            <th>Quantity Dispensed</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.SummaryPerMedication)
-        {
-            <tr>
-                <td>@item.Medication</td>
-                <td>@item.QuantityDispensed</td>
-            </tr>
-        }
-    </tbody>
-</table>

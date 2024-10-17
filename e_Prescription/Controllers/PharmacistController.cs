@@ -8,6 +8,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Text;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+//using e_Prescription.Migrations;
 
 
 
@@ -175,14 +180,30 @@ namespace e_Prescription.Controllers
 
         //Return Prescription
         [HttpGet]
-        public IActionResult GetPrescriptions()
+        public IActionResult GetPrescriptions(bool showUrgentOnly = false)
         {
+            //var prescriptions = _context.PrescriptionItems
+            //    .Include(p => p.Prescription.Admission.Patient)
+            //    .Include(us => us.Prescription.ApplicationUser)
+            //    .Include(p => p.PharmacyMedication)               
+            //    .ToList();
+
+            //return View(prescriptions);
             var prescriptions = _context.PrescriptionItems
                 .Include(p => p.Prescription.Admission.Patient)
                 .Include(us => us.Prescription.ApplicationUser)
-                .Include(p => p.PharmacyMedication)               
-                .ToList();
-            return View(prescriptions);
+                .Include(p => p.PharmacyMedication)
+                .AsQueryable();
+
+            if (showUrgentOnly)
+            {
+                prescriptions = prescriptions.Where(p => p.Prescription.IsUrgent);
+            }
+
+            // Pass the showUrgentOnly value to the view
+            ViewBag.ShowUrgentOnly = showUrgentOnly;
+
+            return View(prescriptions.ToList());
         }
 
         //Generating A Report
@@ -232,6 +253,42 @@ namespace e_Prescription.Controllers
             return View(viewModel);
         }
 
+        //Downloading the report
+        [HttpGet]
+        public IActionResult DownloadReport()
+        {
+            try
+            {
+                using (var stream = new MemoryStream())
+                {
+                    // Create a PdfWriter
+                    var writer = new PdfWriter(stream);
+                    // Initialize PdfDocument
+                    using (var pdf = new PdfDocument(writer))
+                    {
+                        // Create a new document
+                        var document = new Document(pdf);
+                        // Add a simple paragraph
+                        document.Add(new Paragraph("Hello World!"));
+                    }
+
+                    // Finalize the document
+                    var pdfBytes = stream.ToArray();
+                    return File(pdfBytes, "application/pdf", "Report.pdf");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception details
+                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                return BadRequest("Error generating the PDF report.");
+            }
+        }
+
+
+
+
 
         //View patient history
         public async Task<IActionResult> ViewPatientHistory(string patientId, int admissionId)
@@ -280,9 +337,6 @@ namespace e_Prescription.Controllers
 
             return View(admissions);
         }
-
-
-
 
 
         //Return Medication
