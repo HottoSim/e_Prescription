@@ -12,6 +12,7 @@ using System.Text;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
+using e_Prescription.Models.ViewModels;
 //using e_Prescription.Migrations;
 
 
@@ -22,11 +23,13 @@ namespace e_Prescription.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration; // Add IConfiguration as a field
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public PharmacistController(ApplicationDbContext context, IConfiguration configuration)
+        public PharmacistController(ApplicationDbContext context, IConfiguration configuration, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _configuration = configuration; // Assign IConfiguration
+            _userManager = userManager;
         }
         public IActionResult Index()
         {
@@ -206,88 +209,136 @@ namespace e_Prescription.Controllers
             return View(prescriptions.ToList());
         }
 
-        //Generating A Report
+        // Search Action for Date Range
         [HttpGet]
-        public IActionResult GenerateDispensaryReport(DateTime? startDate, DateTime? endDate)
+        public IActionResult SearchPrescriptions(DateTime? startDate, DateTime? endDate)
+        {
+            // Check if both start and end dates are provided
+            if (!startDate.HasValue || !endDate.HasValue)
+            {
+                TempData["ErrorMessage"] = "Please select both start and end dates.";
+                return View(); // Redirect to the main page or wherever appropriate
+            }
+
+            // Redirect to the report generation with valid dates
+            return RedirectToAction("GenerateDispensaryReport", new { startDate, endDate });
+        }
+
+        // Generating A Report
+        [HttpGet]
+        public async Task<IActionResult> GenerateDispensaryReport(DateTime? startDate, DateTime? endDate)
         {
             // Set default date range if no dates are provided
-            if (!startDate.HasValue)
-                startDate = DateTime.Now.AddMonths(-1); // Default to the past 1 month
-            if (!endDate.HasValue)
-                endDate = DateTime.Now;
+            // If no dates are provided, return an empty view
+            if (!startDate.HasValue || !endDate.HasValue)
+            {
+                return View(new List<PDispensaryReportViewModel>());
+            }
 
-            var pharmacistName = User.Identity.Name; // This gets the logged-in user's username
+            // Get the current user
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
-            // Filter prescriptions by date range and include related data
-            var prescriptions = _context.PrescriptionItems
-                .Where(p => p.Prescription.Date >= startDate && p.Prescription.Date <= endDate)
+            var pharmacistName = $"{user.FirstName} {user.LastName}";
+
+            var start = startDate.Value;
+            var end = endDate.Value.Date.AddDays(1).AddTicks(-1);
+
+            // Fetch the prescriptions based on the date range
+            var prescriptions = await _context.PrescriptionItems
+                .Where(p => p.Prescription.Date >= start && p.Prescription.Date <= end)
                 .Include(p => p.Prescription.Admission.Patient)
                 .Include(p => p.PharmacyMedication)
-                .ToList();
+                .ToListAsync();
+
+            // Initialize view model
+            var viewModel = new PDispensaryReportViewModel
+            {
+                PharmacistName = pharmacistName,
+                StartDate = start,
+                EndDate = end,
+                Prescriptions = prescriptions ?? new List<PrescriptionItem>(), // Initialize to an empty list if null
+                TotalDispensed = 0,
+                TotalRejected = 0,
+                SummaryPerMedication = new List<SummaryItem>() // Initialize to an empty list
+            };
+
+            // Check for empty prescriptions
+            if (!viewModel.Prescriptions.Any())
+            {
+                TempData["ErrorMessage"] = "No prescriptions found for the selected date range.";
+                return View(viewModel);
+            }
 
             // Calculate total dispensed and rejected scripts
-            var totalDispensed = prescriptions.Count(p => p.Prescription.Status == "Dispensed");
-            var totalRejected = prescriptions.Count(p => p.Prescription.Status == "Rejected");
+            viewModel.TotalDispensed = viewModel.Prescriptions.Count(p => p.Prescription.Status == "Dispensed");
+            viewModel.TotalRejected = viewModel.Prescriptions.Count(p => p.Prescription.Status == "Rejected");
 
             // Summary per medication
-            var summaryPerMedication = prescriptions
+            viewModel.SummaryPerMedication = viewModel.Prescriptions
                 .Where(p => p.Prescription.Status == "Dispensed")
                 .GroupBy(p => p.PharmacyMedication.MedicationName)
-                .Select(g => new
+                .Select(g => new SummaryItem
                 {
                     Medication = g.Key,
                     QuantityDispensed = g.Sum(p => p.Quantity)
                 }).ToList();
 
-            // Prepare view model for the report
-            var viewModel = new PDispensaryReportViewModel
-            {
-                StartDate = startDate.Value,
-                EndDate = endDate.Value,
-                Prescriptions = prescriptions,
-                TotalDispensed = totalDispensed,
-                TotalRejected = totalRejected,
-                SummaryPerMedication = summaryPerMedication
-            };
-
             return View(viewModel);
         }
 
+
+
+        //// New Search Action
+        //[HttpGet]
+        //public IActionResult SearchPrescriptions(DateTime? startDate, DateTime? endDate)
+        //{
+        //    if (!startDate.HasValue || !endDate.HasValue)
+        //    {
+        //        TempData["ErrorMessage"] = "Please select both start and end dates.";
+        //        return View(); // Redirect to the main page or wherever appropriate
+        //    }
+
+        //    return RedirectToAction("GenerateDispensaryReport", new { startDate, endDate });
+        //}
+
+
+
         //Downloading the report
-        [HttpGet]
-        public IActionResult DownloadReport()
-        {
-            try
-            {
-                using (var stream = new MemoryStream())
-                {
-                    // Create a PdfWriter
-                    var writer = new PdfWriter(stream);
-                    // Initialize PdfDocument
-                    using (var pdf = new PdfDocument(writer))
-                    {
-                        // Create a new document
-                        var document = new Document(pdf);
-                        // Add a simple paragraph
-                        document.Add(new Paragraph("Hello World!"));
-                    }
+        //[HttpGet]
+        //public IActionResult DownloadReport()
+        //{
+        //    try
+        //    {
+        //        using (var stream = new MemoryStream())
+        //        {
+        //            // Create a PdfWriter
+        //            var writer = new PdfWriter(stream);
+        //            // Initialize PdfDocument
+        //            using (var pdf = new PdfDocument(writer))
+        //            {
+        //                // Create a new document
+        //                var document = new Document(pdf);
+        //                // Add a simple paragraph
+        //                document.Add(new Paragraph("Hello World!"));
+        //            }
 
-                    // Finalize the document
-                    var pdfBytes = stream.ToArray();
-                    return File(pdfBytes, "application/pdf", "Report.pdf");
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log the exception details
-                Console.WriteLine($"Error: {ex.Message}");
-                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-                return BadRequest("Error generating the PDF report.");
-            }
-        }
-
-
-
+        //            // Finalize the document
+        //            var pdfBytes = stream.ToArray();
+        //            return File(pdfBytes, "application/pdf", "Report.pdf");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Log the exception details
+        //        Console.WriteLine($"Error: {ex.Message}");
+        //        Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+        //        return BadRequest("Error generating the PDF report.");
+        //    }
+        //}
 
 
         //View patient history

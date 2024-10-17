@@ -5,13 +5,14 @@
 }
 
 <div class="col-md-12 mx-auto pt-0 p-0">
-    <div class="card">
+    <div class="form-card" id="card-content">
         <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
             <h4 class="text-center">Dispensary Report</h4>
         </div>
-        <p><strong>Pharmacist:</strong> @Model.PharmacistName</p>
+        <br />
+        <p class="d-flex justify-content-center"><strong>Pharmacist:&ensp; </strong> @Model.PharmacistName</p>
 
-        <!-- Date Range Selection Form -->
+       @*  <!-- Date Range Selection Form -->
         <form method="get" action="@Url.Action("GenerateDispensaryReport", "Pharmacist")" style="width: 50%;">
             <div class="form-group" style="margin-bottom: 10px;">
                 <label for="startDate" style="font-size: 16px; font-weight: bold; display: inline-block; width: 100px;">Start Date:</label>
@@ -22,12 +23,22 @@
                 <input type="date" id="endDate" name="endDate" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")" style="font-size: 16px; padding: 5px; width: 150px; height: 30px; display: inline-block;" />
             </div>
             <button type="submit" class="btn btn-warning btn-sm">Generate Report</button>
-            <a href="@Url.Action("DownloadReport", "Pharmacist", new { startDate = Model.StartDate, endDate = Model.EndDate })" class="btn btn-danger btn-sm">Download Report</a>
-        </form>
+            <div class="d-flex justify-content-end mt-2">
+                <button type="button" onclick="downloadPDF()" class="btn btn-danger btn-sm">
+                    <!-- Changed to red -->
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+            </div>
+        </form> *@
 
-        <p><strong>Date Range:</strong> @Model.StartDate.ToString("dd MMMM yyyy") - @Model.EndDate.ToString("dd MMMM yyyy")</p>
-        <p><strong>Report Generated:</strong> @DateTime.Now.ToString("dd MMMM yyyy")</p>
-
+        <div class="row">
+            <div class="col-md-6 d-flex justify-content-start">
+                <p><strong>Date Range:</strong> @Model.StartDate.ToString("dd MMMM yyyy") - @Model.EndDate.ToString("dd MMMM yyyy")</p>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end">
+                <p><strong>Report Generated:</strong> @DateTime.Now.ToString("dd MMMM yyyy")</p>
+            </div>
+        </div>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -43,13 +54,12 @@
                 @foreach (var prescription in Model.Prescriptions)
                 {
                     <tr>
-                        <td>@prescription.Prescription?.Date.ToString("dd MMM yyyy")</td> <!-- Null-safe access -->
-                        <td>@prescription.Prescription?.Admission?.Patient?.Firstname </td> <!-- Null-safe access -->
-                        @* <td>@prescription.Prescription?.ApplicationUser?.UserName </td> <!-- Null-safe access --> *@
-                        <td>Dr.@prescription.Prescription?.ApplicationUser?.FirstName @prescription.Prescription?.ApplicationUser?.LastName </td>
-                        <td>@prescription.PharmacyMedication?.MedicationName </td> <!-- Null-safe access -->
+                        <td>@prescription.Prescription?.Date.ToString("dd MMM yyyy")</td>
+                        <td>@prescription.Prescription?.Admission?.Patient?.Firstname </td>
+                        <td>Dr. @prescription.Prescription?.ApplicationUser?.FirstName @prescription.Prescription?.ApplicationUser?.LastName </td>
+                        <td>@prescription.PharmacyMedication?.MedicationName </td>
                         <td>@prescription.Quantity</td>
-                        <td>@prescription.Prescription?.Status </td> <!-- Null-safe access -->
+                        <td>@prescription.Prescription?.Status </td>
                     </tr>
                 }
             </tbody>
@@ -67,21 +77,48 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.SummaryPerMedication)
+                @if (Model.SummaryPerMedication.Any())
+                {
+                    foreach (var item in Model.SummaryPerMedication)
+                    {
+                        <tr>
+                            <td style="padding: 5px;">@item.Medication</td>
+                            <td style="padding: 5px;">@item.QuantityDispensed</td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td style="padding: 5px;">@item.Medication</td>
-                        <td style="padding: 5px;">@item.QuantityDispensed</td>
+                        <td colspan="2" class="text-center">No summary available for the selected date range.</td>
                     </tr>
                 }
             </tbody>
         </table>
-       
-
+        <div class="d-flex justify-content-end mt-2">
+            <button type="button" onclick="downloadPDF()" class="btn btn-danger btn-sm">
+                <!-- Changed to red -->
+                <i class="fas fa-download"></i> Download PDF
+            </button>
+        </div>
     </div>
 </div>
 
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
-
-
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        function downloadPDF() {
+            const element = document.getElementById('card-content');
+            html2pdf()
+                .from(element)
+                .save('patient_admission.pdf')
+                .catch(err => {
+                    console.error("Error generating PDF:", err);
+                });
+        }
+    </script>
+}
