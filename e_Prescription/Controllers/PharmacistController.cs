@@ -24,6 +24,7 @@ namespace e_Prescription.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration; // Add IConfiguration as a field
         private readonly UserManager<ApplicationUser> _userManager;
+        private string alertMessage;
 
         public PharmacistController(ApplicationDbContext context, IConfiguration configuration, UserManager<ApplicationUser> userManager)
         {
@@ -52,18 +53,27 @@ namespace e_Prescription.Controllers
                 .Include(p => p.PharmacyMedication)
                 .FirstOrDefaultAsync(p => p.PrescriptionId == id);
 
-            if (prescriptionItem == null)
+            // Check if prescriptionItem or any necessary navigation property is null
+            if (prescriptionItem == null ||
+                prescriptionItem.PharmacyMedication == null ||
+                prescriptionItem.Prescription?.Admission == null)
             {
-                return NotFound();
+                return NotFound(); // Prescription item or related data not found
             }
 
             // Prepare a list of status options
-            var statusOptions = new List<string> { "Pending","Rejected", "Dispensed" };
+            var statusOptions = new List<string> { "Pending", "Rejected", "Dispensed" };
+
+            // Check for interactions or contraindications
+            string alertMessage = await CheckMedicationInteractionAndContraindication(
+                prescriptionItem.PharmacyMedication.PharmacyMedicationId,
+                prescriptionItem.Prescription.Admission.PatientId);
 
             var viewModel = new ViewPrescriptionViewModel
             {
                 PrescriptionItem = prescriptionItem,
-                StatusOptions = new SelectList(statusOptions)
+                StatusOptions = new SelectList(statusOptions),
+                AlertMessage = alertMessage // Pass the alert message to the view
             };
 
             return View(viewModel);
@@ -79,23 +89,31 @@ namespace e_Prescription.Controllers
 
                 // Fetch the prescription item again to repopulate the view model
                 var prescriptionItem = await _context.PrescriptionItems
-                .Include(p => p.Prescription)
-                .ThenInclude(p => p.Admission)
-                .ThenInclude(a => a.Patient)
-                .Include(p => p.Prescription)
-                .ThenInclude(p => p.ApplicationUser)
-                .Include(p => p.PharmacyMedication)
-                .FirstOrDefaultAsync(p => p.PrescriptionId == id);
+                    .Include(p => p.Prescription)
+                        .ThenInclude(p => p.Admission)
+                            .ThenInclude(a => a.Patient)
+                    .Include(p => p.Prescription)
+                        .ThenInclude(p => p.ApplicationUser)
+                    .Include(p => p.PharmacyMedication)
+                    .FirstOrDefaultAsync(p => p.PrescriptionId == id);
 
-                if (prescriptionItem == null)
+                if (prescriptionItem == null ||
+                    prescriptionItem.PharmacyMedication == null ||
+                    prescriptionItem.Prescription?.Admission == null)
                 {
-                    return NotFound();
+                    return NotFound(); // Prescription item or related data not found
                 }
+
+                // Check for interactions or contraindications again
+                string alertMessage = await CheckMedicationInteractionAndContraindication(
+                    prescriptionItem.PharmacyMedication.PharmacyMedicationId,
+                    prescriptionItem.Prescription.Admission.PatientId);
 
                 var viewModel = new ViewPrescriptionViewModel
                 {
                     PrescriptionItem = prescriptionItem,
-                    StatusOptions = new SelectList(statusOptions)
+                    StatusOptions = new SelectList(statusOptions),
+                    AlertMessage = alertMessage // Pass the alert message to the view
                 };
 
                 return View(viewModel);
@@ -104,14 +122,17 @@ namespace e_Prescription.Controllers
             try
             {
                 var prescriptionItemToUpdate = await _context.PrescriptionItems
-                .Include(p => p.Prescription)
-                .Include(p => p.PharmacyMedication) // Include PharmacyMedication to access medication detail
-                .ThenInclude(m => m.PharmacyMedicationIngredients) // Include ActiveIngredient for interaction check
-                .FirstOrDefaultAsync(p => p.PrescriptionId == id);
+                    .Include(p => p.Prescription)
+                        .ThenInclude(p => p.Admission)
+                            .ThenInclude(a => a.Patient)
+                    .Include(p => p.PharmacyMedication) // Include PharmacyMedication to access medication detail
+                    .FirstOrDefaultAsync(p => p.PrescriptionId == id);
 
-                if (prescriptionItemToUpdate == null)
+                if (prescriptionItemToUpdate == null ||
+                    prescriptionItemToUpdate.PharmacyMedication == null ||
+                    prescriptionItemToUpdate.Prescription?.Admission == null)
                 {
-                    return NotFound();
+                    return NotFound(); // Prescription item or related data not found
                 }
 
                 // Check for medication interaction or contraindication
@@ -126,7 +147,8 @@ namespace e_Prescription.Controllers
                     return View(new ViewPrescriptionViewModel
                     {
                         PrescriptionItem = prescriptionItemToUpdate,
-                        StatusOptions = new SelectList(new List<string> { "Pending", "Rejected", "Dispensed" })
+                        StatusOptions = new SelectList(new List<string> { "Pending", "Rejected", "Dispensed" }),
+                        AlertMessage = alertMessage // Include the alert message in the view model
                     });
                 }
 
@@ -159,7 +181,8 @@ namespace e_Prescription.Controllers
                             return View(new ViewPrescriptionViewModel
                             {
                                 PrescriptionItem = prescriptionItemToUpdate,
-                                StatusOptions = new SelectList(new List<string> { "Pending", "Rejected", "Dispensed" })
+                                StatusOptions = new SelectList(new List<string> { "Pending", "Rejected", "Dispensed" }),
+                                AlertMessage = alertMessage // Include the alert message if any
                             });
                         }
                     }
@@ -173,24 +196,25 @@ namespace e_Prescription.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception
+                // Log the exception (you may want to implement logging here)
                 ModelState.AddModelError(string.Empty, "An error occurred while updating the prescription status: " + ex.Message);
 
                 // Return the view with the current model state
                 var statusOptions = new List<string> { "Pending", "Rejected", "Dispensed" };
                 var prescriptionItem = await _context.PrescriptionItems
-                .Include(p => p.Prescription)
-                .ThenInclude(p => p.Admission)
-                .ThenInclude(a => a.Patient)
-                .Include(p => p.Prescription)
-                .ThenInclude(p => p.ApplicationUser)
-                .Include(p => p.PharmacyMedication)
-                .FirstOrDefaultAsync(p => p.PrescriptionId == id);
+                    .Include(p => p.Prescription)
+                        .ThenInclude(p => p.Admission)
+                            .ThenInclude(a => a.Patient)
+                    .Include(p => p.Prescription)
+                        .ThenInclude(p => p.ApplicationUser)
+                    .Include(p => p.PharmacyMedication)
+                    .FirstOrDefaultAsync(p => p.PrescriptionId == id);
 
                 var viewModel = new ViewPrescriptionViewModel
                 {
                     PrescriptionItem = prescriptionItem,
-                    StatusOptions = new SelectList(statusOptions)
+                    StatusOptions = new SelectList(statusOptions),
+                    AlertMessage = alertMessage // Pass the alert message if any
                 };
 
                 return View(viewModel);
@@ -226,9 +250,6 @@ namespace e_Prescription.Controllers
 
             return string.Empty;
         }
-
-
-
 
         //Return Prescription
         [HttpGet]
