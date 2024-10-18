@@ -431,7 +431,10 @@ namespace e_Prescription.Controllers
         //Manage Contra indications
         public IActionResult ManageContraIndications()
         {
-            var indications = _context.ContraIndications.ToList();
+            var indications = _context.ContraIndications
+                .Include(cm => cm.ChronicCondition)
+                .Include(cm => cm.ActiveIngredient)
+                .ToList();
             return View(indications);
         }
 

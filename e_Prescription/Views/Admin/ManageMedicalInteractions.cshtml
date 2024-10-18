@@ -24,11 +24,6 @@
             <td>
                 @Html.DisplayFor(modelItem => item.ActiveIngredient.IngredientName)
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.InterationId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.InterationId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.InterationId">Delete</a>
-            </td>
         </tr>
 }
     </tbody>

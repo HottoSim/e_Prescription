@@ -35,10 +35,6 @@
                     <th>
                         Active Ingredient
                     </th>
-                    <th>
-                        Description
-                    </th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -46,16 +42,10 @@
                 {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.ChronicCondition.Diagnosis) @Html.DisplayFor(modelItem => item.ChronicCondition.ICD_10_CODE)
+                           @item.ChronicCondition.ICD_10_CODE - @item.ChronicCondition.Diagnosis
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.ActiveIngredient.IngredientName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Description)
-                        </td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.IndicationId">Update</a>
+                            @item.ActiveIngredient.IngredientName
                         </td>
                     </tr>
                 }

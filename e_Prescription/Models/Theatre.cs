@@ -10,7 +10,7 @@ namespace e_Prescription.Models
         [Required(ErrorMessage = "*Required")]
         public string TheatreName { get; set; }
 
-        [Required(ErrorMessage = "*Required")]
-        public string Description { get; set; }
+        //[Required(ErrorMessage = "*Required")]
+        //public string Description { get; set; }
     }
 }

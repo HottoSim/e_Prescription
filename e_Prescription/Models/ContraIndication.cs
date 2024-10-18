@@ -18,7 +18,7 @@ namespace e_Prescription.Models
         public int ActiveIngredientId { get; set; }
         public virtual ActiveIngredient ActiveIngredient { get; set; }
 
-        [Required(ErrorMessage = "*Required")]
-        public string Description { get; set; }
+        //[Required(ErrorMessage = "*Required")]
+        //public string Description { get; set; }
     }
 }

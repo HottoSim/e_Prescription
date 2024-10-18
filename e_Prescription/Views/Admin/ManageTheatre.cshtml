@@ -47,10 +47,10 @@
                     <th>
                         Theatre Name
                     </th>
-                    <th>
+                    @* <th>
                         Description
                     </th>
-                    <th>Action</th>
+                    <th>Action</th> *@
                 </tr>
             </thead>
             <tbody>
@@ -60,13 +60,13 @@
                         <td>
                             @Html.DisplayFor(modelItem => item.TheatreName)
                         </td>
-                        <td>
+                       @*  <td>
                             @Html.DisplayFor(modelItem => item.Description)
                         </td>
                         <td>
                             <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.TheatreId">Update</a>
                             
-                        </td>
+                        </td> *@
                     </tr>
                 }
             </tbody>
