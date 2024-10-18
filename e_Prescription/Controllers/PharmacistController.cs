@@ -511,6 +511,7 @@ namespace e_Prescription.Controllers
                 .Include(m => m.PharmacyMedicationIngredients)
                 .ThenInclude(mi => mi.ActiveIngredient)
                 .Include(m => m.DosageForm)
+                .OrderBy(m => m.MedicationName)
                 .ToList();
 
             return View(medications);
@@ -573,7 +574,9 @@ namespace e_Prescription.Controllers
                         MedicationName = m.MedicationName,
                         QuantityOnHand = m.QuantityOnHand,
                         ReorderLevel = m.ReorderLevel
-                    }).ToList(),
+                    })
+                    .OrderBy(m => m.MedicationName) // Sort medications by MedicationName
+                    .ToList(),
 
                 StockOrders = _context.StockOrders
                     .Include(o => o.PharmacyMedication)
@@ -584,23 +587,51 @@ namespace e_Prescription.Controllers
                         OrderQuantity = o.OrderQuantity,
                         Date = o.Date,
                         Status = o.Status
-                    }).ToList()
+                    })
+                    .OrderByDescending(o => o.Date) // Sort stock orders by Date in descending order (most recent first)
+                    .ToList()
             };
 
             return View(viewModel);
         }
 
-        // Action to process the order
+        //Delete button for ordered medication
+        [HttpPost]
+        public async Task<IActionResult> DeleteStockOrder(int stockOrderId)
+        {
+            var stockOrder = await _context.StockOrders.FindAsync(stockOrderId);
+            if (stockOrder == null)
+            {
+                return NotFound();
+            }
+
+            _context.StockOrders.Remove(stockOrder);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Stock order deleted successfully.";
+            return RedirectToAction("OrderMedications"); // Redirect back to the order page
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> OrderMedications(MedicationOrderViewModel model)
         {
             var emailService = new EmailService(_configuration);
-            var purchaseManagerEmail = "zisandanodali01@gmail.com"; // Replace with actual email
+            var purchaseManagerEmail = "nmostert@nmmu.ac.za"; // Replace with actual email
 
             var orderedMedications = new List<string>(); // To track medications being ordered
 
             foreach (var item in model.Medications.Where(m => m.IsSelected && m.OrderQuantity > 0))
             {
+                // Fetch the medication name if not already in the view model
+                var pharmacyMedication = await _context.PharmacyMedications
+                    .FirstOrDefaultAsync(m => m.PharmacyMedicationId == item.PharmacyMedicationId);
+
+                if (pharmacyMedication == null)
+                {
+                    continue; // Skip if medication not found
+                }
+
                 var stockOrder = new StockOrder
                 {
                     PharmacyMedicationId = item.PharmacyMedicationId,
@@ -610,8 +641,9 @@ namespace e_Prescription.Controllers
                 };
 
                 _context.StockOrders.Add(stockOrder);
-                // Track the ordered medications for the email body
-                orderedMedications.Add($"{item.MedicationName} - Quantity: {item.OrderQuantity}");
+
+                // Use the fetched medication name (or ensure it's in the model)
+                orderedMedications.Add($"{pharmacyMedication.MedicationName} - Quantity: {item.OrderQuantity}");
             }
 
             await _context.SaveChangesAsync();
@@ -622,14 +654,15 @@ namespace e_Prescription.Controllers
                 var subject = "Stock Order Notification";
                 var message = $"Dear Purchase Manager,<br/><br/>The following medications have been ordered:<br/>" +
                               string.Join("<br/>", orderedMedications) +
-                              "<br/><br/>Best regards,<br/>Pharmacy Team";
+                              "<br/><br/>Best regards,<br/>Pharmacy Team<br/></br/>";
 
                 await emailService.SendEmailAsync(purchaseManagerEmail, subject, message);
             }
 
-            TempData["SuccessMessage"] = "Stock order placed successfully and email notification sent.";
+            TempData["EmailMessage"] = "Stock order placed successfully and email notification sent.";
             return RedirectToAction("OrderMedications");
         }
+
 
         // Action to return selected orders
         [HttpGet]
