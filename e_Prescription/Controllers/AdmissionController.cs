@@ -617,7 +617,7 @@ namespace e_Prescription.Controllers
             ViewBag.PatientName = $"{patient.Firstname} {patient.Lastname}";
             ViewBag.PatientId = patientId; // Set PatientId in ViewBag
             ViewBag.Allergies = new SelectList(context.ActiveIngredients.OrderBy(c => c.IngredientName), "ActiveIngredientId", "IngredientName");
-            ViewBag.Conditions = new SelectList(context.ChronicConditions.OrderBy(c => c.Diagnosis), "ChronicCondotionId", "ConditionName");
+            ViewBag.Conditions = new SelectList(context.ChronicConditions.OrderBy(c => c.Diagnosis), "ChronicCondotionId", "Diagnosis");
             ViewBag.Medications = new SelectList(context.Medications.OrderBy(c => c.MedicationName), "MedicationId", "MedicationName");
 
             return View(viewModel);

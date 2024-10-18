@@ -106,11 +106,28 @@ namespace e_Prescription.Controllers
                 var prescriptionItemToUpdate = await _context.PrescriptionItems
                 .Include(p => p.Prescription)
                 .Include(p => p.PharmacyMedication) // Include PharmacyMedication to access medication detail
+                .ThenInclude(m => m.PharmacyMedicationIngredients) // Include ActiveIngredient for interaction check
                 .FirstOrDefaultAsync(p => p.PrescriptionId == id);
 
                 if (prescriptionItemToUpdate == null)
                 {
                     return NotFound();
+                }
+
+                // Check for medication interaction or contraindication
+                string alertMessage = await CheckMedicationInteractionAndContraindication(
+                    prescriptionItemToUpdate.PharmacyMedication.PharmacyMedicationId,
+                    prescriptionItemToUpdate.Prescription.Admission.PatientId);
+
+                if (!string.IsNullOrEmpty(alertMessage))
+                {
+                    // If there are any interaction or contraindication alerts, display them
+                    ModelState.AddModelError(string.Empty, alertMessage);
+                    return View(new ViewPrescriptionViewModel
+                    {
+                        PrescriptionItem = prescriptionItemToUpdate,
+                        StatusOptions = new SelectList(new List<string> { "Pending", "Rejected", "Dispensed" })
+                    });
                 }
 
                 // Update the status
@@ -122,6 +139,7 @@ namespace e_Prescription.Controllers
                     prescriptionItemToUpdate.RejectionNote = rejectionReason; // Adjust this line as needed
                 }
 
+                // Prepare status options
                 if (status == "Dispensed")
                 {
                     // Reduce stock only if the status is "Dispensed"
@@ -178,6 +196,37 @@ namespace e_Prescription.Controllers
                 return View(viewModel);
             }
         }
+
+        private async Task<string> CheckMedicationInteractionAndContraindication(int activeIngredientId, int patientId)
+        {
+            // Check for interactions in the MedicationInteraction table
+            var interactions = await _context.MedicationInteractions
+                .Where(mi => mi.ActiveIngredientId == activeIngredientId)
+                .ToListAsync();
+
+            if (interactions.Any())
+            {
+                return "Warning: Potential interaction detected with selected medication.";
+            }
+
+            // Check for contraindications in the ContraIndication table
+            var patientConditions = await _context.PatientConditions
+                .Where(pcc => pcc.PatientId == patientId)
+                .Select(pcc => pcc.ChronicConditionId)
+                .ToListAsync();
+
+            var contraindications = await _context.ContraIndications
+                .Where(ci => ci.ActiveIngredientId == activeIngredientId && patientConditions.Contains(ci.ChronicConditionId))
+                .ToListAsync();
+
+            if (contraindications.Any())
+            {
+                return "Warning: This medication is contraindicated for one or more of the patient's conditions.";
+            }
+
+            return string.Empty;
+        }
+
 
 
 

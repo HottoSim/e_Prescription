@@ -6,5 +6,7 @@ namespace e_Prescription.Models
     {
         public PrescriptionItem PrescriptionItem { get; set; }
         public SelectList StatusOptions { get; set; }
+
+        public string AlertMessage { get; set; }
     }
 }
