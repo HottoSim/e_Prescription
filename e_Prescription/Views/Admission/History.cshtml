@@ -77,7 +77,10 @@
                     <!-- Modal Trigger -->
                     <script type="text/javascript">
                         $(document).ready(function () {
-                            $('#successModal').modal('show');
+                            $('#successModal').modal({
+                                backdrop: 'static',
+                                keyboard: false
+                            }).modal('show');
                         });
                     </script>
 
@@ -86,7 +89,7 @@
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <span class="checkmark">✔</span>
+                                    <span class="checkmark" style="font-size: 48px; color: green;">✔</span>
                                 </div>
                                 <div class="modal-body text-center">
                                     <h5>@TempData["AlertMessage"]</h5>
@@ -98,6 +101,7 @@
                         </div>
                     </div>
                 }
+
                 else
                 {
                     <div class="row">

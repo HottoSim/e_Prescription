@@ -98,22 +98,28 @@
                         var notifications = ViewBag.Notifications as List<string>;
                         if (notifications != null && notifications.Any())
                         {
-                            <div class="notification">
-                                <div class="modal fade show" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="display: block;">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="notificationModalLabel">Notifications</h5>
-                                            </div>
-                                            <div class="modal-body">
-                                                @foreach (var notification in notifications)
-                                                {
-                                                    <p>@notification</p>
-                                                }
-                                            </div>
-                                            <div class="modal-footer">
-                                                <a asp-controller="Admission" asp-action="History" asp-route-patientId="@Model.PatientId" class="btn btn-success">Continue</a>
-                                            </div>
+                            <script type="text/javascript">
+                                $(document).ready(function () {
+                                    $('#notificationModal').modal({
+                                        backdrop: 'static',
+                                        keyboard: false
+                                    }).modal('show');
+                                });
+                            </script>
+
+                            <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-body text-center">
+                                            <span class="notification-icon" style="font-size: 48px; color: orange;">🔔</span> <!-- Icon moved to the middle -->
+                                            <hr />
+                                            @foreach (var notification in notifications)
+                                            {
+                                                <p>@notification</p>
+                                            }
+                                        </div>
+                                        <div class="modal-footer d-flex justify-content-center">
+                                            <a asp-controller="Admission" asp-action="History" asp-route-patientId="@Model.PatientId" class="btn btn-success">Continue</a>
                                         </div>
                                     </div>
                                 </div>
@@ -121,53 +127,67 @@
                         }
                     }
 
-                    else if (ViewBag.AlertMessage != null)
+
+
+                    @if (ViewBag.AlertMessage != null)
                     {
-                        <div class="alert">
-                            <div class="modal fade show" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="display: block;">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header1">
-                                            <h5 class="modal-title" id="alertModalLabel">Alert message</h5>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="alert alert-success d-flex justify-content-center">
-                                                @ViewBag.AlertMessage
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <a asp-controller="Admission" class="btn btn-info" asp-action="History" asp-route-patientId="@Model.PatientId">Continue</a>
-                                        </div>
+                        <script type="text/javascript">
+                            $(document).ready(function () {
+                                $('#alertModal').modal({
+                                    backdrop: 'static',
+                                    keyboard: false
+                                }).modal('show');
+                            });
+                        </script>
+
+                        <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-body text-center">
+                                        <span class="alert-icon" style="font-size: 48px; color: green;">✔</span> <!-- Success icon with green color -->
+                                        <hr />
+                                        <h5>@ViewBag.AlertMessage</h5>
+                                    </div>
+                                    <div class="modal-footer d-flex justify-content-center">
+                                        <a asp-controller="Admission" asp-action="History" asp-route-patientId="@Model.PatientId" class="btn btn-info">Continue</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     }
 
+
+
                     else
                     {
                         @if (ViewBag.ErrorMessage != null)
                         {
-                            <div class="error">
-                                <div class="modal fade show" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false" style="display: block;">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-error">
-                                                <h5 class="modal-title" id="errorModal">Error message</h5>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="alert alert-danger d-flex justify-content-center">
-                                                    @ViewBag.ErrorMessage
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <a asp-controller="Admission" asp-action="Admission" asp-route-patientId="@Model.PatientId" class="btn btn-info">Back to Admission</a>
-                                            </div>
+                            <script type="text/javascript">
+                                $(document).ready(function () {
+                                    $('#errorModal').modal({
+                                        backdrop: 'static',
+                                        keyboard: false
+                                    }).modal('show');
+                                });
+                            </script>
+
+                            <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-body text-center">
+                                            <span class="error-icon" style="font-size: 48px; color: red;">❌</span> <!-- Icon moved to the middle -->
+                                            <hr />
+                                            <h5>@ViewBag.ErrorMessage</h5>
+                                        </div>
+                                        <div class="modal-footer d-flex justify-content-center">
+                                            <a asp-controller="Admission" asp-action="Admission" asp-route-patientId="@Model.PatientId" class="btn btn-info">OK</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         }
+
+
                         <div class="row">
                             <div class="col-md-12">
                                 <input asp-for="PatientId" class="form-control" hidden />
