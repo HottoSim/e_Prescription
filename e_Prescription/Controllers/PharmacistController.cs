@@ -638,7 +638,7 @@ namespace e_Prescription.Controllers
         public async Task<IActionResult> OrderMedications(MedicationOrderViewModel model)
         {
             var emailService = new EmailService(_configuration);
-            var purchaseManagerEmail = "nmostert@nmmu.ac.za"; // Replace with actual email
+            var purchaseManagerEmail = /*"nmostert@nmmu.ac.za"*/ "zisandanodali01@gmail.com"; // Replace with actual email
 
             var orderedMedications = new List<string>(); // To track medications being ordered
 
@@ -675,7 +675,7 @@ namespace e_Prescription.Controllers
                 var subject = "Stock Order Notification";
                 var message = $"Dear Purchase Manager,<br/><br/>The following medications have been ordered:<br/>" +
                               string.Join("<br/>", orderedMedications) +
-                              "<br/><br/>Best regards,<br/>Pharmacy Team<br/></br/>";
+                              "<br/><br/>Best regards,<br/>Pharmacy Team<br/></br/><small>Bay Breeze Day Hospital<br/>Eastern Cape<br/>Summerstrand (6001)<br/>1 8th Avenue<br/>041 58 2121</small >";
 
                 await emailService.SendEmailAsync(purchaseManagerEmail, subject, message);
             }
