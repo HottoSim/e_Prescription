@@ -185,13 +185,7 @@ namespace e_Prescription.Controllers
         [HttpGet]
         public IActionResult GetPrescriptions(bool showUrgentOnly = false)
         {
-            //var prescriptions = _context.PrescriptionItems
-            //    .Include(p => p.Prescription.Admission.Patient)
-            //    .Include(us => us.Prescription.ApplicationUser)
-            //    .Include(p => p.PharmacyMedication)               
-            //    .ToList();
-
-            //return View(prescriptions);
+            
             var prescriptions = _context.PrescriptionItems
                 .Include(p => p.Prescription.Admission.Patient)
                 .Include(us => us.Prescription.ApplicationUser)
@@ -331,11 +325,7 @@ namespace e_Prescription.Controllers
             {
                 return NotFound($"No admissions found for PatientId: {patientId}");
             }
-
-            //ViewBag.VitalNames = context.Vital
-            //    .Select(v => new SelectListItem { Value = v.VitalId.ToString(), Text = v.VitalName })
-            //    .ToList();
-
+          
             return View(admissions);
         }
 
@@ -718,32 +708,6 @@ namespace e_Prescription.Controllers
             return View(viewModel);
         }
 
-        //Update Stock Received
-        //public IActionResult UpdateStockReceived(int? id)
-        //{
-        //    if (id == null || id == 0)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var objList = _context.StockReceived.Find(id);
-        //    if (objList == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(objList);
-        //}
-        ////Return Updated medication list
-        //[HttpPost]
-        //public IActionResult UpdateStockReceived(ReceivedOrderViewModel model)
-        //{
-        //    _context.StockOrders.Update(stockReceived);
-        //    _context.SaveChanges();
-        //    return RedirectToAction("ReceivedMedicationRecords");
-        //}
-
-
-        //Update Stock Received 2
-        // GET: EditReceivedMedication
         [HttpGet]
         public IActionResult EditReceivedMedication(int? id)
         {

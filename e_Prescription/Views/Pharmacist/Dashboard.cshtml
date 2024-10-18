@@ -67,7 +67,7 @@
         .card {
             display: flex;
             align-items: center;
-            background-color: dimgrey;
+            background-color: darkgreen;
             border-radius: 8px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
             padding: 20px;
@@ -81,7 +81,7 @@
 
         .icon {
             font-size: 30px;
-            color: #28a745;
+            color: brown;
             margin-right: 15px;
         }
 
@@ -95,7 +95,7 @@
         .card-name {
             font-size: 18px;
             font-weight: bold;
-            color: #333;
+            color: white;
             text-decoration:none;
         }
 
@@ -167,6 +167,17 @@
         <div class="divider-horizontal"></div> <!-- This is the horizontal line divider -->
         <a href="@Url.Action("ReceivedMedication","Pharmacist")" class="card-name">
             Capture Stock
+        </a>
+    </div>
+</div>
+<div class="card-container">
+    <div class="card">
+        <div class="icon">
+            <i class="fas fa-file"></i>
+        </div>
+        <div class="divider-horizontal"></div> <!-- This is the horizontal line divider -->
+        <a href="@Url.Action("SearchPrescriptions","Pharmacist")" class="card-name">
+            Dispensary Report
         </a>
     </div>
 </div>
