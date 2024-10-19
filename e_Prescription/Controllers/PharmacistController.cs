@@ -14,6 +14,8 @@ using iText.Layout;
 using iText.Layout.Element;
 using e_Prescription.Models.ViewModels;
 //using e_Prescription.Migrations;
+using iText.Commons.Actions.Contexts;
+//using e_Prescription.Migrations;
 
 
 
@@ -51,6 +53,8 @@ namespace e_Prescription.Controllers
                 .Include(p => p.Prescription)
                     .ThenInclude(p => p.ApplicationUser)
                 .Include(p => p.PharmacyMedication)
+                    .ThenInclude(pm => pm.PharmacyMedicationIngredients) // Ensure ingredients are included
+                    .ThenInclude(pmi => pmi.ActiveIngredient) // Include ActiveIngredient to access names
                 .FirstOrDefaultAsync(p => p.PrescriptionId == id);
 
             // Check if prescriptionItem or any necessary navigation property is null
@@ -61,13 +65,33 @@ namespace e_Prescription.Controllers
                 return NotFound(); // Prescription item or related data not found
             }
 
+            // Retrieve the patient's allergies (ActiveIngredientId)
+            var patientAllergies = _context.PatientAllergies
+                .Where(pa => pa.PatientId == prescriptionItem.Prescription.Admission.PatientId)
+                .Select(pa => pa.ActiveIngredientId)
+                .ToList();
+
+            // Retrieve the active ingredients of the prescribed medication
+            var medicationIngredients = prescriptionItem.PharmacyMedication.PharmacyMedicationIngredients
+                .Select(ma => ma.ActiveIngredient)
+                .ToList();
+
+            // Find the ingredients that the patient is allergic to
+            var allergicIngredients = medicationIngredients
+                               .Where(mi => mi != null && patientAllergies.Contains(mi.ActiveIngredientId)) // Ensure mi is not null
+                               .Select(mi => mi.IngredientName) // Get the name of the ingredient
+                               .ToList();
+
+            if (allergicIngredients.Any())
+            {
+                // Create a warning message with the names of the allergic ingredients
+                var allergyWarning = $"This patient is allergic to: {string.Join(", ", allergicIngredients)}.";
+                TempData["AllergyWarning"] = allergyWarning;
+            }
+
+
             // Prepare a list of status options
             var statusOptions = new List<string> { "Pending", "Rejected", "Dispensed" };
-
-            // Check for interactions or contraindications
-            string alertMessage = await CheckMedicationInteractionAndContraindication(
-                prescriptionItem.PharmacyMedication.PharmacyMedicationId,
-                prescriptionItem.Prescription.Admission.PatientId);
 
             var viewModel = new ViewPrescriptionViewModel
             {
@@ -78,6 +102,7 @@ namespace e_Prescription.Controllers
 
             return View(viewModel);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> UpdatePrescriptionStatus(int id, string status, string rejectionReason)
@@ -104,10 +129,6 @@ namespace e_Prescription.Controllers
                     return NotFound(); // Prescription item or related data not found
                 }
 
-                // Check for interactions or contraindications again
-                string alertMessage = await CheckMedicationInteractionAndContraindication(
-                    prescriptionItem.PharmacyMedication.PharmacyMedicationId,
-                    prescriptionItem.Prescription.Admission.PatientId);
 
                 var viewModel = new ViewPrescriptionViewModel
                 {
@@ -135,14 +156,10 @@ namespace e_Prescription.Controllers
                     return NotFound(); // Prescription item or related data not found
                 }
 
-                // Check for medication interaction or contraindication
-                string alertMessage = await CheckMedicationInteractionAndContraindication(
-                    prescriptionItemToUpdate.PharmacyMedication.PharmacyMedicationId,
-                    prescriptionItemToUpdate.Prescription.Admission.PatientId);
 
                 if (!string.IsNullOrEmpty(alertMessage))
                 {
-                    // If there are any interaction or contraindication alerts, display them
+                    // If there's an alert, display it to the user
                     ModelState.AddModelError(string.Empty, alertMessage);
                     return View(new ViewPrescriptionViewModel
                     {
@@ -161,7 +178,6 @@ namespace e_Prescription.Controllers
                     prescriptionItemToUpdate.RejectionNote = rejectionReason; // Adjust this line as needed
                 }
 
-                // Prepare status options
                 if (status == "Dispensed")
                 {
                     // Reduce stock only if the status is "Dispensed"
@@ -221,35 +237,6 @@ namespace e_Prescription.Controllers
             }
         }
 
-        private async Task<string> CheckMedicationInteractionAndContraindication(int activeIngredientId, int patientId)
-        {
-            // Check for interactions in the MedicationInteraction table
-            var interactions = await _context.MedicationInteractions
-                .Where(mi => mi.ActiveIngredientId == activeIngredientId)
-                .ToListAsync();
-
-            if (interactions.Any())
-            {
-                return "Warning: Potential interaction detected with selected medication.";
-            }
-
-            // Check for contraindications in the ContraIndication table
-            var patientConditions = await _context.PatientConditions
-                .Where(pcc => pcc.PatientId == patientId)
-                .Select(pcc => pcc.ChronicConditionId)
-                .ToListAsync();
-
-            var contraindications = await _context.ContraIndications
-                .Where(ci => ci.ActiveIngredientId == activeIngredientId && patientConditions.Contains(ci.ChronicConditionId))
-                .ToListAsync();
-
-            if (contraindications.Any())
-            {
-                return "Warning: This medication is contraindicated for one or more of the patient's conditions.";
-            }
-
-            return string.Empty;
-        }
 
         //Return Prescription
         [HttpGet]
