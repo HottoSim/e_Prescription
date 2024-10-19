@@ -3,15 +3,15 @@
 @{
     ViewData["Title"] = "Update Prescription Status";
 }
+
 <head>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JavaScript -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
 </head>
+
 <div class="col-md-12 mx-auto pt-0 p-0">
     <div class="card">
         <div class="card-header bg-success text-uppercase text-white" style="height: 45px;">
@@ -83,8 +83,6 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>
 
@@ -94,7 +92,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title text-center w-100" id="allergyWarningLabel">
-                    <i class="fas fa-exclamation-triangle text-warning" style="font-size: 48px;"></i> <!-- Warning Icon -->
+                    <i class="fas fa-exclamation-triangle text-warning" style="font-size: 48px;"></i>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -110,17 +108,44 @@
     </div>
 </div>
 
+<!-- Modal for Medical Interaction Warning -->
+<div class="modal fade" id="medInterWarningModal" tabindex="-1" aria-labelledby="medInterWarningLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-right">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center w-100" id="medInterWarningLabel">
+                    <i class="fas fa-exclamation-triangle text-warning" style="font-size: 48px;"></i>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                @TempData["ContraIndicationWarning"]
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Check if TempData["AllergyWarning"] is not null and show the modal
+            // Show the allergy warning modal if there's a warning message
             var allergyWarning = "@TempData["AllergyWarning"]";
             if (allergyWarning) {
                 $('#allergyWarningModal').modal('show');
             }
+
+            // Show the medical interaction warning modal if there's a warning message
+            var medInterWarning = "@TempData["ContraIndicationWarning"]";
+            if (medInterWarning) {
+                $('#medInterWarningModal').modal('show');
+            }
         });
-    </script>
-    <script>
+
         document.getElementById('statusDropdown').addEventListener('change', function () {
             var rejectionReasonContainer = document.getElementById('rejectionReasonContainer');
             if (this.value === 'Rejected') {
@@ -129,14 +154,5 @@
                 rejectionReasonContainer.style.display = 'none'; // Hide text box
             }
         });
-
-        // Show the alert modal if there's an alert message
-        $(document).ready(function () {
-            var alertMessage = "@Model.AlertMessage";
-            if (alertMessage) {
-                $('#alertModal').modal('show');
-            }
-        });
     </script>
 }
-

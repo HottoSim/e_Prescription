@@ -47,23 +47,57 @@ namespace e_Prescription.Controllers
         public async Task<IActionResult> UpdatePrescriptionStatus(int id)
         {
             var prescriptionItem = await _context.PrescriptionItems
-                .Include(p => p.Prescription)
-                    .ThenInclude(p => p.Admission)
-                        .ThenInclude(a => a.Patient)
-                .Include(p => p.Prescription)
-                    .ThenInclude(p => p.ApplicationUser)
-                .Include(p => p.PharmacyMedication)
-                    .ThenInclude(pm => pm.PharmacyMedicationIngredients) // Ensure ingredients are included
-                    .ThenInclude(pmi => pmi.ActiveIngredient) // Include ActiveIngredient to access names
-                .FirstOrDefaultAsync(p => p.PrescriptionId == id);
+        .Include(p => p.Prescription)
+            .ThenInclude(p => p.Admission)
+                .ThenInclude(a => a.Patient)
+        .Include(p => p.Prescription)
+            .ThenInclude(p => p.ApplicationUser)
+        .Include(p => p.PharmacyMedication)
+            .ThenInclude(pm => pm.PharmacyMedicationIngredients)
+                .ThenInclude(pmi => pmi.ActiveIngredient)
+        .FirstOrDefaultAsync(p => p.PrescriptionId == id);
 
             // Check if prescriptionItem or any necessary navigation property is null
             if (prescriptionItem == null ||
                 prescriptionItem.PharmacyMedication == null ||
                 prescriptionItem.Prescription?.Admission == null)
             {
-                return NotFound(); // Prescription item or related data not found
+                return NotFound();
             }
+
+            // Retrieve patient's conditions
+            var patientConditions = _context.PatientConditions
+                .Where(pc => pc.PatientId == prescriptionItem.Prescription.Admission.PatientId)
+                .Select(pc => pc.PatientConditionId)
+                .ToList();
+
+            // Retrieve medication ingredients
+            var medIngredients = prescriptionItem.PharmacyMedication.PharmacyMedicationIngredients
+                .Select(ma => ma.ActiveIngredient)
+                .ToList();
+
+            // Get a list of active ingredient IDs
+            var activeIngredientIds = medIngredients
+                .Where(mi => mi != null)
+                .Select(mi => mi.ActiveIngredientId)
+                .ToList();
+
+            // Check for contraindications
+            var contraindications = await _context.ContraIndications
+                .Include(ci => ci.ActiveIngredient)
+                .Include(ci => ci.ChronicCondition)
+                .Where(ci => patientConditions.Contains(ci.ChronicConditionId) &&
+                             activeIngredientIds.Contains(ci.ActiveIngredientId)) // Use Contains for matching IDs
+                .Select(ci => ci.ActiveIngredient.IngredientName)
+                .ToListAsync();
+
+            // Prepare warning messages
+            if (contraindications.Any())
+            {
+                var contraindicationWarning = $"There are contraindications for: {string.Join(", ", contraindications)}";
+                TempData["ContraIndicationWarning"] = contraindicationWarning;
+            }
+
 
             // Retrieve the patient's allergies (ActiveIngredientId)
             var patientAllergies = _context.PatientAllergies
@@ -625,7 +659,7 @@ namespace e_Prescription.Controllers
         public async Task<IActionResult> OrderMedications(MedicationOrderViewModel model)
         {
             var emailService = new EmailService(_configuration);
-            var purchaseManagerEmail = /*"nmostert@nmmu.ac.za"*/ "zisandanodali01@gmail.com"; // Replace with actual email
+            var purchaseManagerEmail = "nmostert@nmmu.ac.za"; /*"zisandanodali01@gmail.com";*/ // Replace with actual email
 
             var orderedMedications = new List<string>(); // To track medications being ordered
 
