@@ -1014,33 +1014,34 @@ namespace e_Prescription.Controllers
             if (prescriptionItem == null)
             {
                 ModelState.AddModelError("", "Prescription item not found.");
-                return View(prescriptionItem);
+                return View(medicationGiven);
             }
 
-            var setAdministerd = prescriptionItem.Quantity -= prescriptionItem.AdministeredQuantity;
-            if (prescriptionItem.Quantity < medicationGiven.Quantity && medicationGiven.Quantity >= setAdministerd)
+            // Calculate remaining quantity without modifying prescribed quantity
+            var remainingQuantity = prescriptionItem.Quantity - prescriptionItem.AdministeredQuantity;
+
+            // Check if there's enough medication left to administer
+            if (medicationGiven.Quantity > remainingQuantity)
             {
-                TempData["ErrorMessage"] = "Insufficient medication quantity.";
-                return RedirectToAction("ViewPrescription", new { prescriptionItem.Prescription.AdmissionId });
+                TempData["ErrorMessage"] = "Insufficient medication quantity. Available: " + remainingQuantity;
+                return RedirectToAction("ViewPrescription", new { admissionId = prescriptionItem.Prescription.AdmissionId });
             }
 
+            // Administer the medication by increasing the AdministeredQuantity
             prescriptionItem.AdministeredQuantity += medicationGiven.Quantity;
 
             // Set the NurseId and Time for MedicationGiven
             medicationGiven.NurseId = nurse.Id;
             medicationGiven.Time = DateTime.Now;
 
-            // Update the status of the Prescription to "Administered"
-           // prescriptionItem.Prescription.Status = "Administered";
-
             // Save the administered medication to the database
             context.MedicationsGiven.Add(medicationGiven);
 
-            // Update the prescription item in the database(Status)
+            // Update the prescription item in the database (for the AdministeredQuantity change)
             context.PrescriptionItems.Update(prescriptionItem);
 
-            // Update the prescription status in the database
-            context.Prescriptions.Update(prescriptionItem.Prescription);
+            // Update the prescription status if necessary (optional)
+            // context.Prescriptions.Update(prescriptionItem.Prescription);
 
             await context.SaveChangesAsync();
 
@@ -1055,6 +1056,7 @@ namespace e_Prescription.Controllers
 
             return RedirectToAction("ViewPrescription", new { admissionId });
         }
+
 
 
         //Nurse Reports (Admission details)
