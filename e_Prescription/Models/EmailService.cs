@@ -12,7 +12,7 @@ namespace e_Prescription.Models
             _configuration = configuration;
         }
 
-        public async Task SendEmailAsync(string toEmail, string subject, string message)
+        public async Task SendEmailAsync(string toEmail, string subject, string message, bool isHtml = true)
         {
             var smtpSettings = _configuration.GetSection("SmtpSettings");
             var smtpClient = new SmtpClient(smtpSettings["Server"], int.Parse(smtpSettings["Port"]))

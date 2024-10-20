@@ -174,6 +174,28 @@
          }
         <script type="text/javascript">
             $(document).ready(function () {
+                // Check and set initial state for allergies
+                if ($('#noAllergies').is(':checked')) {
+                    $('select[name="SelectedAllergies"]').prop('disabled', true).selectpicker('refresh').val([]);
+                } else {
+                    $('select[name="SelectedAllergies"]').prop('disabled', false).selectpicker('refresh');
+                }
+
+                // Check and set initial state for conditions
+                if ($('#noConditions').is(':checked')) {
+                    $('select[name="SelectedConditions"]').prop('disabled', true).selectpicker('refresh').val([]);
+                } else {
+                    $('select[name="SelectedConditions"]').prop('disabled', false).selectpicker('refresh');
+                }
+
+                // Check and set initial state for medications
+                if ($('#noMedications').is(':checked')) {
+                    $('select[name="SelectedMedications"]').prop('disabled', true).selectpicker('refresh').val([]);
+                } else {
+                    $('select[name="SelectedMedications"]').prop('disabled', false).selectpicker('refresh');
+                }
+
+                // Bind checkbox change events
                 $('#noAllergies').change(function () {
                     if ($(this).is(':checked')) {
                         $('select[name="SelectedAllergies"]').prop('disabled', true).selectpicker('refresh').val([]);

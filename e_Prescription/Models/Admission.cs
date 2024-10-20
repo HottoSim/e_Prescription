@@ -40,6 +40,9 @@ namespace e_Prescription.Models
         [Required]
         public bool IsDischarged { get; set; } = false;
 
+        [Required(ErrorMessage = "*Required")]
+        public double? BMI { get; set; }
+
         [ForeignKey("ApplicationUser")]
         public string NurseId { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }

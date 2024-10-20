@@ -60,13 +60,37 @@
 
         @if (TempData["SuccessMessage"] != null)
         {
-            <div class="alert alert-success">
-                @TempData["SuccessMessage"]
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+            <!-- Modal Trigger -->
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('#successModal').modal('show'); // Show the modal on page load
+
+                    // Set a timer to close the modal after 4 seconds (4000 milliseconds)
+                    setTimeout(function () {
+                        $('#successModal').modal('hide'); // Hide the modal
+                    }, 4000);
+                });
+            </script>
+
+            <!-- Success Modal -->
+            <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="successModalLabel">Success</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            </button>
+                        </div>
+                        <div class="modal-body text-center text-success">
+                            <span class="alert-icon" style="font-size: 48px; color: green;">✉️</span> <!-- Email icon -->
+                            <hr />
+                            <h5>@TempData["SuccessMessage"]</h5>
+                        </div>
+                    </div>
+                </div>
             </div>
         }
+
         @if (TempData["ErrorMessage"] != null)
         {
             <div class="alert alert-danger">
@@ -113,6 +137,23 @@
                             <div>
                                 <p class="card-text"><strong>Weight:</strong> @item.Weight Kg &nbsp; &nbsp; <strong>Height:</strong> @item.Height cm</p>
                             </div>
+                            <div>
+                                <p class="card-text">
+                                    <strong>
+                                        BMI (Body Mass Index):
+                                        @if (item.BMI.HasValue)
+                                        {
+                                            @item.BMI.Value.ToString("F2") <span>normal range (18.5 - 24.9)</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Not Available</span>
+                                        }
+                                    </strong>
+                                </p>
+                            </div>
+                            <br />
+
                             <table class="table table-sm table-striped">
                                 <thead class="card-header-t bg-success text-white">
                                     <tr>

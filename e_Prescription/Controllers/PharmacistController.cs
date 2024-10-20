@@ -653,13 +653,13 @@ namespace e_Prescription.Controllers
             TempData["SuccessMessage"] = "Stock order deleted successfully.";
             return RedirectToAction("OrderMedications"); // Redirect back to the order page
         }
-
+        /*"zisandanodali01@gmail.com";*/
 
         [HttpPost]
         public async Task<IActionResult> OrderMedications(MedicationOrderViewModel model)
         {
             var emailService = new EmailService(_configuration);
-            var purchaseManagerEmail = "nmostert@nmmu.ac.za"; /*"zisandanodali01@gmail.com";*/ // Replace with actual email
+            var purchaseManagerEmail = "nmostert@nmmu.ac.za"; // Replace with actual email
 
             var orderedMedications = new List<string>(); // To track medications being ordered
 
@@ -694,16 +694,51 @@ namespace e_Prescription.Controllers
             if (orderedMedications.Any())
             {
                 var subject = "Stock Order Notification";
-                var message = $"Dear Purchase Manager,<br/><br/>The following medications have been ordered:<br/>" +
-                              string.Join("<br/>", orderedMedications) +
-                              "<br/><br/>Best regards,<br/>Pharmacy Team<br/></br/><small>Bay Breeze Day Hospital<br/>Eastern Cape<br/>Summerstrand (6001)<br/>1 8th Avenue<br/>041 58 2121</small >";
 
-                await emailService.SendEmailAsync(purchaseManagerEmail, subject, message);
+                // Create email message with table formatting
+                var message = $@"
+            <p>Dear Purchase Manager,</p>
+            <p>The following medications have been ordered:</p>
+            <table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%;'>
+                <tr>
+                    <th>Medication Name</th>
+                    <th>Quantity Ordered</th>
+                </tr>";
+
+                foreach (var item in model.Medications.Where(m => m.IsSelected && m.OrderQuantity > 0))
+                {
+                    var pharmacyMedication = await _context.PharmacyMedications
+                        .FirstOrDefaultAsync(m => m.PharmacyMedicationId == item.PharmacyMedicationId);
+
+                    if (pharmacyMedication != null)
+                    {
+                        message += $@"
+                    <tr>
+                        <td>{pharmacyMedication.MedicationName}</td>
+                        <td>{item.OrderQuantity}</td>
+                    </tr>";
+                    }
+                }
+
+                message += @"
+            </table>
+            <br/><br/>
+            Best regards,<br/>
+            Pharmacy Team
+            <br/><br/>
+            <small>Bay Breeze Day Hospital<br/>
+            Eastern Cape<br/>
+            Summerstrand (6001)<br/>
+            1 8th Avenue<br/>
+            041 58 2121</small>";
+
+                await emailService.SendEmailAsync(purchaseManagerEmail, subject, message, isHtml: true);
             }
 
             TempData["EmailMessage"] = "Stock order placed successfully and email notification sent.";
             return RedirectToAction("OrderMedications");
         }
+
 
 
         // Action to return selected orders

@@ -8,6 +8,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using e_Prescription.Models.ViewModels;
+using NuGet.Versioning;
 
 namespace e_Prescription.Controllers
 {
@@ -526,9 +527,21 @@ namespace e_Prescription.Controllers
                         context.PatientsVitals.Add(patientVital);
                     }
                 }
+                var heightInMeters = admission.Height / 100; // Convert height from cm to meters
+                var bmiCalculation = (admission.Weight / (heightInMeters * heightInMeters));
 
+                admission.BMI = bmiCalculation;
                 context.Admissions.Add(admission);
                 await context.SaveChangesAsync();
+
+                if(admission.BMI > 24.0)
+                {
+                    notifications.Add($"BMI (Body Mass Index) is **HIGHER** than normal. Normal (18.5 - 18.5)");
+                }
+                else if(admission.BMI < 18.5)
+                {
+                    notifications.Add($"BMI (Body Mass Index) is **LOWER** than normal. Normal (18.5 - 18.5)");
+                }
 
                 var patient = context.Patients.Find(patientId);
                 if (patient == null)
