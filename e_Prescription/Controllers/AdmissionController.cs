@@ -61,27 +61,33 @@ namespace e_Prescription.Controllers
             return View(model);
         }
 
-        //View bookings
+        // View bookings
         public IActionResult Index(string searchIdNumber, DateTime? searchDate, string sortOrder)
         {
-            var bookings = context.BookingTreatments.OrderBy(b => b.PatientBooking.Patient.Firstname)
-                                .Where(p => p.PatientBooking.Patient.Status == "Not Admitted")
-                                .Include(pb => pb.PatientBooking.Patient)
-                                .Include(t => t.PatientBooking.Theatre)
-                                .Include(t => t.TreatmentCode)
-                                .Include(pb => pb.PatientBooking.ApplicationUser)
-                                .AsQueryable();
+            // Set default search date to today's date if not provided
+            if (!searchDate.HasValue)
+            {
+                searchDate = DateTime.Today; // Set to today
+            }
 
+            var bookings = context.BookingTreatments.OrderBy(p => p.PatientBooking.Patient.Firstname)
+                .Where(b => b.PatientBooking.Patient.Status == "Not Admitted")
+                .Include(pb => pb.PatientBooking.Patient)
+                .Include(t => t.PatientBooking.Theatre)
+                .Include(t => t.TreatmentCode)
+                .Include(pb => pb.PatientBooking.ApplicationUser)
+                .AsQueryable();
+
+            // Filter by searchIdNumber if provided
             if (!string.IsNullOrEmpty(searchIdNumber))
             {
                 bookings = bookings.Where(b => b.PatientBooking.Patient.IdNumber == searchIdNumber);
             }
 
-            if (searchDate.HasValue)
-            {
-                bookings = bookings.Where(b => b.PatientBooking.Date.Date == searchDate.Value.Date);
-            }
+            // Filter by searchDate
+            bookings = bookings.Where(b => b.PatientBooking.Date.Date == searchDate.Value.Date);
 
+            // Sorting logic
             switch (sortOrder)
             {
                 case "asc":
@@ -97,6 +103,7 @@ namespace e_Prescription.Controllers
 
             return View(bookings.ToList());
         }
+
 
         [HttpGet]
         public IActionResult Contacts(int patientId)
