@@ -48,7 +48,6 @@
                     <th>
                         Ingredient name
                     </th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -57,9 +56,6 @@
                     <tr>
                         <td>
                             @Html.DisplayFor(modelItem => item.IngredientName)
-                        </td>
-                        <td>
-                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.ActiveIngredientId">Update</a>
                         </td>
                     </tr>
                 }

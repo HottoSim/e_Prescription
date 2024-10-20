@@ -48,7 +48,6 @@
                     <th>Low Limit</th>
                     <th>High Limit</th>
                     <th>Units</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,9 +58,6 @@
                         <td>@item.LowLimit</td>
                         <td>@item.HighLimit</td>
                         <td>@Html.DisplayFor(modelItem => item.Units)</td>
-                        <td>
-                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.VitalId">Update</a>
-                        </td>
                     </tr>
                 }
             </tbody>

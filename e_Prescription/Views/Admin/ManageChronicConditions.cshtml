@@ -53,7 +53,6 @@
                     <th>
                         @Html.DisplayNameFor(model => model.Diagnosis)
                     </th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -65,9 +64,6 @@
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Diagnosis)
-                        </td>
-                        <td>
-                            <a asp-action="Edit" class="btn btn-info" asp-route-id="@item.ChronicCondotionId">Edit</a>
                         </td>
                     </tr>
                 }
