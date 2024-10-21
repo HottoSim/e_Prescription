@@ -435,6 +435,7 @@ namespace e_Prescription.Controllers
                     var vital = context.Vital.Find(patientVital.VitalId);
                     if (vital != null)
                     {
+                        // Blood pressure reading
                         if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^(1[0-9]{2}|[1-9]?[0-9]{1,2})\/(1[0-9]{2}|[1-9]?[0-9]{1,2})$"))
                         {
                             var bloodPressureParts = patientVital.Reading.Split('/');
@@ -479,7 +480,7 @@ namespace e_Prescription.Controllers
                                 return View(admission);
                             }
                         }
-
+                        // Temperature reading
                         else if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d+(\.\d+)?$"))
                         {
                             if (double.TryParse(vital.LowLimit, out double lowLimit) &&
@@ -515,12 +516,12 @@ namespace e_Prescription.Controllers
 
                             var wards = context.Wards.ToList();
                             var beds = new List<Bed>
-                            {
-                               new Bed()
-                                {
-                                BedId = 0, BedName = "--Select Bed--"
-                               }
-                            };
+                    {
+                       new Bed()
+                        {
+                        BedId = 0, BedName = "--Select Bed--"
+                       }
+                    };
 
                             ViewBag.Wards = new SelectList(wards.OrderBy(w => w.WardName), "WardId", "WardName");
                             ViewBag.Beds = new SelectList(beds.OrderBy(b => b.BedName), "BedId", "BedName");
@@ -530,20 +531,20 @@ namespace e_Prescription.Controllers
                         context.PatientsVitals.Add(patientVital);
                     }
                 }
+
                 var heightInMeters = admission.Height / 100; // Convert height from cm to meters
                 var bmiCalculation = (admission.Weight / (heightInMeters * heightInMeters));
-
                 admission.BMI = bmiCalculation;
                 context.Admissions.Add(admission);
                 await context.SaveChangesAsync();
 
-                if(admission.BMI > 24.0)
+                if (admission.BMI > 24.0)
                 {
-                    notifications.Add($"BMI (Body Mass Index) is **HIGHER** than normal. Normal (18.5 - 18.5)");
+                    notifications.Add($"BMI (Body Mass Index) is **HIGHER** than normal. Normal (18.5 - 24.9)");
                 }
-                else if(admission.BMI < 18.5)
+                else if (admission.BMI < 18.5)
                 {
-                    notifications.Add($"BMI (Body Mass Index) is **LOWER** than normal. Normal (18.5 - 18.5)");
+                    notifications.Add($"BMI (Body Mass Index) is **LOWER** than normal. Normal (18.5 - 24.9)");
                 }
 
                 var patient = context.Patients.Find(patientId);
@@ -569,7 +570,7 @@ namespace e_Prescription.Controllers
                 }
                 else
                 {
-                    ViewBag.AlertMessage = "All patient Vitals seem normal!";
+                    ViewBag.AlertMessage = "All patient vitals seem normal!";
                 }
 
                 ViewBag.Vitals = context.Vital.OrderBy(v => v.VitalName).ToList();  // Reinitialize Vitals
@@ -592,6 +593,7 @@ namespace e_Prescription.Controllers
                 return View(admission);
             }
         }
+
 
         // Get Bed By Ward
         public JsonResult GetBedByWardId(int wardId)
