@@ -45,8 +45,12 @@
                 <div class="form-group">
                     <input type="checkbox" id="showUrgentOnly" name="showUrgentOnly" value="true" @(ViewBag.ShowUrgentOnly ? "checked" : "") />
                     <label for="showUrgentOnly">Show only urgent prescriptions</label>
-                    <button type="submit" class="btn btn-danger btn-sm">Filter</button>
                 </div>
+                <div class="form-group">
+                    <input type="checkbox" id="showPendingOnly" name="showPendingOnly" value="true" @(ViewBag.ShowPendingOnly ? "checked" : "") />
+                    <label for="showPendingOnly">Show only pending prescriptions</label>
+                </div>
+                <button type="submit" class="btn btn-danger btn-sm">Filter</button>
             </form>
         </div>
 

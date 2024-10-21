@@ -274,25 +274,33 @@ namespace e_Prescription.Controllers
 
         //Return Prescription
         [HttpGet]
-        public IActionResult GetPrescriptions(bool showUrgentOnly = false)
+        public IActionResult GetPrescriptions(bool showUrgentOnly = false, bool showPendingOnly = false)
         {
-            
             var prescriptions = _context.PrescriptionItems
                 .Include(p => p.Prescription.Admission.Patient)
                 .Include(us => us.Prescription.ApplicationUser)
                 .Include(p => p.PharmacyMedication)
+                .OrderByDescending(o => o.Prescription.PresciptionDate) // Sort by Date descending
                 .AsQueryable();
 
+            // Filter by Urgency
             if (showUrgentOnly)
             {
                 prescriptions = prescriptions.Where(p => p.Prescription.IsUrgent);
             }
 
-            // Pass the showUrgentOnly value to the view
+            // Filter by Pending Status
+            if (showPendingOnly)
+            {
+                prescriptions = prescriptions.Where(p => p.Prescription.Status == "Pending");
+            }
+
             ViewBag.ShowUrgentOnly = showUrgentOnly;
+            ViewBag.ShowPendingOnly = showPendingOnly;
 
             return View(prescriptions.ToList());
         }
+
 
         // Search Action for Date Range
         [HttpGet]
