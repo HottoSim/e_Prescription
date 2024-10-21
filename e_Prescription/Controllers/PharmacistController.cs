@@ -292,7 +292,7 @@ namespace e_Prescription.Controllers
             // Filter by Pending Status
             if (showPendingOnly)
             {
-                prescriptions = prescriptions.Where(p => p.Prescription.Status == "Pending");
+                prescriptions = prescriptions.Where(p => p.Prescription.Status == "Prescribed");
             }
 
             ViewBag.ShowUrgentOnly = showUrgentOnly;

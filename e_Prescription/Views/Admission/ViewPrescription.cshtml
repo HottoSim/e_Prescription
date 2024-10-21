@@ -114,7 +114,6 @@
                             <th>Medication Name</th>
                             <th>Quantity</th>
                             <th>Instructions</th>
-                            <th>Time</th>
                             <th>Surgeon</th>
                             <th>Action</th>
                         </tr>
@@ -129,7 +128,6 @@
                                     <td>@item.PharmacyMedication.MedicationName</td>
                                     <td>@item.Quantity</td>
                                     <td>@item.Instruction</td>
-                                    <td>@item.Prescription.PresciptionDate.ToShortTimeString()</td>
                                     <td>Dr. @item.Prescription.ApplicationUser.FirstName @item.Prescription.ApplicationUser.LastName</td>
                                     <td>
                                         @if (item.AdministeredQuantity >= item.Quantity)
