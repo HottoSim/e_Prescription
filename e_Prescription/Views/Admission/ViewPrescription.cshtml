@@ -115,6 +115,7 @@
                             <th>Quantity</th>
                             <th>Instructions</th>
                             <th>Surgeon</th>
+                            <th>Time</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -128,6 +129,7 @@
                                     <td>@item.PharmacyMedication.MedicationName</td>
                                     <td>@item.Quantity</td>
                                     <td>@item.Instruction</td>
+                                    <td>@item.Prescription.PresciptionDate.ToShortTimeString()</td>
                                     <td>Dr. @item.Prescription.ApplicationUser.FirstName @item.Prescription.ApplicationUser.LastName</td>
                                     <td>
                                         @if (item.AdministeredQuantity >= item.Quantity)
@@ -176,7 +178,6 @@
                             <tr>
                                 <th>Medication Name</th>
                                 <th>Quantity</th>
-                                <th>Time</th>
                                 <th>Nurse</th>
                             </tr>
                         </thead>
@@ -186,7 +187,6 @@
                                 <tr>
                                     <td>@item.PrescriptionItem.PharmacyMedication.MedicationName</td>
                                     <td>@item.Quantity</td>
-                                    <td>@item.Time.ToString("HH:mm")</td>
                                     <td>@item.ApplicationUser.FirstName @item.ApplicationUser.LastName</td>
                                 </tr>
                             }
