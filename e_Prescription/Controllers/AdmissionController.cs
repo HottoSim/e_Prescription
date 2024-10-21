@@ -269,7 +269,7 @@ namespace e_Prescription.Controllers
                     if (vitalInfo != null)
                     {
                         // Check if the reading is in the "150/60" blood pressure format
-                        if (System.Text.RegularExpressions.Regex.IsMatch(vital.Reading, @"^\d{2,3}\/\d{2,3}$"))
+                        if (System.Text.RegularExpressions.Regex.IsMatch(vital.Reading, @"^(1[0-9]{2}|[1-9]?[0-9]{1,2})\/(1[0-9]{2}|[1-9]?[0-9]{1,2})$"))
                         {
                             var bloodPressureParts = vital.Reading.Split('/');
                             if (bloodPressureParts.Length == 2 &&
@@ -435,7 +435,7 @@ namespace e_Prescription.Controllers
                     var vital = context.Vital.Find(patientVital.VitalId);
                     if (vital != null)
                     {
-                        if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d{2,3}\/\d{2,3}$"))
+                        if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^(1[0-9]{2}|[1-9]?[0-9]{1,2})\/(1[0-9]{2}|[1-9]?[0-9]{1,2})$"))
                         {
                             var bloodPressureParts = patientVital.Reading.Split('/');
                             if (bloodPressureParts.Length == 2 &&
@@ -459,24 +459,19 @@ namespace e_Prescription.Controllers
 
                                 if (isSystolicLow || isDiastolicLow)
                                 {
-                                    // Systolic or Diastolic pressure is below the normal range
                                     notifications.Add($"The reading for {vital.VitalName} is **LOWER** than normal range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
                                     patientVital.Note = "Lower than normal";
                                 }
                                 else if (isSystolicHigh || isDiastolicHigh)
                                 {
-                                    // Systolic or Diastolic pressure is above the normal range
                                     notifications.Add($"The reading for {vital.VitalName} is **HIGHER** than normal range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
                                     patientVital.Note = "Higher than normal";
                                 }
                                 else
                                 {
-                                    // Systolic and Diastolic pressures are within the normal range
-                                   // notifications.Add($"The reading for {vital.VitalName} is **WITHIN NORMAL RANGE**: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
                                     patientVital.Note = "Within normal range";
                                 }
                             }
-
                             else
                             {
                                 ModelState.AddModelError(string.Empty, $"Invalid format for the blood pressure reading of {vital.VitalName}. Please check the input.");
@@ -484,6 +479,7 @@ namespace e_Prescription.Controllers
                                 return View(admission);
                             }
                         }
+
                         else if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d+(\.\d+)?$"))
                         {
                             if (double.TryParse(vital.LowLimit, out double lowLimit) &&
