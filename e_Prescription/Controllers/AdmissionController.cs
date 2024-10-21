@@ -269,7 +269,7 @@ namespace e_Prescription.Controllers
                     if (vitalInfo != null)
                     {
                         // Check if the reading is in the "150/60" blood pressure format
-                        if (System.Text.RegularExpressions.Regex.IsMatch(vital.Reading, @"^\d{2,3}\/\d{2,3}$"))
+                        if (System.Text.RegularExpressions.Regex.IsMatch(vital.Reading, @"^(1[0-9]{2}|[1-9]?[0-9]{1,2})\/(1[0-9]{2}|[1-9]?[0-9]{1,2})$"))
                         {
                             var bloodPressureParts = vital.Reading.Split('/');
                             if (bloodPressureParts.Length == 2 &&
@@ -435,7 +435,8 @@ namespace e_Prescription.Controllers
                     var vital = context.Vital.Find(patientVital.VitalId);
                     if (vital != null)
                     {
-                        if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d{2,3}\/\d{2,3}$"))
+                        // Blood pressure reading
+                        if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^(1[0-9]{2}|[1-9]?[0-9]{1,2})\/(1[0-9]{2}|[1-9]?[0-9]{1,2})$"))
                         {
                             var bloodPressureParts = patientVital.Reading.Split('/');
                             if (bloodPressureParts.Length == 2 &&
@@ -459,24 +460,19 @@ namespace e_Prescription.Controllers
 
                                 if (isSystolicLow || isDiastolicLow)
                                 {
-                                    // Systolic or Diastolic pressure is below the normal range
                                     notifications.Add($"The reading for {vital.VitalName} is **LOWER** than normal range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
                                     patientVital.Note = "Lower than normal";
                                 }
                                 else if (isSystolicHigh || isDiastolicHigh)
                                 {
-                                    // Systolic or Diastolic pressure is above the normal range
                                     notifications.Add($"The reading for {vital.VitalName} is **HIGHER** than normal range: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
                                     patientVital.Note = "Higher than normal";
                                 }
                                 else
                                 {
-                                    // Systolic and Diastolic pressures are within the normal range
-                                   // notifications.Add($"The reading for {vital.VitalName} is **WITHIN NORMAL RANGE**: {systolic}/{diastolic} {vital.Units} (Normal range: {vital.LowLimit} - {vital.HighLimit} {vital.Units})");
                                     patientVital.Note = "Within normal range";
                                 }
                             }
-
                             else
                             {
                                 ModelState.AddModelError(string.Empty, $"Invalid format for the blood pressure reading of {vital.VitalName}. Please check the input.");
@@ -484,6 +480,7 @@ namespace e_Prescription.Controllers
                                 return View(admission);
                             }
                         }
+                        // Temperature reading
                         else if (System.Text.RegularExpressions.Regex.IsMatch(patientVital.Reading, @"^\d+(\.\d+)?$"))
                         {
                             if (double.TryParse(vital.LowLimit, out double lowLimit) &&
@@ -519,12 +516,12 @@ namespace e_Prescription.Controllers
 
                             var wards = context.Wards.ToList();
                             var beds = new List<Bed>
-                            {
-                               new Bed()
-                                {
-                                BedId = 0, BedName = "--Select Bed--"
-                               }
-                            };
+                    {
+                       new Bed()
+                        {
+                        BedId = 0, BedName = "--Select Bed--"
+                       }
+                    };
 
                             ViewBag.Wards = new SelectList(wards.OrderBy(w => w.WardName), "WardId", "WardName");
                             ViewBag.Beds = new SelectList(beds.OrderBy(b => b.BedName), "BedId", "BedName");
@@ -534,20 +531,20 @@ namespace e_Prescription.Controllers
                         context.PatientsVitals.Add(patientVital);
                     }
                 }
+
                 var heightInMeters = admission.Height / 100; // Convert height from cm to meters
                 var bmiCalculation = (admission.Weight / (heightInMeters * heightInMeters));
-
                 admission.BMI = bmiCalculation;
                 context.Admissions.Add(admission);
                 await context.SaveChangesAsync();
 
-                if(admission.BMI > 24.0)
+                if (admission.BMI > 24.0)
                 {
-                    notifications.Add($"BMI (Body Mass Index) is **HIGHER** than normal. Normal (18.5 - 18.5)");
+                    notifications.Add($"BMI (Body Mass Index) is **HIGHER** than normal. Normal (18.5 - 24.9)");
                 }
-                else if(admission.BMI < 18.5)
+                else if (admission.BMI < 18.5)
                 {
-                    notifications.Add($"BMI (Body Mass Index) is **LOWER** than normal. Normal (18.5 - 18.5)");
+                    notifications.Add($"BMI (Body Mass Index) is **LOWER** than normal. Normal (18.5 - 24.9)");
                 }
 
                 var patient = context.Patients.Find(patientId);
@@ -573,7 +570,7 @@ namespace e_Prescription.Controllers
                 }
                 else
                 {
-                    ViewBag.AlertMessage = "All patient Vitals seem normal!";
+                    ViewBag.AlertMessage = "All patient vitals seem normal!";
                 }
 
                 ViewBag.Vitals = context.Vital.OrderBy(v => v.VitalName).ToList();  // Reinitialize Vitals
@@ -596,6 +593,7 @@ namespace e_Prescription.Controllers
                 return View(admission);
             }
         }
+
 
         // Get Bed By Ward
         public JsonResult GetBedByWardId(int wardId)

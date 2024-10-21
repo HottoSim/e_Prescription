@@ -89,7 +89,7 @@ namespace e_Prescription.Controllers
         </tr>
          <tr>
             <td><strong>Weight and Height:</strong></td>
-            <td>{admission.Weight} kg and {admission.Height} cm</td>
+            <td>{admission.Weight} kg and {admission.Height} m</td>
         </tr>
         <tr>
             <td><strong>BMI:</strong></td>

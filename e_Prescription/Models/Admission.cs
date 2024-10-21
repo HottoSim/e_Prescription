@@ -27,11 +27,9 @@ namespace e_Prescription.Models
         public virtual Bed Bed { get; set; }
 
         [Required(ErrorMessage = "*Required")]
-        [Range(2.0, Double.MaxValue, ErrorMessage = "Invalid weight entered")]
         public double? Weight { get; set; }
 
         [Required(ErrorMessage = "*Required")]
-        [Range(45.0, Double.MaxValue, ErrorMessage = "Invalid Height entered.")]
         public double? Height { get; set; }
 
         public virtual List<PatientsVitals> PatientsVitals { get; set; } = new List<PatientsVitals>();
