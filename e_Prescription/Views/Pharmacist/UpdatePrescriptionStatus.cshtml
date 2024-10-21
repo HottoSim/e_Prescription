@@ -94,15 +94,9 @@
                 <h5 class="modal-title text-center w-100" id="allergyWarningLabel">
                     <i class="fas fa-exclamation-triangle text-warning" style="font-size: 48px;"></i>
                 </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
             <div class="modal-body text-center">
                 @TempData["AllergyWarning"]
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -116,15 +110,9 @@
                 <h5 class="modal-title text-center w-100" id="medInterWarningLabel">
                     <i class="fas fa-exclamation-triangle text-warning" style="font-size: 48px;"></i>
                 </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
             </div>
             <div class="modal-body text-center">
                 @TempData["ContraIndicationWarning"]
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -137,14 +125,21 @@
             var allergyWarning = "@TempData["AllergyWarning"]";
             if (allergyWarning) {
                 $('#allergyWarningModal').modal('show');
+                setTimeout(function () {
+                    $('#allergyWarningModal').modal('hide');
+                }, 5000); // 8000 milliseconds = 8 seconds
             }
 
             // Show the medical interaction warning modal if there's a warning message
             var medInterWarning = "@TempData["ContraIndicationWarning"]";
             if (medInterWarning) {
                 $('#medInterWarningModal').modal('show');
+                setTimeout(function () {
+                    $('#medInterWarningModal').modal('hide');
+                }, 5000); // 8000 milliseconds = 8 seconds
             }
         });
+
 
         document.getElementById('statusDropdown').addEventListener('change', function () {
             var rejectionReasonContainer = document.getElementById('rejectionReasonContainer');
